@@ -60,6 +60,77 @@ For each domain group:
    - What would a skeptic say about this design?
    - Rate confidence 1-10 in this architecture surviving production.
 
+### ⚠️ CRUCIBLE EXECUTION IS PROGRAMMATIC, NOT CLAIMED (March 2026 — Non-Negotiable)
+
+**The Problem:** An AI agent can read the steps above and CLAIM it ran a Crucible without actually invoking NotebookLM. NotebookLM is an isolated Google workspace — it has no read access to your local machine, GitHub, or Claude Code's terminal. Files must be explicitly uploaded.
+
+**The Rule:** The Crucible is NOT complete until NotebookLM has been programmatically invoked and a notebook ID is recorded. An AI agent saying "I ran the Crucible" without a notebook ID is lying.
+
+**The Tool:** `teng-lin/notebooklm-py` — a Python API wrapper for NotebookLM. Installed globally. Auth via `~/.notebooklm/storage_state.json` (Playwright browser state).
+
+**The Canonical Pattern (proven March 17, 2026):**
+
+```python
+import asyncio
+from notebooklm import NotebookLMClient
+
+async def run_crucible(domain_name, source_files, questions):
+    async with await NotebookLMClient.from_storage() as client:
+        # Step 1: Create notebook (one per domain group)
+        notebook = await client.notebooks.create(f"Crucible: {domain_name}")
+        notebook_id = notebook.id
+
+        # Step 2: Upload sources (MUST be explicit — files don't auto-sync)
+        for filepath, title in source_files:
+            with open(filepath) as f:
+                await client.sources.add_text(
+                    notebook_id=notebook_id,
+                    title=title,
+                    content=f.read(),
+                    wait=True
+                )
+
+        # Step 3: Ask adversarial questions
+        for question in questions:
+            result = await client.chat.ask(
+                notebook_id=notebook_id,
+                question=question
+            )
+            print(f"Q: {question[:80]}...")
+            print(f"A: {result.answer}\n")
+
+        # Step 4: Return notebook ID as VERIFICATION ARTIFACT
+        return notebook_id
+
+# Example: run and capture the notebook ID
+notebook_id = asyncio.run(run_crucible(
+    domain_name="Security & Auth",
+    source_files=[
+        ("docs/02-specs/FSD-247-concurrency.md", "FSD-247 Concurrency"),
+        ("docs/04-technical/TECH-STACK.md", "Tech Stack"),
+        ("docs/02-specs/ASSUMPTION-TABLE.md", "Assumption Table"),
+    ],
+    questions=[
+        "Will the ghost_canvases table become a bottleneck at 50 concurrent agents?",
+        "Does the queued_behind debounce solve the race condition or create a new deadlock?",
+        "Where is data loss most likely between the Async Action Queue and Slack delivery?",
+    ]
+))
+print(f"CRUCIBLE ARTIFACT: {notebook_id}")  # THIS is the proof
+```
+
+**The Verification Artifact:**
+Every Crucible session MUST produce a notebook ID. This ID is:
+- Appended to `progress.txt` as: `[CRUCIBLE] notebook_id={id} domain={name}`
+- Posted as a GitHub issue comment on the parent issue
+- Checked by the R4 gate (no notebook ID = gate FAILS)
+
+**What Does NOT Count as a Crucible:**
+- An AI agent reviewing specs in-context and calling it a "Crucible" — that's a red-team, not a Crucible
+- Chat-only interaction with NotebookLM (Rule 3: Audio IS the Crucible for full debates)
+- Claiming "I created a notebook" without the notebook ID artifact
+- Any review that doesn't use NotebookLM as a SEPARATE system with uploaded sources
+
 #### Step 3: Synthesis Crucible
 
 After all domain groups are tested individually:
@@ -127,6 +198,7 @@ See [ratify.md](ratify.md#r4-adversarial-gate-after-crucible)
 
 **Must pass:**
 - [ ] Every domain group tested independently
+- [ ] **NotebookLM notebook ID recorded for EACH domain group** (no ID = no Crucible)
 - [ ] **Buyer Persona loaded as mandatory source** in every domain group notebook
 - [ ] Synthesis Crucible run (cross-domain integration)
 - [ ] All findings dispositioned (fix now / fix later / won't fix)
@@ -134,3 +206,4 @@ See [ratify.md](ratify.md#r4-adversarial-gate-after-crucible)
 - [ ] Updated FSDs reflect Crucible learnings
 - [ ] Fresh eyes CTO review on Crucible output
 - [ ] Confidence ≥ 8/10
+- [ ] All notebook IDs posted as GitHub issue comments (audit trail)

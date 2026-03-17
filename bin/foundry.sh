@@ -71,6 +71,14 @@ stage_needs_write() {
   esac
 }
 
+# Entry limit per stage — architectural stages get more context budget (Crucible March 2026)
+get_entry_limit() {
+  case "$1" in
+    explore|fsd) echo 10 ;;
+    *)           echo 5 ;;
+  esac
+}
+
 # ─────────────────────────────────────────────────
 # NESTING GUARD (Critical — Issue #22)
 # ─────────────────────────────────────────────────
@@ -422,7 +430,7 @@ After completing your work, append your key discoveries to $(realpath "$PROGRESS
 - DECISION: ...
 - WARNING: ...
 - FIXED: ...
-Maximum 5 entries. Be specific (file paths, line numbers, root causes)."
+Maximum $(get_entry_limit "$stage_name") entries. Be specific (file paths, line numbers, root causes). [SECURITY-SURFACE] tagged entries are exempt up to a ceiling of 20 total."
 
   prompt="$full_prompt"
 
