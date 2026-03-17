@@ -131,7 +131,7 @@ War Room uses AI APIs (Perplexity, OpenAI) for research and content generation.
 - Native Apple Silicon optimization
 
 **Cons:**
-- Commercial product ($8/month personal, $16/month business after trial)
+- Commercial product (free for personal use, $8/month Pro for business, Enterprise custom)
 - Less ecosystem support than Docker Desktop (extensions, Scout, etc.)
 - Smaller community — fewer Stack Overflow answers when things go wrong
 
@@ -139,7 +139,7 @@ War Room uses AI APIs (Perplexity, OpenAI) for research and content generation.
 
 | Runtime | Speed | Resources | Docker Compat | Cost | Status |
 |---------|-------|-----------|---------------|------|--------|
-| **OrbStack** | Fastest (2s) | Lowest (180mW) | Full drop-in | $8-16/mo | INSTALLED, ACTIVE |
+| **OrbStack** | Fastest (2s) | Lowest (180mW) | Full drop-in | Free (personal) / $8/mo (Pro) | INSTALLED, ACTIVE |
 | Docker Desktop | Slow (30s+) | Heavy (726mW) | Native | Free (personal) | Not installed |
 | Colima | Medium | Low | Good | Free (OSS) | Not installed |
 | Podman | Medium | Low | Partial (rootless) | Free (OSS) | Not installed |
@@ -157,13 +157,13 @@ War Room uses AI APIs (Perplexity, OpenAI) for research and content generation.
 
 | Tool | Type | Language | Features | Maintenance |
 |------|------|----------|----------|-------------|
-| [mad-fake-slack](https://github.com/maddevsio/mad-fake-slack) | Full simulator | Node.js | Web API + WebSocket + UI + channels + users + message history. JSON file storage. | Active (alpha) |
+| [mad-fake-slack](https://github.com/maddevsio/mad-fake-slack) | Full simulator | Node.js | Web API + RTM WebSocket + UI + channels + users + message history. JSON file storage. | ⚠️ STALE (last commit 2019, RTM-only — Slack deprecated RTM in 2020, no Docker image published) |
 | [slack-server-mock](https://github.com/ygalblum/slack-server-mock) | HTTP+WS mock | — | Mock HTTP and WebSocket server for subsystem testing | Community |
 | [slack-mock](https://github.com/Skellington-Closet/slack-mock) | Test library | Node.js | API mocker for bot integration tests | Community |
 | [slack-testing-library](https://github.com/chrishutchinson/slack-testing-library) | Test library | Node.js | Mock server for interactive Slack apps | Community |
 | [Mockoon](https://mockoon.com/mock-samples/slackcom/) | Generic mock | Cross-platform | Pre-built Slack Web API mock sample | Active |
 
-**Recommendation:** Start with **mad-fake-slack** for highest fidelity. Fall back to **WireMock + recorded stubs** for specific API routes.
+**Recommendation:** ⚠️ mad-fake-slack is **abandoned** (last commit 2019, uses deprecated RTM API, no published Docker image). Start with **WireMock + recorded Slack API stubs** or **Mockoon** (has pre-built Slack Web API sample). Evaluate **slack-server-mock** (Python, last push Feb 2025) as an alternative. Building a lightweight Events API + Socket Mode mock may be necessary for production-grade testing.
 
 ### Supabase (PostgreSQL + Auth + RLS)
 
@@ -200,7 +200,7 @@ War Room uses AI APIs (Perplexity, OpenAI) for research and content generation.
 | Tool | Type | Language | Best For |
 |------|------|----------|----------|
 | [WireMock](https://wiremock.org/) | HTTP stub/mock server | Java (standalone JAR) | Recording + replaying real API traffic. 6M+ downloads. |
-| [Mountebank](https://www.mbtest.org/) | Multi-protocol mock | Node.js | HTTP, HTTPS, TCP, SMTP. ⚠️ Potentially discontinued. |
+| [Mountebank](https://www.mbtest.dev/) | Multi-protocol mock | Node.js | HTTP, HTTPS, TCP, SMTP. ⚠️ Project moved to mbtest.dev; old .org domain is dead. |
 | [Hoverfly](https://hoverfly.io/) | Service virtualization | Go | Capture-replay workflows, K8s sidecar, performance testing |
 | [Mockoon](https://mockoon.com/) | API mock GUI + CLI | Electron/Node | Quick mock API setup with GUI. Pre-built templates. |
 
