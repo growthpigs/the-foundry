@@ -15,11 +15,19 @@ Building and reviewing are different cognitive modes. You cannot do both simulta
 
 Not every gate needs the same rigor. Early phases (MINE, SCOUT) use soft gates — you're still exploring. Later phases (CRUCIBLE → PLAN, HAMMER → TEMPER) use hard gates — you're committing resources.
 
+### The Chain Rule
+
+Every gate checks TWO things:
+1. **This phase's outputs** — did we do the work?
+2. **Previous phase's outputs are still valid** — did anything change that invalidates earlier work?
+
+If the previous gate's outputs are stale (e.g., an FSD was updated after the Crucible ran), you must re-run the affected gate.
+
 ---
 
-## The 7 Gates
+## The 9 Gates
 
-### R1: Scope Gate (after MINE)
+### R1: Scope Gate (after MINE) — Soft Gate
 
 **Question:** "Is this worth building? Is it scoped right?"
 
@@ -36,11 +44,16 @@ Tell me if the following feature is too ambitious. Apply 80-20 protocol —
 think of improvements, and let's move forward. Feature: [NAME]
 ```
 
-**Pass criteria:** Clear scope, defined personas, articulated pain, 80-20 validated.
+**Must pass:**
+- [ ] Clear problem statement exists
+- [ ] At least 1 buyer persona identified
+- [ ] 80-20 validated
+- [ ] No kill criteria triggered (no personas = STOP, no pain = STOP)
+- [ ] Confidence ≥ 6/10
 
 ---
 
-### R2: Vision Gate (after SCOUT)
+### R2: Vision Gate (after SCOUT) — Soft Gate
 
 **Question:** "Do we truly understand the problem space?"
 
@@ -49,6 +62,7 @@ think of improvements, and let's move forward. Feature: [NAME]
 2. Assumption inversion: Pretend all assumptions are inversed. What would that mean?
 3. Competitive gap: What are others doing that we're missing? What are we doing that nobody else is?
 4. Research completeness: Did we find the right sources? Are there blind spots?
+5. Deployment pipeline: Is hosting verified? Do preview deploys work?
 
 **Prompt Pattern:**
 ```
@@ -57,11 +71,18 @@ Let's pretend for a second that all our assumptions are inversed. What would tha
 What would you do now if you could do anything to make you happy with this vision?
 ```
 
-**Pass criteria:** Research is thorough, assumptions are explicit, blind spots are named.
+**Must pass:**
+- [ ] Research covers ≥ 3 competitors
+- [ ] Technical feasibility confirmed (APIs exist, costs viable)
+- [ ] Deployment pipeline verified (GREENFIELD only)
+- [ ] At least 1 surprising insight discovered
+- [ ] Blind spots explicitly named
+- [ ] Assumption inversion exercise completed
+- [ ] Confidence ≥ 6/10
 
 ---
 
-### R3: Spec Gate (after ASSAY)
+### R3: Spec Gate (after ASSAY) — Hard Gate
 
 **Question:** "Are the specs perfect? Could a stranger implement from this?"
 
@@ -70,6 +91,9 @@ What would you do now if you could do anything to make you happy with this visio
 2. Root cause thinking: Think of 5-7 different possible sources of ambiguity. Distill to 1-2 most critical. Resolve them.
 3. Cross-reference check: Do the FSDs agree with the ADRs? Do the user stories match the data model? Do the admin docs contradict each other?
 4. Failure definitions: Every user story has acceptance criteria AND failure definitions?
+5. Assumption Table: Are all assumptions below 70% spiked? Below 50% flagged for Crucible?
+6. Buyer Persona pressure test: Has every FSD been read through each persona's eyes?
+7. Budget check: Are we on track with DU estimates? Does the Work Ledger look realistic?
 
 **Prompt Pattern:**
 ```
@@ -81,13 +105,26 @@ thinking. You are an exceptional entity that can work anything out.
 So you think it's done? Good start but keep going. What would you do next?
 Think really hard, and don't just find the first problem — find the next three
 or four or five as well. There are probably more than one.
+
+Stop just chasing symptoms instead of understanding the root cause!
+Use critical thinking and imagine you are a HUMAN senior developer with 25 years
+of full stack development experience. You can do this using first principles.
 ```
 
-**Pass criteria:** Independent Observer ≥ 8/10, zero contradictions between docs, all failure definitions written.
+**Must pass:**
+- [ ] All 18 Admin Documents substantially complete
+- [ ] Every user story has acceptance criteria AND failure definitions
+- [ ] Independent Observer Score ≥ 8/10 on each FSD
+- [ ] Zero contradictions between Admin docs
+- [ ] Assumption Table produced — all <70% spiked
+- [ ] Buyer Persona pressure test completed on every FSD
+- [ ] Correctness confidence ≥ 8/10
+- [ ] UX/Intent confidence ≥ 7/10 (through Buyer Persona lens)
+- [ ] Work Ledger budget check — are we on track?
 
 ---
 
-### R4: Adversarial Gate (after CRUCIBLE)
+### R4: Adversarial Gate (after CRUCIBLE) — Hard Gate
 
 **Question:** "Did the stress-test find what matters?"
 
@@ -95,7 +132,8 @@ or four or five as well. There are probably more than one.
 1. Fresh eyes CTO review: Pretend you're a 25-year veteran ratifying someone else's work.
 2. False positive audit: Were any Crucible findings actually non-issues?
 3. Coverage check: Did the Crucible cover every domain group? Or did it skip something?
-4. Parallel agent validation: Deploy Explore, Brainstorm, and Superpower agents to independently assess the Crucible output.
+4. Parallel agent validation: Deploy Explore, Brainstorm, and Superpower agents to independently assess.
+5. Chain check: Were any FSDs updated AFTER the Crucible? If so, re-run affected domain.
 
 **Prompt Pattern:**
 ```
@@ -108,100 +146,142 @@ parallel. Each agent specializes: one scans for gaps, another for risks, a third
 for opportunities. Let them compete, share findings, and produce a joint report.
 ```
 
-**Pass criteria:** All Crucible findings dispositioned (fix now / fix later / won't fix with rationale), zero untested domain groups.
+**Must pass:**
+- [ ] Every domain group tested independently
+- [ ] Buyer Persona loaded as mandatory source in every notebook
+- [ ] Synthesis Crucible run (cross-domain integration)
+- [ ] All findings dispositioned (fix now / fix later / won't fix)
+- [ ] "Fix now" items resolved in ASSAY docs
+- [ ] No FSDs changed since Crucible ran (or re-run if they did)
+- [ ] Fresh eyes CTO review completed
+- [ ] Confidence ≥ 8/10
 
 ---
 
-### R5: Ready Gate (after PLAN)
+### R4b: External Auditor Gate (after EXT. AUDITOR) — Hard Gate
 
-**Question:** "Did we build it right? In the right place?"
+**Question:** "Did an independent model find anything we all missed?"
 
 **Protocol:**
-1. Environmental sanity check:
-   - Are you editing the right file?
-   - Are you in the right repository?
-   - Is this the same feature you were meant to be editing?
-   - Is it an older version? Has it been commented out?
-   - Has something been added by another Claude Code instance you aren't aware of?
-2. Runtime-first verification: File existence ≠ functionality. Execute, don't assume.
-   - For every claim ("tests pass", "selector updated", "no more duplicates"), point to SPECIFIC code or output proving it.
-   - Run verification commands — don't assume previous runs are still valid.
-3. Isolation: Fix issues one by one. Don't batch. Verify each individually.
+1. Different model family reviewed the full spec package (see `04b-external-auditor.md`)
+2. All findings dispositioned
+3. Assumption Table confidence scores adjusted if auditor disagreed
+4. Any "NO" verdict = go back to ASSAY
+
+**Must pass:**
+- [ ] External Auditor report received from a DIFFERENT model family
+- [ ] All findings dispositioned (fix / dismiss / discuss)
+- [ ] "Fix" items resolved in ASSAY docs
+- [ ] Assumption Table updated
+- [ ] Auditor verdict is YES or CONDITIONAL-resolved (not NO)
+- [ ] Confidence ≥ 8/10
+
+---
+
+### R5: Ready Gate (after PLAN) — Hard Gate
+
+**Question:** "Is every issue ready to build? Are we really ready to drop the hammer?"
+
+This is "Drop the Hammer" — the conscious decision to transition from thinking to building. It cannot be rushed.
+
+**Protocol:**
+1. Issue completeness: Every GitHub issue has acceptance criteria, failure definitions, and an FSD reference.
+2. Sprint realism: Is the sprint plan achievable within the DU budget?
+3. Dependency chain: Are stories ordered correctly? Does anything block something else?
+4. Deployment pipeline: Is CI/CD verified and working? (Not "should work" — TESTED)
+5. Candid Self-Assessment (the "are we ready to build?" moment):
+
+```
+You are my senior engineer doing a candid debrief, not a servant.
+1. WHERE ARE WE NOW? Status, what changed, what's unchanged.
+2. ASSUMPTIONS — list every one you made.
+3. CONFIDENCE SCORES (1-10): Correctness, UX/intent, Performance.
+   For each: WHY and what EVIDENCE.
+4. WHAT NEEDS RUNTIME VERIFICATION? Step-by-step.
+5. DOCS & HOUSEKEEPING — what needs updating right now?
+6. YOUR RECOMMENDATION — what would YOU do next?
+7. WHAT AM I NOT ASKING?
+Permission to be frank: approved.
+```
+
+**Must pass:**
+- [ ] Every issue has acceptance criteria + failure definitions
+- [ ] Every issue references its FSD
+- [ ] Sprint 1 stories have no unresolved dependencies
+- [ ] Deployment pipeline verified (not assumed)
+- [ ] Candid Self-Assessment scores all ≥ 7
+- [ ] Work Ledger budget check — enough DUs remaining?
+- [ ] Confidence ≥ 8/10
+
+---
+
+### R6: Build Gate (after HAMMER) — Hard Gate
+
+**Question:** "Did we build what was specified? Does it actually work?"
+
+**Protocol:**
+1. Environmental sanity (FIRST — before anything else):
+   - Are you in the right file, right repo, right branch, right directory?
+   - Is this the feature you were meant to build?
+   - Has another CC instance changed something you aren't aware of?
+   - Check `git log -3` — what changed recently?
+2. Runtime-first verification: Execute, don't assume.
+   - For every claim, show stdout/stderr
+   - Run the test suite — show exit code 0
+   - TypeScript compiles — show `tsc --noEmit` clean
+   - Build succeeds — show it
+3. FSD Compliance Check: Did we build what was specified?
+   - Compare the implementation against the FSD point by point
+   - Every acceptance criterion — does the code satisfy it?
+   - Every failure definition — is it prevented?
+4. Anti-regression comparison: Baseline vs post-code — no regressions?
 
 **Prompt Pattern:**
 ```
-That approach was unsuccessful. Isolate the elements using codebase-analyst and
-confirm you are editing the correct file. Search for all related elements.
-Conduct tests with a validator. Make a minor modification and review results to
-be 100% certain. Are you in the correct directory? Double-check that you are not
-making a basic mistake by working on the wrong file. Then return to first
-principles and consider 2-3 alternative methods.
+This is where I want you to check your own homework. Pretend you have fresh eyes
+and you're another senior AI developer, but you have a human take on this — a CTO
+who's correcting someone else's homework.
+
+Is it the right directory? Is it the right service? Did you edit the right FILES?
+Is it the right version, right place? Sanity check!
+Have you actually pushed the commit? Have you done the deploy?
+Analyze everything because you probably made a mistake.
 
 Verification requires Execution. File existence does not imply functionality.
 ```
 
-**Pass criteria:** Every change verified by execution (not just syntax check), environmental sanity confirmed, no batched fixes.
+**Must pass:**
+- [ ] Environmental sanity confirmed (right file/repo/branch)
+- [ ] All tests pass (exit code 0, not assumed)
+- [ ] TypeScript compiles clean
+- [ ] Build succeeds
+- [ ] FSD compliance check — implementation matches spec
+- [ ] Anti-regression — no regressions from baseline
+- [ ] Draft PR created with CI passing
+- [ ] Confidence ≥ 8/10
 
 ---
 
-### R6: Build Gate (after HAMMER)
+### R7: Ship Gate (after TEMPER) — Hard Gate
 
-**Question:** "Is it bulletproof? Will it stay working?"
-
-**Protocol:**
-1. Stress test as Senior QA Architect:
-   - Edge cases: What happens with null/empty inputs?
-   - Data formats: Did we verify the shape of data from DB/API?
-   - Dependencies: Are we importing libraries that aren't installed?
-2. Hardening checklist:
-   - [ ] E2E tests written (Playwright) and passing in CI
-   - [ ] Runtime guard that throws if broken
-   - [ ] Monitoring alert on drift (Sentry)
-   - [ ] Feature flag killswitch if applicable
-3. Anti-regression baseline: Capture BEFORE snapshot, compare AFTER.
-4. Pre-flight checklist for every claim:
-   - ✅ VERIFIED: Checked code/file and it exists + executes
-   - ⚠️ UNVERIFIED: Guessing (state the risk)
-   - ❌ MISSING: Forgot to account for this
-
-**Prompt Pattern:**
-```
-Switch roles: You are now a Senior QA Architect. Be skeptical.
-
-For every step in your plan, provide PROOF:
-- If you say "it handles X," show the specific code snippet that proves it.
-- If you assume a config exists, verify it NOW.
-- List every assumption made.
-
-Find the gaps — the "What Ifs":
-- Edge cases with null/empty inputs?
-- Data format verification from DB/API?
-- Missing dependencies?
-
-Confidence Score (0-10): Rate your own work. If <9, fix before proceeding.
-```
-
-**Pass criteria:** All claims have evidence, hardening checklist complete, confidence ≥ 9/10 (higher bar for Forge).
-
----
-
-### R7: Ship Gate (after TEMPER)
-
-**Question:** "Prove it's done. Show me evidence."
+**Question:** "Prove it's done. Every claim backed by evidence."
 
 **Protocol:**
-1. Evidence audit:
+1. Evidence audit — show proof for every claim:
    - `git diff HEAD~1` — show what actually changed
-   - Test suite exit code 0
+   - Test suite pass (unit + E2E)
    - Linter clean, type check clean, build succeeds
-   - For docs: exact text added, no contradictions, file exists at stated path
-   - For data: read back values written, verify schema, show before/after
-   - For deploys: actual logs (not "should work"), live URL working, correct commit deployed
-2. Cross-system consistency:
-   - Multiple files changed → verify they reference each other correctly
-   - Ledger/log updated → verify numbers add up
-   - Commit made → `git log -1` with message
-3. ICE Report:
+   - For deploys: actual logs, live URL working, correct commit
+2. Hardening verification:
+   - [ ] E2E tests written and passing in CI
+   - [ ] Runtime guard throws if broken
+   - [ ] Monitoring alert configured (Sentry)
+   - [ ] Feature flag killswitch (if applicable)
+3. Cross-system consistency:
+   - Multiple files → references correct?
+   - Ledger/log → numbers add up?
+   - Commit → `git log -1` matches?
+4. ICE Report:
    ```
    repo: [name], branch: [branch]
    deployed: [host]
@@ -214,9 +294,6 @@ Confidence Score (0-10): Rate your own work. If <9, fix before proceeding.
 ```
 VERIFY THIS IS ACTUALLY DONE — Full Hardening Check.
 
-I'm claiming this work is complete. Before you accept that, I need to prove it
-with actual evidence:
-
 1. Show changed files (git diff)
 2. Run tests, linter, type check, build — show all passing
 3. For docs: show exact text, verify no contradictions
@@ -224,48 +301,24 @@ with actual evidence:
 5. Cross-system: verify references, numbers, commits
 6. Git status: should be clean
 
-Success criteria: Actual output/evidence for every claim. Not "I think it's done" — actual proof.
+Success criteria: Actual output/evidence for every claim.
+Not "I think it's done" — actual proof.
+
+If anything fails: Stop. Tell me what failed. Fix it. Run the check again.
 ```
 
-**Pass criteria:** Every claim backed by executed evidence, ICE report produced, git status clean.
+**Must pass:**
+- [ ] Every claim backed by executed evidence
+- [ ] E2E tests passing in CI
+- [ ] Hardening checklist complete
+- [ ] ICE Report produced
+- [ ] Git status clean
+- [ ] Work Ledger updated with actual DUs
+- [ ] Confidence ≥ 9/10 (highest bar — this is shipping)
 
 ---
 
-## Anti-Bias Prompts (Use at Any Gate)
-
-When the AI seems stuck in a rut or confirming its own assumptions:
-
-```
-Go outside yourself. Go 30,000 feet and then back to sea level. What can we do?
-
-Let's pretend all our assumptions are inversed. What would that mean?
-
-What would you do now if you could do anything to make you happy with what you just did?
-
-Review everything from first principles. Assume 40 years expert experience.
-Use fresh eyes. Check for common pitfalls. Get specific documentation from web
-to help. Recommend improvements. Summarize findings.
-```
-
-## Debugging Escalation (Use at R5/R6)
-
-When bugs are persistent or tricky:
-
-```
-Diagnose recurring bugs or usability issues. Identify the underlying root cause,
-trace it across modules, and explain how to address it so it never appears again.
-
-Assign subagents "Explore," "Brainstorm," and "Superpower" to work in parallel.
-Each specializes: one scans for bugs, another for performance, a third for UX.
-Let them compete, share findings, and produce a joint report.
-
-Stop chasing symptoms. Use critical thinking. Imagine you are a HUMAN senior
-developer with 25 years of experience. Use first principles.
-```
-
----
-
-### R8: The Honest Gate (after EVERY phase — mandatory, ALL modes)
+### R8: The Honest Gate (after EVERY phase — mandatory, ALL modes) — Hard Gate
 
 **Question:** "Are you actually happy with this?"
 
@@ -299,17 +352,66 @@ Do not just reassure me. If something feels off, say so plainly
 and explain the risk.
 ```
 
-**Pass criteria:**
+**Must pass:**
 - [ ] All three confidence scores ≥ 9/10
-- [ ] Any score below 9 must explain what would raise it, and you must DO that thing
-- [ ] "What am I not asking?" section must contain at least ONE non-obvious insight
+- [ ] Any score below 9 → explain what would raise it → DO that thing
+- [ ] "What am I not asking?" contains at least ONE non-obvious insight
 - [ ] If you can't reach 9/10 on all three, you're NOT done — go fix it
+- [ ] Work Ledger updated
 
-**Why this works:**
-AI systems are trained to confirm. "Looks good!" is the path of least resistance. The Honest Gate forces the opposite: "What's actually wrong?" + "Permission to be frank" = real assessment. This single prompt caught the dual-Constitution drift problem, the untested VSDD pattern, and the 5/10 stability score that led to fixing 6 validator failures.
+---
 
-**Why every mode, even HOTFIX:**
-HOTFIX is when you're most rushed, most stressed, and most likely to ship something broken. The Honest Gate takes 60 seconds. A production rollback takes hours.
+## Toolkit — Use at Any Gate
+
+### Anti-Bias Prompts (when AI seems stuck or confirming itself)
+
+```
+Go outside yourself. Go 30,000 feet and then back to sea level. What can we do?
+
+Let's pretend all our assumptions are inversed. What would that mean?
+
+What would you do now if you could do anything to make you happy with what you just did?
+
+Review everything from first principles. Assume 40 years expert experience.
+Use fresh eyes. Check for common pitfalls. Get specific documentation from web
+to help. Recommend improvements. Summarize findings.
+
+Now prove to me that it'll be implemented systematically.
+Do you want to do a triple check?
+```
+
+### Debugging Escalation (when bugs are persistent — use at R5/R6/R7)
+
+```
+Diagnose recurring bugs or usability issues. Identify the underlying root cause,
+trace it across modules, and explain how to address it so it never appears again.
+
+Assign subagents "Explore," "Brainstorm," and "Superpower" to work in parallel.
+Each specializes: one scans for bugs, another for performance, a third for UX.
+Let them compete, share findings, and produce a joint report.
+
+Stop chasing symptoms. Use critical thinking. Imagine you are a HUMAN senior
+developer with 25 years of experience. Use first principles.
+```
+
+### Isolation Protocol (when fixes aren't working — use at R6)
+
+```
+That approach was unsuccessful. Isolate the elements using codebase-analyst and
+confirm you are editing the correct file. Search for all related elements.
+Conduct tests with a validator. Make a minor modification and review results to
+be 100% certain. Are you in the correct directory? Double-check that you are not
+making a basic mistake by working on the wrong file. Then return to first
+principles and consider 2-3 alternative methods.
+```
+
+### Comments & Documentation (after code is stable — use at R7)
+
+```
+Add succinct, accurate comments to critical sections of this codebase. Include
+explanations for any non-trivial logic, and point out any places that would
+benefit from better documentation.
+```
 
 ---
 
