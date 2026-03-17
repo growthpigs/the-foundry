@@ -105,6 +105,7 @@ See [ratify.md](ratify.md#r4-adversarial-gate-after-crucible)
 
 **Must pass:**
 - [ ] Every domain group tested independently
+- [ ] **Buyer Persona loaded as mandatory source** in every domain group notebook
 - [ ] Synthesis Crucible run (cross-domain integration)
 - [ ] All findings dispositioned (fix now / fix later / won't fix)
 - [ ] "Fix now" items resolved in ASSAY docs
