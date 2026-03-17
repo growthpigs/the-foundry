@@ -98,13 +98,13 @@ the-foundry/
 ├── CONSTITUTION.md           # 37 immutable articles (the law)
 ├── LINEAGE.md                # Industry ancestry
 ├── phases/
-│   ├── 01-ideation.md        # Mine the ore
+│   ├── 01-mine.md            # Mine the ore
 │   ├── 02-scout.md           # Prospect
-│   ├── 03-metallurgy.md      # Smelt (specs, FSDs, admin docs)
+│   ├── 03-assay.md           # Smelt (specs, FSDs, admin docs)
 │   ├── 04-crucible.md        # Stress-test (NotebookLM debates)
-│   ├── 05-dark-factory.md    # Autonomous build
-│   ├── 06-forge.md           # Harden (E2E, anti-regression)
-│   ├── 07-hammer.md          # Ship (PR, deploy, validate)
+│   ├── 05-plan.md            # Blueprint (issues, sprints)
+│   ├── 06-hammer.md          # Build (Dark Factory, Ralph loop)
+│   ├── 07-temper.md          # Harden & ship (E2E, deploy)
 │   └── ratify.md             # The 7 Ratify gates
 ├── knowledge/
 │   ├── anti-regression.md    # Baseline capture spec

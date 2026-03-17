@@ -99,7 +99,7 @@ usage() {
   echo "Usage: $0 [OPTIONS] #<issue-number>"
   echo ""
   echo "Options:"
-  echo "  --mode MODE     Force pipeline mode (FULL|FIX|HOTFIX|REFACTOR|SECURE|SPEC)"
+  echo "  --mode MODE     Force pipeline mode (GREENFIELD|FEATURE|FIX|HOTFIX|REFACTOR|SECURE|SPEC)"
   echo "  --defcon        Emergency mode (forces HOTFIX)"
   echo "  --gated         Add human checkpoints after explore and code"
   echo "  --dry-run       Show pipeline plan without executing"
@@ -228,8 +228,10 @@ classify_issue() {
     echo "REFACTOR"
   elif echo "$labels" | grep -qi "bug\|fix\|regression\|patch"; then
     echo "FIX"
+  elif echo "$labels" | grep -qi "new\|greenfield"; then
+    echo "GREENFIELD"
   else
-    echo "FULL"
+    echo "FEATURE"
   fi
 }
 
@@ -241,8 +243,11 @@ get_stages() {
   local mode="$1"
 
   case "$mode" in
-    FULL)
+    GREENFIELD|FULL)
       echo "issue user-stories explore issue-review red-team anti-regression code validate e2e pr pr-review compliance follow-up"
+      ;;
+    FEATURE)
+      echo "issue user-stories red-team-quick anti-regression code validate e2e pr follow-up"
       ;;
     FIX)
       echo "issue user-stories explore red-team-quick anti-regression code validate e2e pr follow-up"

@@ -100,7 +100,7 @@ After merge:
 
 ## ⚖️ R7: Ship Gate
 
-See [ratify.md](ratify.md#r7-ship-gate-after-hammer)
+See [ratify.md](ratify.md#r7-ship-gate-after-temper)
 
 **Key question:** "Prove it's done. Show me evidence."
 

@@ -3,7 +3,7 @@
 **Metaphor:** Scouting the terrain before committing resources. Where is the richest vein?
 
 **Duration:** 1-4 hours (parallel agents recommended)
-**Mode applicability:** GREENFIELD, FEATURE
+**Mode applicability:** GREENFIELD only
 
 ---
 
