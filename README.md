@@ -36,6 +36,7 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 
 | # | Stage | What Happens | Duration |
 |---|-------|-------------|----------|
+| 0 | **LAUNCH** | Load methodology, load project, pick mode, determine starting phase. | 5 min |
 | 1 | **MINE** | Firehose capture. Raw ideas, links, transcripts. Zero filtering. | 30-60 min |
 | 2 | **SCOUT** | Research. Competitors, APIs, IDEO sprint. **Deployment pipeline setup.** | 1-4 hours |
 | 3 | **ASSAY** | Thrash specs. 18 admin docs, FSDs, user stories + test stubs. Assumption Table. | 2-10 days |
@@ -100,13 +101,13 @@ See [LINEAGE.md](LINEAGE.md) for the full intellectual ancestry.
 
 ```
 the-foundry/
-├── LAUNCH.md                 # START HERE — session launch template for any project
 ├── CLAUDE.md                 # Project instructions for CC sessions
 ├── README.md                 # This file
 ├── CONSTITUTION.md           # 37 immutable articles (the law)
 ├── LINEAGE.md                # Industry ancestry (IDEO → StrongDM → us)
 ├── .gitignore                # Excludes .foundry/ runtime artifacts
 ├── phases/
+│   ├── 00-launch.md          # START HERE — load methodology, load project, pick mode
 │   ├── 01-mine.md            # Mine the ore
 │   ├── 02-scout.md           # Prospect
 │   ├── 03-assay.md           # Smelt (specs, FSDs, admin docs)
