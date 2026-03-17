@@ -47,7 +47,7 @@ Things our approach does that nobody else does:
 
 8. **The "Drop the Hammer" decision** — An explicit, named, irreversible commitment point between PLAN and HAMMER. Before it, everything is reversible. After it, you're building. No other system names this moment.
 
-9. **35-article Constitution** — Battle-tested across 3+ projects. spec-kit's constitution is a lightweight template. The Foundry's is a living legal document with ratification dates and incident-driven amendments.
+9. **37-article Constitution** — Battle-tested across 3+ projects. spec-kit's constitution is a lightweight template. The Foundry's is a living legal document with ratification dates and incident-driven amendments.
 
 10. **The 10-day proof** — LifeModo spent 10 days in ASSAY+CRUCIBLE before writing a line of code. Found its raison d'etre on day 9. The thinking IS the product. No other system has this kind of proof that extended spec thrashing pays off.
 
