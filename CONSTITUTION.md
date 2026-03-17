@@ -1,4 +1,4 @@
-# Dark Foundry — Constitution
+# The Foundry — Constitution
 
 **Version:** 1.0
 **Status:** RATIFIED (2026-03-13)
