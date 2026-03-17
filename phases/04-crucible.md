@@ -91,11 +91,14 @@ async def run_crucible(domain_name, source_files, questions, audio_instructions)
                 )
 
         # Step 3: Ask adversarial questions via chat
+        # Capture results — chat findings are MODALITY 1 of the report
+        chat_results = []
         for question in questions:
             result = await client.chat.ask(
                 notebook_id=notebook_id,
                 question=question
             )
+            chat_results.append((question, result.answer))
             print(f"Q: {question[:80]}...")
             print(f"A: {result.answer}\n")
 
@@ -125,7 +128,7 @@ async def run_crucible(domain_name, source_files, questions, audio_instructions)
             )
         print(f"Audio generation: {final_status.status} ✅")
 
-        # Step 5: Download the audio for transcription/archival
+        # Step 5: Download the audio
         audio_path = f".foundry/crucible-audio-{domain_name.lower().replace(' ', '-')}.wav"
         try:
             downloaded = await client.artifacts.download_audio(
@@ -135,13 +138,61 @@ async def run_crucible(domain_name, source_files, questions, audio_instructions)
             print(f"Audio saved to: {downloaded}")
         except Exception as e:
             print(f"Audio download failed (check NotebookLM UI): {e}")
+            audio_path = None
 
-        # Step 6: Return notebook ID + audio status as VERIFICATION ARTIFACTS
-        # Only return if audio SUCCEEDED — failed audio = incomplete Crucible
-        return notebook_id, audio_status.task_id
+        # Step 6: TRANSCRIBE the audio (NON-NEGOTIABLE)
+        # Chat and audio are DIFFERENT MODALITIES that produce DIFFERENT insights.
+        # Both transcripts must be captured separately and fed back into specs.
+        transcript_path = None
+        if audio_path:
+            transcript_path = audio_path.replace('.wav', '-transcript.md')
+            # Use whisper, yt-dlp, or any transcription tool
+            import subprocess
+            try:
+                # Option A: Use whisper if available
+                subprocess.run(
+                    ["whisper", audio_path, "--output_format", "txt",
+                     "--output_dir", ".foundry/"],
+                    capture_output=True, timeout=300
+                )
+                transcript_path = audio_path.replace('.wav', '.txt')
+                print(f"Audio transcribed to: {transcript_path}")
+            except (FileNotFoundError, subprocess.TimeoutExpired):
+                # Option B: Upload audio to NotebookLM as a source for self-transcription
+                # NotebookLM can process its own audio output
+                print("Whisper not available — transcribe manually or via NotebookLM UI")
+                transcript_path = None
 
-# Example: run and capture BOTH artifacts
-notebook_id, audio_task_id = asyncio.run(run_crucible(
+        # Step 7: Compile BOTH modalities into the Crucible Report
+        # These are TWO SEPARATE sections in the report — never merged
+        report_path = f".foundry/crucible-report-{domain_name.lower().replace(' ', '-')}.md"
+        with open(report_path, 'w') as report:
+            report.write(f"# Crucible Report: {domain_name}\n\n")
+            report.write(f"**Notebook ID:** {notebook_id}\n")
+            report.write(f"**Audio Task ID:** {audio_status.task_id}\n\n")
+            report.write("## MODALITY 1: Chat Findings (targeted Q&A)\n\n")
+            report.write("_Chat produces specific, cited answers to direct questions._\n\n")
+            for q, a in chat_results:
+                report.write(f"### Q: {q}\n\n{a}\n\n---\n\n")
+            report.write("## MODALITY 2: Audio Debate Findings (sustained adversarial)\n\n")
+            report.write("_Audio produces emergent insights from sustained argument._\n")
+            report.write("_The AI takes opposing positions it would never take in chat._\n\n")
+            if transcript_path and os.path.exists(transcript_path):
+                with open(transcript_path) as t:
+                    report.write(t.read())
+            else:
+                report.write("**[TRANSCRIPT PENDING — transcribe from audio file]**\n")
+            report.write("\n\n## Key: Why Both Modalities Matter\n\n")
+            report.write("Chat answers what you ASK. Audio surfaces what you DIDN'T ask.\n")
+            report.write("A Crucible with only chat is an interview. A Crucible with only audio is unfocused.\n")
+            report.write("Together they form a complete adversarial review.\n")
+        print(f"Crucible report saved to: {report_path}")
+
+        # Step 8: Return ALL artifacts
+        return notebook_id, audio_status.task_id, report_path
+
+# Example: run and capture ALL THREE artifacts
+notebook_id, audio_task_id, report_path = asyncio.run(run_crucible(
     domain_name="Security & Auth",
     source_files=[
         ("docs/02-specs/FSD-247-concurrency.md", "FSD-247 Concurrency"),
@@ -156,20 +207,34 @@ notebook_id, audio_task_id = asyncio.run(run_crucible(
     audio_instructions="Debate the pros and cons of server-wins conflict resolution. "
                        "Focus on what happens when a field technician's offline work is silently discarded."
 ))
-print(f"CRUCIBLE ARTIFACTS: notebook={notebook_id}, audio_task={audio_task_id}")
+print(f"CRUCIBLE ARTIFACTS: notebook={notebook_id}, audio_task={audio_task_id}, report={report_path}")
 ```
 
-**The Verification Artifacts (TWO required per domain):**
+**The Verification Artifacts (THREE required per domain):**
 Every Crucible session MUST produce:
 1. **Notebook ID** — proves NotebookLM was invoked with separate sources
-2. **Audio task ID** — proves the DEBATE audio was generated (not just chat)
+2. **Audio task ID (status=COMPLETED)** — proves the DEBATE audio was generated and succeeded
+3. **Crucible Report** (`.foundry/crucible-report-{domain}.md`) — contains BOTH modalities as separate sections
 
-Both are:
-- Appended to `progress.txt` as: `[CRUCIBLE] notebook_id={id} audio_task={id} domain={name}`
+All three are:
+- Appended to `progress.txt` as: `[CRUCIBLE] notebook_id={id} audio_task={id} report={path} domain={name}`
 - Posted as a GitHub issue comment on the parent issue
-- Checked by the R4 gate (missing either = gate FAILS)
+- Checked by the R4 gate (missing any = gate FAILS)
 
-**Rule 3 enforcement:** Chat queries are the FIRST pass. The Audio Overview (DEBATE format) is the SECOND pass. They produce DIFFERENT insights because audio forces the AI to argue against itself in a sustained format. Skipping audio means you only did half the Crucible.
+### Why Two Modalities (Non-Negotiable)
+
+Chat and audio are DIFFERENT modalities that produce DIFFERENT information:
+
+| Modality | What It Produces | Why It's Unique |
+|----------|-----------------|-----------------|
+| **Chat (Modality 1)** | Specific, cited answers to direct questions | You control the questions — targeted, precise, referenceable |
+| **Audio DEBATE (Modality 2)** | Emergent insights from sustained argument | The AI takes opposing positions it would NEVER take in chat. Surfaces what you didn't ask. |
+
+**A Crucible with only chat is an interview.** You get answers to your questions but miss what you didn't think to ask.
+**A Crucible with only audio is unfocused.** You get debate but can't drill into specifics.
+**Together they form a complete adversarial review.** Chat answers what you ASK. Audio surfaces what you DIDN'T ask.
+
+The Crucible Report captures both as separate sections. They are never merged, never summarized into one — they're different lenses on the same architecture and both feed back into the FSDs.
 
 **What Does NOT Count as a Crucible:**
 - An AI agent reviewing specs in-context and calling it a "Crucible" — that's a red-team, not a Crucible
@@ -270,9 +335,14 @@ Every Crucible finding gets dispositioned:
 | **False positive** | Not actually an issue | Note in Crucible findings for learning |
 
 ### Outputs
+- **Crucible Reports per domain** (`.foundry/crucible-report-{domain}.md`) — TWO modalities per report:
+  - Section 1: Chat findings (cited Q&A from targeted questions)
+  - Section 2: Audio debate transcript (emergent insights from sustained argument)
+- **Audio files per domain** (`.foundry/crucible-audio-{domain}.wav`) — for archival and re-listening
+- **Audio transcripts per domain** (`.foundry/crucible-audio-{domain}-transcript.md`) — searchable text
 - Crucible findings per domain group (GitHub issues labeled `crucible`)
 - Synthesis findings (cross-domain issues)
-- Updated FSDs (incorporating Crucible fixes)
+- Updated FSDs (incorporating Crucible fixes from BOTH modalities)
 - Updated ADR Log (new decisions from Crucible debates)
 - Confidence score per domain
 
@@ -298,13 +368,16 @@ After Crucible debates are complete and findings dispositioned:
 
 ---
 
-### The 5 Crucible Rules (from IT Concierge)
+### The 8 Crucible Rules (Updated March 2026 — Incident-Hardened)
 
-1. **Minimum 3 sources per notebook** — Architecture anchor + subject doc + external sources
-2. **One notebook per topic** — Never batch topics into one notebook
-3. **Audio IS the Crucible** — Two-host debate required; chat alone doesn't count
-4. **Cross-reference specs against specs** — The best findings come from comparing FSD vs ADR vs data model, not from single-document review
-5. **Zero false positives is achievable** — IT Concierge's Crucible had 0% false positive rate across 16 findings
+1. **Programmatic execution only** — `teng-lin/notebooklm-py` API. No manual claims. Notebook ID is proof.
+2. **NO source concatenation** — Each file = one `add_text()` call. Combining files destroys cross-referencing.
+3. **Minimum 3 SEPARATE sources per notebook** — Architecture anchor + subject doc + EXTERNAL ground truth
+4. **External ground truth mandatory** — At least 1 official vendor doc per domain. Your specs debating your specs is an echo chamber.
+5. **One notebook per topic** — Never batch topics into one notebook
+6. **BOTH modalities required** — Chat (Modality 1: targeted Q&A) AND Audio DEBATE (Modality 2: sustained adversarial). They produce different information. Both are captured as separate sections in the Crucible Report.
+7. **Audio must be generated AND transcribed** — `generate_audio(AudioFormat.DEBATE)` + transcription. Audio task must have `status=COMPLETED`.
+8. **Cross-reference specs against external docs** — The best findings come from comparing YOUR implementation against OFFICIAL documentation, not from internal-only review
 
 ---
 
@@ -317,7 +390,8 @@ See [ratify.md](ratify.md#r4-adversarial-gate-after-crucible)
 **Must pass:**
 - [ ] Every domain group tested independently
 - [ ] **NotebookLM notebook ID recorded for EACH domain group** (no ID = no Crucible)
-- [ ] **Audio Overview (DEBATE format) generated for EACH domain group** (no audio task ID = half a Crucible)
+- [ ] **Audio Overview (DEBATE format) generated AND transcribed for EACH domain group** (no audio task ID = half a Crucible)
+- [ ] **Crucible Report exists per domain** with BOTH modalities as separate sections (chat findings + audio transcript)
 - [ ] **NO concatenated sources** — each file uploaded as a SEPARATE source (verify source count ≥ 3 per notebook)
 - [ ] **External ground truth loaded** — at least 1 official external doc per domain (not just your own specs debating themselves)
 - [ ] **Buyer Persona loaded as mandatory source** in every domain group notebook
