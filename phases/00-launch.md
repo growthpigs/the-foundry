@@ -1,109 +1,77 @@
-# The Foundry — Session Launch Template
+# Phase 0: LAUNCH — Start a Foundry Session
 
-**Use this template to start ANY Foundry session on ANY project.**
-
-Replace everything in `[BRACKETS]` with your project specifics.
+**Metaphor:** Before you enter the foundry, you suit up. Load the methodology, load the project, pick your mode.
 
 ---
 
-## The Prompt
+## How To Start
+
+Open a terminal in your project directory and run:
+
+```bash
+~/_PAI/projects/system/the-foundry/bin/launch.sh
+```
+
+That's it. The script:
+1. Detects which project you're in (from git remote)
+2. Finds your Activity Log and Work Ledger issue numbers
+3. Asks you to pick a mode (GREENFIELD, FEATURE, FIX, etc.)
+4. Generates the exact prompt to paste into a fresh CC session
+
+### With Options
+
+```bash
+# Feature work with a specific epic
+~/_PAI/projects/system/the-foundry/bin/launch.sh --mode FEATURE --epic "E1: Platform Foundation"
+
+# Bug fix on a specific issue
+~/_PAI/projects/system/the-foundry/bin/launch.sh --mode FIX --issue 123
+
+# New project from scratch
+~/_PAI/projects/system/the-foundry/bin/launch.sh --mode GREENFIELD
+
+# Architecture spec only (no code)
+~/_PAI/projects/system/the-foundry/bin/launch.sh --mode SPEC
+```
+
+### The Workflow
 
 ```
-# The Foundry — [MODE] Pipeline for [PROJECT NAME]
+Warp Tab 1 (your project dir):
+  $ cd ~/_PAI/projects/personal/lifemodo
+  $ ~/_PAI/projects/system/the-foundry/bin/launch.sh --mode FEATURE
+  → Generates prompt
+  → Copy it to clipboard
 
-You are running The Foundry methodology. Read the methodology FIRST, then the project.
-
-## Step 1: Load The Foundry (read in this order)
-1. Methodology: ~/_PAI/projects/system/the-foundry/README.md
-2. Phases: ~/_PAI/projects/system/the-foundry/phases/ (all files)
-3. Ratify gates: ~/_PAI/projects/system/the-foundry/phases/ratify.md
-4. Modes: ~/_PAI/projects/system/the-foundry/modes/MODES.md
-5. Stage map: ~/_PAI/projects/system/the-foundry/modes/STAGE-MAP.md
-
-## Step 2: Load Project Context
-1. Project CLAUDE.md: [PROJECT PATH]/CLAUDE.md
-2. Project HANDOVER.md: [PROJECT PATH]/HANDOVER.md
-3. Admin docs: gh issue list --repo [REPO] --milestone "Admin" --state open
-4. Activity Log: gh issue view [ACTIVITY_LOG_ISSUE] --repo [REPO]
-
-## Step 3: Determine Starting Phase
-
-[Choose ONE — delete the others]
-
-### GREENFIELD (new project, start from scratch)
-Start at Phase 1 (MINE). Run all 7 phases sequentially.
-No existing specs. No existing code. Full pipeline.
-
-### FEATURE (new feature on existing project)
-Start at Phase 3 (ASSAY). MINE and SCOUT already done.
-Existing architecture. New feature needs speccing + building.
-
-### FIX (bug fix)
-Start at Phase 6 (HAMMER). Spec the fix, then build it.
-Issue already exists. Architecture unchanged.
-
-### SPEC (architecture only, no code)
-Start at Phase 3 (ASSAY). Stop after Phase 4b (External Auditor).
-Output is validated specs, not code.
-
-## Step 4: Your Mission
-
-[DESCRIBE WHAT NEEDS TO BE DONE — e.g.,
-"Run LifeModo E1 (Platform Foundation) through PLAN → HAMMER → TEMPER.
-Validate: Does Supabase RLS with SET LOCAL work through PgBouncer?
-Does OpenClaw registerService() support 5-min cron?"]
-
-## Rules
-- Follow The Foundry methodology exactly as documented
-- Run every applicable Ratify gate — NEVER skip R8 (Honest Gate)
-- Log to Activity Log every turn
-- Update Work Ledger at session wrap
-- "Verification requires Execution. File existence does not imply functionality."
-- If an assumption fails, STOP and report. Don't work around it.
-- Active projects: LifeModo, IT Concierge, War Room ONLY
-
-## At Session End
-Produce a SITREP with:
-- What worked in the methodology
-- What was confusing or missing
-- What you'd change about The Foundry
-- R8 Honest Gate scores (Correctness, UX/Intent, Stability)
+Warp Tab 2 (fresh CC session):
+  → Paste the prompt
+  → The Foundry is running
 ```
 
 ---
 
-## Quick-Fill Examples
+## What Launch Detects Automatically
 
-### LifeModo E1 (Platform Foundation)
-```
-PROJECT NAME: LifeModo
-MODE: FEATURE
-PROJECT PATH: ~/_PAI/projects/personal/lifemodo
-REPO: growthpigs/lifemodo
-ACTIVITY_LOG_ISSUE: 447
-STARTING PHASE: Phase 5 (PLAN) — MINE/SCOUT/ASSAY/CRUCIBLE already done
-MISSION: Run E1 through PLAN → HAMMER → TEMPER. Validate PgBouncer
-SET LOCAL and OpenClaw cron. Build Supabase project + schema migrations.
-```
+| What | How |
+|------|-----|
+| Project name | From `git remote` URL |
+| Project path | From `git rev-parse --show-toplevel` |
+| GitHub repo | From remote (e.g., `growthpigs/lifemodo`) |
+| Activity Log issue # | Searches Admin milestone for "Activity Log" |
+| Work Ledger issue # | Searches Admin milestone for "Work Ledger" |
+| CLAUDE.md exists? | Checks project root |
+| HANDOVER.md exists? | Checks project root |
+| Admin doc count | Counts issues in Admin milestone |
+| Starting phase | Based on mode + how many admin docs exist |
 
-### IT Concierge (New Feature)
-```
-PROJECT NAME: IT Concierge
-MODE: FEATURE
-PROJECT PATH: ~/_PAI/projects/personal/it-concierge
-REPO: growthpigs/it-concierge
-ACTIVITY_LOG_ISSUE: 46
-STARTING PHASE: Phase 3 (ASSAY)
-MISSION: [describe the feature]
-```
+## Modes → Starting Phases
 
-### New Project (Greenfield)
-```
-PROJECT NAME: [New Project]
-MODE: GREENFIELD
-PROJECT PATH: ~/_PAI/projects/[category]/[name]
-REPO: growthpigs/[name]
-ACTIVITY_LOG_ISSUE: [create one]
-STARTING PHASE: Phase 1 (MINE)
-MISSION: Bootstrap from zero. Full 7-phase pipeline.
-```
+| Mode | Starting Phase | When |
+|------|---------------|------|
+| GREENFIELD | Phase 1 (MINE) | New project, nothing exists |
+| FEATURE | Phase 3 (ASSAY) or 5 (PLAN) | New feature, project exists |
+| FIX | Phase 6 (HAMMER) | Bug fix |
+| HOTFIX | Phase 6 (HAMMER) | Production emergency |
+| SPEC | Phase 3 (ASSAY) | Architecture only, no code |
+| REFACTOR | Phase 3 (ASSAY) | Behaviour-preserving changes |
+| SECURE | Phase 3 (ASSAY) | Security vulnerability |
