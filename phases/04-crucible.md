@@ -130,6 +130,69 @@ Every Crucible session MUST produce a notebook ID. This ID is:
 - Chat-only interaction with NotebookLM (Rule 3: Audio IS the Crucible for full debates)
 - Claiming "I created a notebook" without the notebook ID artifact
 - Any review that doesn't use NotebookLM as a SEPARATE system with uploaded sources
+- **CONCATENATING ALL SOURCES INTO ONE FILE** — see rule below
+
+### ⛔ THE CONCATENATION BAN (March 2026 — Incident-Driven)
+
+**Incident:** Two separate CC sessions (IT Concierge, LifeModo) concatenated all source files into a single `CRUCIBLE_SOURCES_COMBINED.md` and uploaded it as one source to NotebookLM. This completely destroys the Crucible.
+
+**Why concatenation kills the Crucible:** NotebookLM's entire architecture relies on mapping relationships BETWEEN distinct source documents. When everything is in one file, there are no semantic boundaries. The debate becomes a biased echo chamber because there is no external "ground truth" to challenge internal assumptions. A single-source Crucible is like a prosecutor, defense attorney, and witness all being the same person.
+
+**The Rule:** You are STRICTLY FORBIDDEN from:
+1. Combining multiple files into one before upload
+2. Creating a "combined" or "compiled" or "merged" source document
+3. Using `cat file1.md file2.md > combined.md` or any equivalent
+4. Passing concatenated content as a single `add_text()` call
+
+**Each source file = one `add_text()` call.** The loop in the canonical pattern exists for this reason:
+```python
+# CORRECT: Each file is a separate source
+for filepath, title in source_files:
+    await client.sources.add_text(notebook_id=notebook_id, title=title, content=f.read())
+
+# WRONG: Concatenating everything into one source
+combined = "\n".join(open(f).read() for f, _ in source_files)
+await client.sources.add_text(notebook_id=notebook_id, title="All Sources", content=combined)  # ⛔ BANNED
+```
+
+### 🌍 EXTERNAL GROUND TRUTH REQUIREMENT (March 2026 — Non-Negotiable)
+
+**The Problem:** A Crucible that only debates YOUR specs against YOUR specs is an echo chamber. Your FSD says "we use RLS for security." Your data model implements RLS. NotebookLM cross-references them and says "looks consistent." But neither document asked whether your RLS IMPLEMENTATION actually follows Supabase best practices. The specs agree with each other — that doesn't mean they're correct.
+
+**The Rule:** Every domain group MUST include at least ONE external ground truth source — official documentation for the technology being debated. This source acts as an unbiased referee.
+
+| Domain | External Ground Truth (examples) |
+|--------|----------------------------------|
+| Database/RLS/Security | Official Supabase RLS docs, OWASP guidelines |
+| Offline/Sync | Official PowerSync conflict resolution docs |
+| State machines | Academic state machine completeness theory, framework docs |
+| Auth/JWT | Official auth provider docs (Supabase Auth, Auth0, etc.) |
+| Storage | Official Supabase Storage policy docs |
+| API design | REST/GraphQL best practices, framework docs |
+| Concurrency | Postgres isolation level docs, OCC pattern references |
+
+**How to fetch external docs programmatically:**
+```python
+# Use WebFetch or curl to get official docs, then upload as a source
+import subprocess
+result = subprocess.run(
+    ["curl", "-s", "https://supabase.com/docs/guides/auth/row-level-security"],
+    capture_output=True, text=True
+)
+await client.sources.add_text(
+    notebook_id=notebook_id,
+    title="EXTERNAL: Supabase RLS Official Docs",
+    content=result.stdout,
+    wait=True
+)
+```
+
+**Minimum source composition per domain notebook:**
+- 1-2 internal specs (FSD, data model, ADR)
+- 1 external ground truth (official docs for the technology)
+- 1 buyer persona document (how does this feel to the user?)
+- Optional: competitor analysis, academic papers, Stack Overflow deep dives
+- **Minimum 3 sources, maximum 8, ALL SEPARATE**
 
 #### Step 3: Synthesis Crucible
 
@@ -199,6 +262,8 @@ See [ratify.md](ratify.md#r4-adversarial-gate-after-crucible)
 **Must pass:**
 - [ ] Every domain group tested independently
 - [ ] **NotebookLM notebook ID recorded for EACH domain group** (no ID = no Crucible)
+- [ ] **NO concatenated sources** — each file uploaded as a SEPARATE source (verify source count ≥ 3 per notebook)
+- [ ] **External ground truth loaded** — at least 1 official external doc per domain (not just your own specs debating themselves)
 - [ ] **Buyer Persona loaded as mandatory source** in every domain group notebook
 - [ ] Synthesis Crucible run (cross-domain integration)
 - [ ] All findings dispositioned (fix now / fix later / won't fix)
