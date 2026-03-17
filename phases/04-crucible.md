@@ -72,15 +72,15 @@ For each domain group:
 
 ```python
 import asyncio
-from notebooklm import NotebookLMClient
+from notebooklm import NotebookLMClient, AudioFormat
 
-async def run_crucible(domain_name, source_files, questions):
+async def run_crucible(domain_name, source_files, questions, audio_instructions):
     async with await NotebookLMClient.from_storage() as client:
         # Step 1: Create notebook (one per domain group)
         notebook = await client.notebooks.create(f"Crucible: {domain_name}")
         notebook_id = notebook.id
 
-        # Step 2: Upload sources (MUST be explicit — files don't auto-sync)
+        # Step 2: Upload sources AS SEPARATE FILES (NO concatenation — see ban below)
         for filepath, title in source_files:
             with open(filepath) as f:
                 await client.sources.add_text(
@@ -90,7 +90,7 @@ async def run_crucible(domain_name, source_files, questions):
                     wait=True
                 )
 
-        # Step 3: Ask adversarial questions
+        # Step 3: Ask adversarial questions via chat
         for question in questions:
             result = await client.chat.ask(
                 notebook_id=notebook_id,
@@ -99,31 +99,68 @@ async def run_crucible(domain_name, source_files, questions):
             print(f"Q: {question[:80]}...")
             print(f"A: {result.answer}\n")
 
-        # Step 4: Return notebook ID as VERIFICATION ARTIFACT
-        return notebook_id
+        # Step 4: Generate Audio Overview — DEBATE format (NON-NEGOTIABLE)
+        # Rule 3: "Audio IS the Crucible. Chat alone doesn't count."
+        # The two-host debate format produces insights that chat misses
+        # because it forces the AI to argue AGAINST its own positions.
+        print("Generating Audio Overview (DEBATE format)...")
+        audio_status = await client.artifacts.generate_audio(
+            notebook_id=notebook_id,
+            audio_format=AudioFormat.DEBATE,
+            instructions=audio_instructions
+        )
+        # Wait for audio generation to complete
+        final_status = await client.artifacts.wait_for_completion(
+            notebook_id=notebook_id,
+            task_id=audio_status.task_id,
+            timeout=600.0  # Audio can take up to 10 minutes
+        )
+        print(f"Audio generation: {final_status.status}")
 
-# Example: run and capture the notebook ID
-notebook_id = asyncio.run(run_crucible(
+        # Step 5: Download the audio for transcription/archival
+        audio_path = f".foundry/crucible-audio-{domain_name.lower().replace(' ', '-')}.wav"
+        try:
+            downloaded = await client.artifacts.download_audio(
+                notebook_id=notebook_id,
+                output_path=audio_path
+            )
+            print(f"Audio saved to: {downloaded}")
+        except Exception as e:
+            print(f"Audio download failed (check NotebookLM UI): {e}")
+
+        # Step 6: Return notebook ID + audio status as VERIFICATION ARTIFACTS
+        return notebook_id, audio_status.task_id
+
+# Example: run and capture BOTH artifacts
+notebook_id, audio_task_id = asyncio.run(run_crucible(
     domain_name="Security & Auth",
     source_files=[
         ("docs/02-specs/FSD-247-concurrency.md", "FSD-247 Concurrency"),
         ("docs/04-technical/TECH-STACK.md", "Tech Stack"),
-        ("docs/02-specs/ASSUMPTION-TABLE.md", "Assumption Table"),
+        # EXTERNAL GROUND TRUTH (mandatory — see requirement below)
+        ("EXTERNAL-supabase-rls-docs.md", "EXTERNAL: Supabase RLS Official Docs"),
     ],
     questions=[
-        "Will the ghost_canvases table become a bottleneck at 50 concurrent agents?",
+        "Cross-reference FSD-247 against the official Supabase RLS docs. Where does our implementation violate best practices?",
         "Does the queued_behind debounce solve the race condition or create a new deadlock?",
-        "Where is data loss most likely between the Async Action Queue and Slack delivery?",
-    ]
+    ],
+    audio_instructions="Debate the pros and cons of server-wins conflict resolution. "
+                       "Focus on what happens when a field technician's offline work is silently discarded."
 ))
-print(f"CRUCIBLE ARTIFACT: {notebook_id}")  # THIS is the proof
+print(f"CRUCIBLE ARTIFACTS: notebook={notebook_id}, audio_task={audio_task_id}")
 ```
 
-**The Verification Artifact:**
-Every Crucible session MUST produce a notebook ID. This ID is:
-- Appended to `progress.txt` as: `[CRUCIBLE] notebook_id={id} domain={name}`
+**The Verification Artifacts (TWO required per domain):**
+Every Crucible session MUST produce:
+1. **Notebook ID** — proves NotebookLM was invoked with separate sources
+2. **Audio task ID** — proves the DEBATE audio was generated (not just chat)
+
+Both are:
+- Appended to `progress.txt` as: `[CRUCIBLE] notebook_id={id} audio_task={id} domain={name}`
 - Posted as a GitHub issue comment on the parent issue
-- Checked by the R4 gate (no notebook ID = gate FAILS)
+- Checked by the R4 gate (missing either = gate FAILS)
+
+**Rule 3 enforcement:** Chat queries are the FIRST pass. The Audio Overview (DEBATE format) is the SECOND pass. They produce DIFFERENT insights because audio forces the AI to argue against itself in a sustained format. Skipping audio means you only did half the Crucible.
 
 **What Does NOT Count as a Crucible:**
 - An AI agent reviewing specs in-context and calling it a "Crucible" — that's a red-team, not a Crucible
@@ -262,6 +299,7 @@ See [ratify.md](ratify.md#r4-adversarial-gate-after-crucible)
 **Must pass:**
 - [ ] Every domain group tested independently
 - [ ] **NotebookLM notebook ID recorded for EACH domain group** (no ID = no Crucible)
+- [ ] **Audio Overview (DEBATE format) generated for EACH domain group** (no audio task ID = half a Crucible)
 - [ ] **NO concatenated sources** — each file uploaded as a SEPARATE source (verify source count ≥ 3 per notebook)
 - [ ] **External ground truth loaded** — at least 1 official external doc per domain (not just your own specs debating themselves)
 - [ ] **Buyer Persona loaded as mandatory source** in every domain group notebook
