@@ -87,6 +87,28 @@ Every Crucible finding gets dispositioned:
 - Updated ADR Log (new decisions from Crucible debates)
 - Confidence score per domain
 
+#### Step 5: Persona Validation (Consumer/Experience Products)
+
+**Optional but recommended** for products where "how it feels" is the product (LifeModo, consumer apps). Skip for infrastructure, internal tools, APIs.
+
+After Crucible debates are complete and findings dispositioned:
+
+1. **Mock the key user touchpoints** — not code, not UI. Print the formats:
+   - The Morning Brief as it would appear in Slack
+   - The dashboard view with sample data
+   - The notification that arrives at 8am
+   - The onboarding message on Day 0
+2. **Show to 1-3 people who match the Buyer Persona** — not developers, not friends. People who ARE the target user.
+3. **Ask one question:** "Would you pay [price] for this arriving every [cadence]?"
+4. **Record reactions** — what surprises them, what confuses them, what they wish it did instead.
+5. **Feed reactions back into FSDs** — update before PLAN.
+
+**Why here, not in ASSAY?** Because the Crucible has already stress-tested the architecture. You know the spec is CORRECT. Now you're testing whether the spec is DESIRABLE. These are different questions with different judges — architects judge correctness, users judge desirability.
+
+**Why before PLAN?** Because if the user says "I wouldn't pay for this," you need to redesign before creating 50 GitHub issues against the wrong spec.
+
+---
+
 ### The 5 Crucible Rules (from IT Concierge)
 
 1. **Minimum 3 sources per notebook** — Architecture anchor + subject doc + external sources

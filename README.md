@@ -97,9 +97,11 @@ See [LINEAGE.md](LINEAGE.md) for the full intellectual ancestry.
 
 ```
 the-foundry/
+├── CLAUDE.md                 # Project instructions for CC sessions
 ├── README.md                 # This file
 ├── CONSTITUTION.md           # 37 immutable articles (the law)
-├── LINEAGE.md                # Industry ancestry
+├── LINEAGE.md                # Industry ancestry (IDEO → StrongDM → us)
+├── .gitignore                # Excludes .foundry/ runtime artifacts
 ├── phases/
 │   ├── 01-mine.md            # Mine the ore
 │   ├── 02-scout.md           # Prospect
@@ -108,17 +110,19 @@ the-foundry/
 │   ├── 05-plan.md            # Blueprint (issues, sprints)
 │   ├── 06-hammer.md          # Build (Dark Factory, Ralph loop)
 │   ├── 07-temper.md          # Harden & ship (E2E, deploy)
-│   └── ratify.md             # The 7 Ratify gates
+│   └── ratify.md             # The 8 Ratify gates (R1-R7 + R8 Honest)
 ├── knowledge/
 │   ├── anti-regression.md    # Baseline capture spec
 │   ├── progress-txt.md       # Offensive knowledge lifecycle
 │   └── output-locations.md   # Where artifacts land
 ├── modes/
-│   └── MODES.md              # FULL, FIX, HOTFIX, REFACTOR, SECURE, SPEC
+│   ├── MODES.md              # 7 pipeline modes with skip matrices
+│   └── STAGE-MAP.md          # Maps 7 phases ↔ 13 pipeline stages
 ├── bin/
-│   └── foundry.sh            # The pipeline runner
+│   └── foundry.sh            # The pipeline runner (Bash 3.2 safe)
 └── research/
-    └── spec-first-2026.md    # Industry landscape research
+    ├── spec-first-2026.md    # Industry landscape research
+    └── dtu-digital-twin.md   # Digital Twin Universe feasibility
 ```
 
 ## Quick Start

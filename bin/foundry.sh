@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# Dark Foundry — Autonomous Pipeline Orchestrator
+# The Foundry — Autonomous Pipeline Orchestrator
+# Canonical repo: growthpigs/the-foundry
 # PAI System-Level — applies to ALL projects
-# Issues: growthpigs/pai-system #19-24
 #
 # Usage:
-#   ./dark-foundry.sh #123                    # Auto-detect mode from labels
-#   ./dark-foundry.sh --mode FIX #123         # Force FIX mode
-#   ./dark-foundry.sh --defcon #123           # Emergency HOTFIX mode
-#   ./dark-foundry.sh --gated #123            # Add human checkpoints
-#   ./dark-foundry.sh --dry-run #123          # Show plan without executing
+#   ./foundry.sh #123                         # Auto-detect mode from labels
+#   ./foundry.sh --mode GREENFIELD #123       # Force GREENFIELD mode
+#   ./foundry.sh --mode FIX #123              # Force FIX mode
+#   ./foundry.sh --defcon #123                # Emergency HOTFIX mode
+#   ./foundry.sh --gated #123                 # Add human checkpoints
+#   ./foundry.sh --dry-run #123               # Show plan without executing
 #
 # Can run from bare terminal OR inside Claude Code (CLAUDECODE guard auto-unsets).
 
