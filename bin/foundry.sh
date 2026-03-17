@@ -116,7 +116,7 @@ usage() {
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --mode)
-      MODE="${2^^}"  # uppercase
+      MODE=$(echo "$2" | tr '[:lower:]' '[:upper:]')  # POSIX-compatible uppercase (Bash 3.2 safe)
       shift 2
       ;;
     --defcon)

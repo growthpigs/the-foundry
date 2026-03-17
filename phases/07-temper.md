@@ -81,7 +81,7 @@ Once all gates pass:
 #### Step 7: Knowledge Graduation
 
 After merge:
-1. Archive progress.txt to `.dark-foundry/archive/`
+1. Archive progress.txt to `.foundry/archive/`
 2. Graduate recurring findings to error-patterns.md (3+ occurrences)
 3. Update Activity Log with final summary
 4. Update Work Ledger with DUs

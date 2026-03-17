@@ -77,7 +77,7 @@ The industry has been converging on "think more, code less" for decades:
 **Contribution:** Constitution → Specify → Plan → Tasks pipeline. 72.7k stars.
 **Where it lives in The Foundry:** The Constitution concept. spec-kit calls their rules file a "Constitution" — same name, same idea.
 **What we took:** Validation that the Constitution pattern is industry-standard.
-**What we added:** 35 articles of hard-won rules vs. spec-kit's lightweight template. The Foundry Constitution is battle-tested across 3+ projects; spec-kit is a starter kit.
+**What we added:** 37 articles of hard-won rules vs. spec-kit's lightweight template. The Foundry Constitution is battle-tested across 3+ projects; spec-kit is a starter kit.
 
 ### The Ralph Pattern (2026)
 

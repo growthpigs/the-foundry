@@ -1,0 +1,10 @@
+# Foundry runtime artifacts (per-project, not tracked in this repo)
+.foundry/
+progress.txt
+
+# OS
+.DS_Store
+
+# Node (if tests are added later)
+node_modules/
+coverage/

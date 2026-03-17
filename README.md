@@ -95,7 +95,7 @@ See [LINEAGE.md](LINEAGE.md) for the full intellectual ancestry.
 ```
 the-foundry/
 ├── README.md                 # This file
-├── CONSTITUTION.md           # 35 immutable articles (the law)
+├── CONSTITUTION.md           # 37 immutable articles (the law)
 ├── LINEAGE.md                # Industry ancestry
 ├── phases/
 │   ├── 01-ideation.md        # Mine the ore

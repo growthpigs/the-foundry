@@ -1,4 +1,4 @@
-# Dark Foundry — Anti-Regression Baseline Capture
+# The Foundry — Anti-Regression Baseline Capture
 
 **Purpose:** Snapshot the system state BEFORE making changes so we can verify AFTER that nothing broke.
 
@@ -103,7 +103,7 @@ shape(data)
 ## Baseline File Location
 
 ```
-.dark-foundry/
+.foundry/
 ├── baseline-{issue-number}.md    ← Captured BEFORE changes
 ├── postcheck-{issue-number}.md   ← Captured AFTER changes
 └── comparison-{issue-number}.md  ← Diff report

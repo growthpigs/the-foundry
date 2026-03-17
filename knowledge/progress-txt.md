@@ -1,4 +1,4 @@
-# Dark Foundry — progress.txt Lifecycle
+# The Foundry — progress.txt Lifecycle
 
 **Issue:** growthpigs/pai-system #20
 **Origin:** Adopted from snarktank/ralph
@@ -18,15 +18,15 @@ APPEND (each stage adds findings)
   ↓
 GRADUATE (recurring findings → error-patterns.md)
   ↓
-ARCHIVE (on merge, move to .dark-foundry/archive/)
+ARCHIVE (on merge, move to .foundry/archive/)
 ```
 
 ## 1. SEED (Pipeline Start)
 
-Created by `bin/dark-foundry.sh` when the pipeline begins:
+Created by `bin/foundry.sh` when the pipeline begins:
 
 ```
-# progress.txt — Dark Foundry Pipeline
+# progress.txt — The Foundry Pipeline
 # Issue: #123 — Fix chat formatting regression
 # Mode: FIX
 # Started: 2026-03-13T14:30:00Z
@@ -97,7 +97,7 @@ When a discovery in progress.txt recurs across **3 or more different features**,
 ### Graduation Process
 
 1. After pipeline completes, scan progress.txt for DISCOVERED/WARNING entries
-2. Cross-reference against `.dark-foundry/archive/` — has this appeared before?
+2. Cross-reference against `.foundry/archive/` — has this appeared before?
 3. If ≥ 3 occurrences: create a new error pattern entry
 4. Format:
 
@@ -119,7 +119,7 @@ The follow-up command file includes instructions to check for graduation candida
 
 When the PR is merged:
 
-1. Move progress.txt to `.dark-foundry/archive/progress-{issue-number}-{date}.txt`
+1. Move progress.txt to `.foundry/archive/progress-{issue-number}-{date}.txt`
 2. The archive is gitignored but kept locally for graduation cross-referencing
 3. Archive retention: 90 days, then delete
 
@@ -129,8 +129,8 @@ archive_progress() {
   local date_stamp
   date_stamp=$(date +%Y%m%d)
 
-  mkdir -p .dark-foundry/archive
-  mv progress.txt ".dark-foundry/archive/progress-${issue_num}-${date_stamp}.txt"
+  mkdir -p .foundry/archive
+  mv progress.txt ".foundry/archive/progress-${issue_num}-${date_stamp}.txt"
 }
 ```
 
@@ -139,7 +139,7 @@ archive_progress() {
 ```
 project-root/
 ├── progress.txt                          ← Active (current pipeline run)
-├── .dark-foundry/
+├── .foundry/
 │   ├── archive/
 │   │   ├── progress-123-20260313.txt     ← Completed features
 │   │   ├── progress-124-20260314.txt
@@ -148,7 +148,7 @@ project-root/
 │   └── ...
 ├── .claude/
 │   └── error-patterns.md                 ← Permanent (graduated findings)
-└── .gitignore                            ← .dark-foundry/ is gitignored
+└── .gitignore                            ← .foundry/ is gitignored
 ```
 
 ## Integration with Pipeline Stages

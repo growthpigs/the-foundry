@@ -8,7 +8,7 @@ Not every task needs every phase. Modes define which phases to run.
 
 | Mode | MINE | SCOUT | ASSAY | CRUCIBLE | PLAN | HAMMER | TEMPER | Budget |
 |------|------|-------|-------|----------|------|--------|--------|--------|
-| **GREENFIELD** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$29 |
+| **GREENFIELD** (alias: FULL) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$29 |
 | **FEATURE** | ⏭ | ⏭ | ✅ | ✅ (quick) | ✅ | ✅ | ✅ | ~$22 |
 | **FIX** | ⏭ | ⏭ | ✅ | ⏭ | ⏭ | ✅ | ✅ | ~$12 |
 | **HOTFIX** | ⏭ | ⏭ | ⏭ | ⏭ | ⏭ | ✅ | ✅ (fast) | ~$8 |
