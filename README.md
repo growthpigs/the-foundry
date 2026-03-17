@@ -36,6 +36,7 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 
 | # | Stage | What Happens | Duration |
 |---|-------|-------------|----------|
+| — | **PRE-FOUNDRY** | Client intake interview (Gemini Gem), raw requirements, kill criteria, Agreement. | 1-3 hours |
 | 0 | **LAUNCH** | Load methodology, load project, pick mode, determine starting phase. | 5 min |
 | 1 | **MINE** | Firehose capture. Raw ideas, links, transcripts. Zero filtering. | 30-60 min |
 | 2 | **SCOUT** | Research. Competitors, APIs, IDEO sprint. **Deployment pipeline setup.** | 1-4 hours |
@@ -46,6 +47,7 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 | 6 | **HAMMER** | Code. Dark Factory mode. Ralph loop. Digital twin testing. | Days-weeks |
 | 7 | **TEMPER** | Harden. E2E, anti-regression, compliance check, deploy, ship. | 1-4 hrs/PR |
 | 8 | **RALPH LOOP** | Capture learnings. Graduate knowledge. Feed back to next epic. | 30-60 min |
+| — | **POST-FOUNDRY** | Bug triage, issue intake (60s), maintenance sprints, client feedback loop. | Ongoing |
 
 **"Drop the Hammer"** = the decision between PLAN and HAMMER. After this, you commit to building. Before it, everything is reversible.
 
@@ -107,6 +109,7 @@ the-foundry/
 ├── LINEAGE.md                # Industry ancestry (IDEO → StrongDM → us)
 ├── .gitignore                # Excludes .foundry/ runtime artifacts
 ├── phases/
+│   ├── pre-foundry.md        # Client intake, Gemini Gem interview, kill criteria
 │   ├── 00-launch.md          # START HERE — load methodology, load project, pick mode
 │   ├── 01-mine.md            # Mine the ore
 │   ├── 02-scout.md           # Prospect
@@ -117,6 +120,7 @@ the-foundry/
 │   ├── 06-hammer.md          # Build (Dark Factory, Ralph loop)
 │   ├── 07-temper.md          # Harden & ship (E2E, deploy)
 │   ├── 08-ralph-loop.md      # Capture learnings, feed back to next epic
+│   ├── post-foundry.md       # Bug triage, issue intake, maintenance, feedback loop
 │   └── ratify.md             # The 9 Ratify gates (R1-R8 + R4b Auditor)
 ├── knowledge/
 │   ├── anti-regression.md    # Baseline capture spec
