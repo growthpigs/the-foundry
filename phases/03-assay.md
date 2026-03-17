@@ -77,18 +77,57 @@ describe('Ticket status transitions', () => {
 
 **Why test stubs in ASSAY, not HAMMER?** Because writing the test forces you to think about edge cases, failure modes, and acceptance criteria WITH PRECISION. Prose specs hide ambiguity. Code specs expose it.
 
-#### Step 3: Thrash
+#### Step 3: Assumption Table (Mandatory)
+
+Before thrashing, produce an **Assumption Table** — every assumption the specs rely on, with confidence and blast radius:
+
+```
+| # | Assumption | Confidence | What Breaks If Wrong |
+|---|-----------|------------|---------------------|
+| 1 | Supabase RLS with SET LOCAL works through PgBouncer | 50% | Every table has broken isolation. Business-ending. |
+| 2 | EUR 50K clients will use Slack daily | 75% | Console-first architecture is wrong for persona |
+| 3 | Gmail snippet (~200 chars) is enough signal | 65% | False negative rate balloons |
+```
+
+**Rules:**
+- Any assumption below **70% confidence** → triggers a **technical spike** during ASSAY (30-60 min to verify with real tools, not prose)
+- Any assumption below **50% confidence** → becomes a CRUCIBLE topic (Phase 4) with mandatory adversarial debate
+- The Assumption Table is a living document — update it as confidence changes
+- Assumptions at 90%+ after a spike can be removed from the table
+
+**What is a technical spike?** Spin up the real tool. Test the actual API. Run the query. The DTU (Digital Twin Universe) exists for this — verify assumptions against real services, not documentation.
+
+#### Step 4: Buyer Persona Pressure Test
+
+**Every FSD must be read through the eyes of each Buyer Persona.** Not in the abstract — specifically.
+
+Load the Buyer Persona document and for each FSD, ask:
+- "How does **[Persona Name]** experience this feature?"
+- "Does this feel like [the promise] or like [generic software]?"
+- "What would **[Persona Name]** complain about?"
+- "Would **[Persona Name]** even use this, or is it for us?"
+
+**Example (LifeModo):**
+- Jean-Marc (retired CEO): "Does the Morning Brief feel like having an EA again, or like a notification digest?"
+- David (expat): "Does the obligation tracker feel like a concierge helping me navigate French bureaucracy, or like a to-do app?"
+
+The Buyer Persona document must be a mandatory input to every Crucible session (Phase 4) as one of the minimum 3 sources.
+
+#### Step 5: Thrash
 
 The spec is not done on the first pass. Thrash it:
-- Challenge every assumption
+- Challenge every assumption (reference the Assumption Table)
 - Find contradictions between documents
 - Ask "what if the opposite were true?"
 - Find gaps: what did we NOT specify?
 - Run failure scenarios: what happens when things go wrong?
+- **Read every FSD through each Buyer Persona's eyes**
 
 ### Outputs
 - 18 Admin Documents (GitHub Issues — gold standard)
 - FSDs per component
+- **Assumption Table** (with confidence scores and spike results)
+- **Buyer Persona pressure test notes** (per FSD)
 - Activity Log entries (thinking captured)
 - Work Ledger entries (DUs logged)
 - Sources list for Crucible (Phase 4)
@@ -107,11 +146,14 @@ See [ratify.md](ratify.md#r3-spec-gate-after-assay)
 
 **Key question:** "Are the specs perfect? Could a stranger implement from this?"
 
-**Must pass:**
+**Must pass (dual confidence scores):**
 - [ ] All 18 Admin Documents substantially complete
 - [ ] At least Agreement, Client Requirements, User Stories, User Journeys, Tech Stack, ADR Log, and Features are FINISHED
 - [ ] Every user story has acceptance criteria AND failure definitions
 - [ ] Independent Observer Score ≥ 8/10 on each FSD
 - [ ] Zero contradictions between Admin docs
 - [ ] Glossary has every term defined
-- [ ] Confidence ≥ 8/10
+- [ ] **Assumption Table produced** — all assumptions below 70% have been spiked
+- [ ] **Buyer Persona pressure test completed** on every FSD
+- [ ] **Correctness confidence ≥ 8/10**
+- [ ] **UX/Intent confidence ≥ 7/10** (judged through Buyer Persona lens — would the target user FEEL this is what was promised?)

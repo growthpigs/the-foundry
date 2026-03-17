@@ -43,12 +43,15 @@ For each domain group:
 2. **Load sources** (minimum 3, maximum 8):
    - Architecture anchor document (the FSD or ADR for this domain)
    - Subject-specific document (the detailed spec)
-   - 3-8 external sources (official API docs, competitor analysis, academic papers, Stack Overflow deep dives)
+   - **Buyer Persona document** (MANDATORY — how does this domain feel to the target user?)
+   - 2-7 external sources (official API docs, competitor analysis, academic papers, Stack Overflow deep dives)
+   - **Assumption Table entries** for this domain (any assumption below 70% that hasn't been spiked)
 3. **Run the debate** — Two-host adversarial format:
    - "Argue FOR and AGAINST this architecture decision"
    - "What are we missing? What will break?"
    - "Where will this fail at scale?"
    - "What's the security exploit path?"
+   - **"How does [Buyer Persona] EXPERIENCE this? Does it feel like [the promise] or like generic software?"**
 4. **Audio IS the Crucible** — The two-host debate is required. Chat alone doesn't count. The audio format forces the AI to argue with itself, producing insights that direct prompting misses.
 5. **Self-processing** — After audio, extract findings via 5 queries:
    - What were the top 3 concerns raised?
