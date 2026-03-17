@@ -109,13 +109,21 @@ async def run_crucible(domain_name, source_files, questions, audio_instructions)
             audio_format=AudioFormat.DEBATE,
             instructions=audio_instructions
         )
-        # Wait for audio generation to complete
+        # Wait for audio generation to complete (can take 10-20 minutes)
         final_status = await client.artifacts.wait_for_completion(
             notebook_id=notebook_id,
             task_id=audio_status.task_id,
-            timeout=600.0  # Audio can take up to 10 minutes
+            timeout=1200.0  # 20 minutes max
         )
-        print(f"Audio generation: {final_status.status}")
+
+        # CRITICAL: Check audio actually succeeded — a failed task ID
+        # still passes the gate if we don't verify status here
+        if final_status.status not in ("completed", "complete"):
+            raise RuntimeError(
+                f"Audio generation FAILED for {domain_name}: "
+                f"status={final_status.status}, error={final_status.error}"
+            )
+        print(f"Audio generation: {final_status.status} ✅")
 
         # Step 5: Download the audio for transcription/archival
         audio_path = f".foundry/crucible-audio-{domain_name.lower().replace(' ', '-')}.wav"
@@ -129,6 +137,7 @@ async def run_crucible(domain_name, source_files, questions, audio_instructions)
             print(f"Audio download failed (check NotebookLM UI): {e}")
 
         # Step 6: Return notebook ID + audio status as VERIFICATION ARTIFACTS
+        # Only return if audio SUCCEEDED — failed audio = incomplete Crucible
         return notebook_id, audio_status.task_id
 
 # Example: run and capture BOTH artifacts
@@ -210,15 +219,24 @@ await client.sources.add_text(notebook_id=notebook_id, title="All Sources", cont
 
 **How to fetch external docs programmatically:**
 ```python
-# Use WebFetch or curl to get official docs, then upload as a source
+# Option 1: Use WebFetch MCP tool (returns clean text, not raw HTML)
+# Option 2: Use agent-browser to snapshot docs pages
+# Option 3: Fetch MDX/markdown source from vendor GitHub repos (cleanest)
+# Option 4: Use Exa search to find and extract relevant doc sections
+#
+# ⛔ Do NOT use raw `curl` on doc pages — it returns HTML with nav bars,
+# JS bundles, and cookie consent dialogs. NotebookLM will be polluted
+# with thousands of tokens of site chrome instead of actual documentation.
+#
+# Example using vendor GitHub (cleanest):
 import subprocess
 result = subprocess.run(
-    ["curl", "-s", "https://supabase.com/docs/guides/auth/row-level-security"],
+    ["curl", "-s", "https://raw.githubusercontent.com/supabase/supabase/master/apps/docs/content/guides/auth/row-level-security.mdx"],
     capture_output=True, text=True
 )
 await client.sources.add_text(
     notebook_id=notebook_id,
-    title="EXTERNAL: Supabase RLS Official Docs",
+    title="EXTERNAL: Supabase RLS Official Docs (from GitHub MDX source)",
     content=result.stdout,
     wait=True
 )
