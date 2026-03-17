@@ -57,8 +57,26 @@ When a problem arrives — from a client, from testing, from Sentry, from Roderi
 3. **Create GitHub issue** (15s) — `gh issue create` with:
    - Title: Clear, specific
    - Body: Root cause hypothesis, affected files, reproduction steps
-   - Labels: `bug` / `hotfix` / `security` / `refactor` (for Foundry mode classifier)
    - Severity: P0 (production down) → P3 (nice to have)
+   - Labels: **MUST match foundry.sh classifier** (see table below)
+
+### Label → Foundry Mode Mapping (MUST use these exact labels)
+
+| What It Is | Labels to Apply | Foundry Mode |
+|-----------|----------------|-------------|
+| Production down | `hotfix`, `production-down`, `P0` | HOTFIX |
+| Security vulnerability | `security`, `vulnerability` | SECURE |
+| Bug | `bug` | FIX |
+| Regression (was working, now broken) | `bug`, `regression` | FIX |
+| Performance issue | `refactor`, `performance` | REFACTOR |
+| Tech debt cleanup | `refactor`, `tech-debt` | REFACTOR |
+| Feature request | `enhancement` | FEATURE |
+| Architecture question | `spec`, `architecture` | SPEC |
+| New project idea | `new`, `greenfield` | GREENFIELD |
+
+**If no labels match** → foundry.sh defaults to FEATURE mode.
+
+**Common mistake:** Labelling a feature request as `new` routes it to GREENFIELD (full pipeline from scratch). Use `enhancement` for features on existing projects.
 
 **Hard rule:** Do NOT fix the bug during intake. Capture it. The Foundry handles the fix.
 
@@ -111,6 +129,30 @@ These are NOT bugs. They're feature signals. Capture them:
 3. **Don't act immediately** — let feedback accumulate
 4. **Monthly review** — Do 3+ clients say the same thing? → Promote to FEATURE mode
 5. **Buyer Persona update** — Does this feedback change our understanding of the persona?
+
+---
+
+## Rollback Protocol (When TEMPER Deploy Breaks Production)
+
+When a deploy breaks production — and it will, eventually — follow this protocol:
+
+### Immediate (< 5 minutes)
+1. **Revert the deploy** — `git revert HEAD` + push, or rollback in hosting dashboard
+2. **Verify production is back** — hit the health endpoint, load the app
+3. **Create P0 issue** — `gh issue create --label "hotfix,production-down,P0"`
+
+### Investigate (< 30 minutes)
+4. **Compare staging vs production** — is staging also broken? Or just production?
+5. **Check what changed** — `git log -5`, env vars, external API changes
+6. **Capture the incident** — in the issue body: what broke, what was reverted, root cause hypothesis
+
+### Fix (via HOTFIX mode)
+7. **Run the Foundry in HOTFIX mode** — `bin/launch.sh --mode HOTFIX --issue [P0_ISSUE]`
+8. **HAMMER → TEMPER (fast)** — fix, test, ship
+9. **RALPH LOOP** — what caused this? How do we prevent it?
+
+### The Rule
+> Revert FIRST, investigate SECOND. A broken production costs money every minute. A reverted deploy costs nothing.
 
 ---
 

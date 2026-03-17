@@ -25,7 +25,32 @@ If the previous gate's outputs are stale (e.g., an FSD was updated after the Cru
 
 ---
 
-## The 9 Gates
+## The 11 Gates
+
+### R0: Intake Gate (after PRE-FOUNDRY) — Soft Gate
+
+**Question:** "Should this project enter The Foundry?"
+
+**Protocol:**
+1. Review the Handoff Document — does it follow the canonical format?
+2. Kill criteria — any showstoppers (no persona, no pain, infeasible)?
+3. Gut check: is this a real project or a distraction?
+
+**Prompt Pattern:**
+```
+I just completed a client intake. Review this handoff document.
+Is the problem real? Is the persona clear? Is the budget realistic?
+Would YOU spend your time building this? Be honest.
+```
+
+**Must pass:**
+- [ ] Handoff document follows the canonical format (see pre-foundry.md)
+- [ ] All kill criteria passed
+- [ ] At least 1 verbatim client quote captured
+- [ ] Budget and timeline stated
+- [ ] Confidence ≥ 6/10
+
+---
 
 ### R1: Scope Gate (after MINE) — Soft Gate
 
@@ -412,6 +437,25 @@ Add succinct, accurate comments to critical sections of this codebase. Include
 explanations for any non-trivial logic, and point out any places that would
 benefit from better documentation.
 ```
+
+---
+
+### R-Triage: Post-Foundry Triage Gate — Soft Gate
+
+**Question:** "Is this issue correctly classified before it enters The Foundry?"
+
+Runs when Post-Foundry triage routes an issue to a Foundry mode. Prevents misclassification (e.g., feature request labelled as bug → runs FIX mode without speccing).
+
+**Protocol:**
+1. Read the issue title and body — does the label match the content?
+2. Check severity — is P0 really production-down, or just annoying?
+3. Verify the right Foundry mode was selected
+
+**Must pass:**
+- [ ] Labels match foundry.sh classifier expectations (see post-foundry.md label table)
+- [ ] Severity is correctly assessed (P0 = actually down, not just broken)
+- [ ] Foundry mode makes sense for this issue type
+- [ ] Confidence ≥ 6/10
 
 ---
 

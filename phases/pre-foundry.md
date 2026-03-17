@@ -132,6 +132,75 @@ MINE takes the Gem output as its primary input — the firehose has already been
 
 ---
 
+## Handoff Document Format
+
+The Pre-Foundry output MUST follow this exact structure. This is the data contract between Pre-Foundry and MINE. Any tool (Gemini Gem, manual interview, voice memo) must produce this format:
+
+```markdown
+# [Project Name] — Intake Document
+
+## 1. Problem Statement
+[1-3 sentences. What pain does this solve? For whom?]
+
+## 2. Client Quotes (verbatim)
+- "[Exact words the client used about their pain]"
+- "[Exact words about what they wish existed]"
+- "[Exact words about what they've tried]"
+
+## 3. Buyer Persona (rough)
+- **Name:** [Real or archetypal]
+- **Role:** [What they do]
+- **Pain:** [Their #1 frustration]
+- **Current solution:** [What they use now]
+- **Budget signal:** [What they said about money/value]
+
+## 4. Scope Boundaries
+- **Must have:** [Non-negotiable features]
+- **Nice to have:** [Would be great but can wait]
+- **Explicitly out:** [Things we agreed NOT to build]
+
+## 5. Financial Terms
+- **Budget:** [Amount, currency]
+- **Payment structure:** [Milestones, retainer, equity, debt settlement]
+- **Timeline expectation:** [When they need it]
+
+## 6. Existing Materials
+- [Links to docs, screenshots, WhatsApp exports, competitor URLs]
+
+## 7. Kill Criteria Assessment
+- Buyer persona defined: YES/NO
+- Pain articulated: YES/NO
+- Technically feasible: YES/NO/FLAG
+- Budget realistic: YES/NO/DISCUSS
+```
+
+---
+
+## ⚖️ R0: Intake Gate (Soft Gate)
+
+**Question:** "Should this project enter The Foundry?"
+
+**Protocol:**
+1. Review the Handoff Document — is it complete?
+2. Check kill criteria — any showstoppers?
+3. Gut check: does this feel like a real project or a distraction?
+
+**Prompt Pattern:**
+```
+I just completed a client intake. Review this handoff document.
+Is the problem real? Is the persona clear? Is the budget realistic?
+Would YOU spend your time building this? Be honest.
+```
+
+**Must pass:**
+- [ ] Handoff document follows the format above
+- [ ] All kill criteria passed (no showstoppers)
+- [ ] At least 1 verbatim client quote captured
+- [ ] Budget and timeline are stated (even if rough)
+- [ ] Confidence ≥ 6/10 (soft gate)
+
+---
+
 ## Pre-Foundry Is NOT Speccing
 
 Pre-Foundry captures raw material. It does NOT:
