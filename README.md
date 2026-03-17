@@ -69,8 +69,11 @@ Each gate has a **phase-specific protocol** — different prompts, different che
 | R5 Ready | PLAN | **Hard** | ≥ 8/10 + "Drop the Hammer" |
 | R6 Build | HAMMER | **Hard** | ≥ 8/10 + tests pass |
 | R7 Ship | TEMPER | **Hard** | ≥ 9/10 + evidence for every claim |
+| **R8 Honest** | **ALL phases** | **Hard** | ≥ 9/10 on all 3 scores + "what am I not asking?" |
 
 **Hard gate** = pipeline STOPS. Go back and fix. **Soft gate** = flag concerns, proceed with awareness.
+
+**R8 is special** — it runs after EVERY mode completes, including HOTFIX. It bypasses AI sycophancy by asking "Are you happy?" with permission to be frank. If any confidence score is below 9, you're not done.
 
 ## Industry Lineage
 

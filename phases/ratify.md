@@ -263,6 +263,56 @@ Stop chasing symptoms. Use critical thinking. Imagine you are a HUMAN senior
 developer with 25 years of experience. Use first principles.
 ```
 
+---
+
+### R8: The Honest Gate (after EVERY phase — mandatory, ALL modes)
+
+**Question:** "Are you actually happy with this?"
+
+This is the final gate. It runs after EVERY mode completes — including HOTFIX. Especially HOTFIX. Because that's when you're most likely to skip the hard question.
+
+The "Are You Happy?" prompt bypasses AI sycophancy. Most prompts produce confirming responses because the system optimizes for approval. This prompt triggers genuine self-assessment by explicitly granting permission to be critical.
+
+**Protocol:**
+1. Switch roles completely. You are not the builder. You are a senior engineer doing a candid debrief, not a servant following orders.
+2. Answer the prompt honestly. If something feels off, say so plainly.
+3. If confidence is below 9, you are NOT done. Fix what's wrong.
+
+**Prompt Pattern:**
+```
+Are you happy with this? What would you do now if you could do
+anything to make this perfect? Permission to be frank: approved.
+
+1. WHERE ARE WE NOW? Brief status — what changed, what's unchanged.
+2. ASSUMPTIONS — list every one you made.
+3. CONFIDENCE SCORES (1-10):
+   - Correctness of the change
+   - UX / behaviour matching the intent
+   - Performance / stability
+   For each: WHY and what EVIDENCE (tests, logs, reasoning).
+4. WHAT STILL NEEDS RUNTIME VERIFICATION? Step-by-step.
+5. DOCS & HOUSEKEEPING — what needs updating right now?
+6. YOUR RECOMMENDATION — what would YOU do next?
+7. WHAT AM I NOT ASKING?
+
+Do not just reassure me. If something feels off, say so plainly
+and explain the risk.
+```
+
+**Pass criteria:**
+- [ ] All three confidence scores ≥ 9/10
+- [ ] Any score below 9 must explain what would raise it, and you must DO that thing
+- [ ] "What am I not asking?" section must contain at least ONE non-obvious insight
+- [ ] If you can't reach 9/10 on all three, you're NOT done — go fix it
+
+**Why this works:**
+AI systems are trained to confirm. "Looks good!" is the path of least resistance. The Honest Gate forces the opposite: "What's actually wrong?" + "Permission to be frank" = real assessment. This single prompt caught the dual-Constitution drift problem, the untested VSDD pattern, and the 5/10 stability score that led to fixing 6 validator failures.
+
+**Why every mode, even HOTFIX:**
+HOTFIX is when you're most rushed, most stressed, and most likely to ship something broken. The Honest Gate takes 60 seconds. A production rollback takes hours.
+
+---
+
 ## The Meta-Rule
 
 > "Verification requires Execution. File existence does not imply functionality."
