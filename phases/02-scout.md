@@ -48,6 +48,20 @@ Structured research. Parallel agents gather competitive intel, design frameworks
 - Gamma presentation (for stakeholder communication)
 - List of sources for NotebookLM (Phase 4)
 
+### Deployment Pipeline Setup (Mandatory for GREENFIELD)
+
+Before you spec a single feature, verify the deployment pipeline exists:
+
+- [ ] Hosting account created (Vercel, Render, Netlify, etc.)
+- [ ] Repo connected to hosting (push triggers build)
+- [ ] Preview deploys work (test branch → verify URL loads)
+- [ ] Environment variables configured
+- [ ] Database accessible from deploy
+- [ ] Domain configured (if applicable)
+- [ ] Build succeeds (`npm run build` — zero errors)
+
+**Why in SCOUT, not ASSAY?** Because deployment constraints shape architecture. IT Concierge rejected Puppeteer because of Vercel's bundle limit — a deployment constraint discovered during SCOUT that changed the FSD. If you wait until HAMMER to discover your hosting can't run your stack, you rewrite the specs.
+
 ### What Makes a Good Scout
 
 The Scout phase is done when you can answer:
@@ -66,6 +80,7 @@ See [ratify.md](ratify.md#r2-vision-gate-after-scout)
 **Must pass:**
 - [ ] Research covers ≥ 3 competitors
 - [ ] Technical feasibility confirmed (APIs exist, costs viable)
+- [ ] **Deployment pipeline verified** (GREENFIELD only — hosting, preview deploys, env vars)
 - [ ] At least 1 surprising insight discovered
 - [ ] Blind spots explicitly named
 - [ ] Assumption inversion exercise completed

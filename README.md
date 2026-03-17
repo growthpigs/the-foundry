@@ -13,36 +13,38 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 ## The 7 Phases
 
 ```
-  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐
-  │ 1. MINE  │──►──│ 2. SCOUT │──►──│ 3. ASSAY │──►──│4.CRUCIBLE│
-  │ Capture  │  A  │ Research │  A  │  Thrash  │  A  │ Validate │
+  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐
+  │ 1. MINE  │──►──│ 2. SCOUT │──►──│ 3. ASSAY │──►──│4.CRUCIBLE│──►──│4b.AUDITOR│
+  │ Capture  │  A  │ Research │  A  │  Thrash  │  A  │ Validate │  A  │ External │
+  └──────────┘  T  └──────────┘  T  └──────────┘  T  └──────────┘  T  └──────────┘
+                I                I                I                I        │
+                F                F                F                F        │ R
+                Y                Y                Y                Y        │ A
+                                                                           │ T
+  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐        │ I
+  │ 8. RALPH │◄─◄──│ 7. TEMPER│◄─◄──│ 6.HAMMER │◄─◄──│ 5. PLAN  │◄───────┘ F
+  │  LOOP    │  A  │  Harden  │  A  │  Build   │  A  │Blueprint │          Y
   └──────────┘  T  └──────────┘  T  └──────────┘  T  └──────────┘
-                I                I                I        │
-                F                F                F        │ R
-                Y                Y                Y        │ A
-                                                           │ T
-  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐         │ I
-  │ 7. TEMPER│◄─◄──│ 6.HAMMER │◄─◄──│ 5. PLAN  │◄────────┘ F
-  │  Harden  │  A  │  Build   │  A  │Blueprint │           Y
-  └──────────┘  T  └──────────┘  T  └──────────┘
-       │        I                I
-       │        F                F
-       ▼        Y                Y
+       │        I                I                I
+       │        F                F                F
+       ▼        Y                Y                Y
   ┌──────────┐
-  │  RALPH   │  ← Learnings from TEMPER feed back to MINE
-  │  LOOP    │
+  │  NEXT    │  ← Learnings feed forward to the next epic
+  │  EPIC    │
   └──────────┘
 ```
 
 | # | Stage | What Happens | Duration |
 |---|-------|-------------|----------|
 | 1 | **MINE** | Firehose capture. Raw ideas, links, transcripts. Zero filtering. | 30-60 min |
-| 2 | **SCOUT** | Research. Competitors, APIs, IDEO sprint, art direction. | 1-4 hours |
-| 3 | **ASSAY** | Thrash specs. 18 admin docs, FSDs, user stories + test stubs. | 2-10 days |
+| 2 | **SCOUT** | Research. Competitors, APIs, IDEO sprint. **Deployment pipeline setup.** | 1-4 hours |
+| 3 | **ASSAY** | Thrash specs. 18 admin docs, FSDs, user stories + test stubs. Assumption Table. | 2-10 days |
 | 4 | **CRUCIBLE** | Adversarial NotebookLM debates. Per domain group. Score ≥ 75%. | 1-2 hrs/group |
+| 4b | **EXT. AUDITOR** | Independent model review (Gemini/GPT). Circuit breaker before code. | 30-60 min |
 | 5 | **PLAN** | GitHub issues, sprints, epics. "Drop the Hammer" decision. | 1-2 hours |
 | 6 | **HAMMER** | Code. Dark Factory mode. Ralph loop. Digital twin testing. | Days-weeks |
 | 7 | **TEMPER** | Harden. E2E, anti-regression, compliance check, deploy, ship. | 1-4 hrs/PR |
+| 8 | **RALPH LOOP** | Capture learnings. Graduate knowledge. Feed back to next epic. | 30-60 min |
 
 **"Drop the Hammer"** = the decision between PLAN and HAMMER. After this, you commit to building. Before it, everything is reversible.
 
@@ -98,6 +100,7 @@ See [LINEAGE.md](LINEAGE.md) for the full intellectual ancestry.
 
 ```
 the-foundry/
+├── LAUNCH.md                 # START HERE — session launch template for any project
 ├── CLAUDE.md                 # Project instructions for CC sessions
 ├── README.md                 # This file
 ├── CONSTITUTION.md           # 37 immutable articles (the law)
@@ -112,7 +115,8 @@ the-foundry/
 │   ├── 05-plan.md            # Blueprint (issues, sprints)
 │   ├── 06-hammer.md          # Build (Dark Factory, Ralph loop)
 │   ├── 07-temper.md          # Harden & ship (E2E, deploy)
-│   └── ratify.md             # The 8 Ratify gates (R1-R7 + R8 Honest)
+│   ├── 08-ralph-loop.md      # Capture learnings, feed back to next epic
+│   └── ratify.md             # The 9 Ratify gates (R1-R8 + R4b Auditor)
 ├── knowledge/
 │   ├── anti-regression.md    # Baseline capture spec
 │   ├── progress-txt.md       # Offensive knowledge lifecycle
@@ -122,8 +126,6 @@ the-foundry/
 │   └── STAGE-MAP.md          # Maps 7 phases ↔ 13 pipeline stages
 ├── bin/
 │   └── foundry.sh            # The pipeline runner (Bash 3.2 safe)
-├── templates/
-│   └── session-launch.md    # Launch template for any project
 └── research/
     ├── spec-first-2026.md    # Industry landscape research
     └── dtu-digital-twin.md   # Digital Twin Universe feasibility
