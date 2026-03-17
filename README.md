@@ -66,6 +66,7 @@ Each gate has a **phase-specific protocol** — different prompts, different che
 | R2 Vision | SCOUT | Soft | ≥ 6/10 |
 | R3 Spec | ASSAY | **Hard** | ≥ 8/10 + Independent Observer |
 | R4 Adversarial | CRUCIBLE | **Hard** | ≥ 8/10 + all domains scored |
+| **R4b Auditor** | **Ext. Auditor** | **Hard** | Different model, verdict YES/CONDITIONAL |
 | R5 Ready | PLAN | **Hard** | ≥ 8/10 + "Drop the Hammer" |
 | R6 Build | HAMMER | **Hard** | ≥ 8/10 + tests pass |
 | R7 Ship | TEMPER | **Hard** | ≥ 9/10 + evidence for every claim |
@@ -107,6 +108,7 @@ the-foundry/
 │   ├── 02-scout.md           # Prospect
 │   ├── 03-assay.md           # Smelt (specs, FSDs, admin docs)
 │   ├── 04-crucible.md        # Stress-test (NotebookLM debates)
+│   ├── 04b-external-auditor.md # Independent model review (circuit breaker)
 │   ├── 05-plan.md            # Blueprint (issues, sprints)
 │   ├── 06-hammer.md          # Build (Dark Factory, Ralph loop)
 │   ├── 07-temper.md          # Harden & ship (E2E, deploy)
@@ -120,6 +122,8 @@ the-foundry/
 │   └── STAGE-MAP.md          # Maps 7 phases ↔ 13 pipeline stages
 ├── bin/
 │   └── foundry.sh            # The pipeline runner (Bash 3.2 safe)
+├── templates/
+│   └── session-launch.md    # Launch template for any project
 └── research/
     ├── spec-first-2026.md    # Industry landscape research
     └── dtu-digital-twin.md   # Digital Twin Universe feasibility
