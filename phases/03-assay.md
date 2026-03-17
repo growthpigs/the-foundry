@@ -103,7 +103,7 @@ The cost of thinking is ALWAYS less than the cost of fixing.
 
 ## ⚖️ R3: Spec Gate
 
-See [ratify.md](ratify.md#r3-spec-gate-after-metallurgy)
+See [ratify.md](ratify.md#r3-spec-gate-after-assay)
 
 **Key question:** "Are the specs perfect? Could a stranger implement from this?"
 

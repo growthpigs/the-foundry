@@ -78,7 +78,7 @@ Any score below 7 → BLOCKED. Go back to ASSAY.
 
 ## ⚖️ R5: Ready Gate
 
-See [ratify.md](ratify.md#r5-build-gate-after-dark-factory)
+See [ratify.md](ratify.md#r5-ready-gate-after-plan)
 
 **Key question:** "Is every issue complete enough to build from?"
 

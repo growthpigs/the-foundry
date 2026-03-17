@@ -101,7 +101,7 @@ If a discovery recurs across 3+ features → graduates to error-patterns.md.
 
 ## ⚖️ R6: Build Gate
 
-See [ratify.md](ratify.md#r5-build-gate-after-dark-factory)
+See [ratify.md](ratify.md#r6-build-gate-after-hammer)
 
 **Key question:** "Did we build it right? In the right place?"
 

@@ -19,7 +19,7 @@ Not every gate needs the same rigor. Early phases (MINE, SCOUT) use soft gates â
 
 ## The 7 Gates
 
-### R1: Scope Gate (after Ideation)
+### R1: Scope Gate (after MINE)
 
 **Question:** "Is this worth building? Is it scoped right?"
 
@@ -40,7 +40,7 @@ think of improvements, and let's move forward. Feature: [NAME]
 
 ---
 
-### R2: Vision Gate (after Scout)
+### R2: Vision Gate (after SCOUT)
 
 **Question:** "Do we truly understand the problem space?"
 
@@ -61,7 +61,7 @@ What would you do now if you could do anything to make you happy with this visio
 
 ---
 
-### R3: Spec Gate (after Metallurgy)
+### R3: Spec Gate (after ASSAY)
 
 **Question:** "Are the specs perfect? Could a stranger implement from this?"
 
@@ -87,7 +87,7 @@ or four or five as well. There are probably more than one.
 
 ---
 
-### R4: Adversarial Gate (after Crucible)
+### R4: Adversarial Gate (after CRUCIBLE)
 
 **Question:** "Did the stress-test find what matters?"
 
@@ -112,7 +112,7 @@ for opportunities. Let them compete, share findings, and produce a joint report.
 
 ---
 
-### R5: Build Gate (after Dark Factory)
+### R5: Ready Gate (after PLAN)
 
 **Question:** "Did we build it right? In the right place?"
 
@@ -144,7 +144,7 @@ Verification requires Execution. File existence does not imply functionality.
 
 ---
 
-### R6: Harden Gate (after Forge)
+### R6: Build Gate (after HAMMER)
 
 **Question:** "Is it bulletproof? Will it stay working?"
 
@@ -185,7 +185,7 @@ Confidence Score (0-10): Rate your own work. If <9, fix before proceeding.
 
 ---
 
-### R7: Ship Gate (after Hammer)
+### R7: Ship Gate (after TEMPER)
 
 **Question:** "Prove it's done. Show me evidence."
 

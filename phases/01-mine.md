@@ -45,7 +45,7 @@ The firehose. Brain dump everything. No filtering, no judging, no prioritizing. 
 
 ## ⚖️ R1: Scope Gate
 
-See [ratify.md](ratify.md#r1-scope-gate-after-ideation)
+See [ratify.md](ratify.md#r1-scope-gate-after-mine)
 
 **Key question:** "Is this worth building? Is it scoped right?"
 
