@@ -23,7 +23,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL_DIR="$SCRIPT_DIR"
 GLOBAL_COMMANDS="$HOME/.claude/commands"
 SE_SKILLS="$HOME/.claude/skills/software-engineer/skills"
-DARK_FOUNDRY_DIR=".dark-foundry"
+DARK_FOUNDRY_DIR=".foundry"
 MAX_RETRIES_PER_STAGE=3
 MAX_RETRIES_TOTAL=50
 TOTAL_RETRIES=0
@@ -391,7 +391,7 @@ run_stage() {
   else
     echo "[WARN] Constitution file not found at: $CONSTITUTION_FILE"
     echo "[WARN] Pipeline will run WITHOUT immutable rules. This is dangerous."
-    echo "[WARN] Expected: ~/.claude/skills/DarkFoundry/CONSTITUTION.md"
+    echo "[WARN] Expected: growthpigs/the-foundry CONSTITUTION.md"
   fi
 
   # Layer 2: Prior progress (accumulated discoveries)
@@ -728,8 +728,19 @@ main() {
     completed=$((completed + 1))
 
     # Anti-regression comparison (after code, if baseline exists)
+    # CRITICAL: Return code MUST be checked — regressions BLOCK the pipeline (Article 8)
     if [ "$stage" = "code" ]; then
-      compare_anti_regression
+      if ! compare_anti_regression; then
+        echo ""
+        echo "╔════════════════════════════════════════════════╗"
+        echo "║  🚨 ANTI-REGRESSION BLOCK — PIPELINE HALTED   ║"
+        echo "║  Regressions detected. Fix before proceeding.  ║"
+        echo "║  See: .foundry/post-code-${ISSUE_NUM}.md       ║"
+        echo "╚════════════════════════════════════════════════╝"
+        echo ""
+        echo "[ANTI-REGRESSION] 🚨 PIPELINE HALTED — regressions detected" >> "$PROGRESS_FILE"
+        exit 1
+      fi
     fi
 
     # Gated checkpoints

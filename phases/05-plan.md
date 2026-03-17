@@ -3,7 +3,7 @@
 **Metaphor:** Before the blacksmith swings, they read the blueprint. Every cut, every bend, every joint is planned.
 
 **Duration:** 1-2 hours
-**Mode applicability:** GREENFIELD, FEATURE
+**Mode applicability:** GREENFIELD, FEATURE, REFACTOR, SECURE
 
 ---
 

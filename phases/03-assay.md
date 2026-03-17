@@ -3,7 +3,7 @@
 **Metaphor:** Assaying determines the composition and quality of the ore. What exactly do we have? How pure is it?
 
 **Duration:** 2-10 days (the most important phase)
-**Mode applicability:** GREENFIELD, FEATURE, SPEC
+**Mode applicability:** GREENFIELD, FEATURE, FIX (light), SPEC, REFACTOR, SECURE
 
 ---
 
