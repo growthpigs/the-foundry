@@ -121,10 +121,10 @@ the-foundry/
 ## Quick Start
 
 1. Every project gets a `CLAUDE.md` that references this methodology
-2. New project? Start at Phase 1 (Ideation) and work through sequentially
-3. Bug fix on existing project? Jump to Phase 5 (Dark Factory) in FIX mode
-4. Production emergency? Phase 5 in HOTFIX mode
-5. Architecture question? Phase 3-4 in SPEC mode (no code)
+2. New project? Start at Phase 1 (MINE) and work through sequentially in GREENFIELD mode
+3. Bug fix on existing project? Jump to Phase 6 (HAMMER) in FIX mode
+4. Production emergency? Phase 6 in HOTFIX mode
+5. Architecture question? Phase 3-4 (ASSAY + CRUCIBLE) in SPEC mode (no code)
 
 ## Core Philosophy
 
