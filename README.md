@@ -137,6 +137,38 @@ The Foundry exists because AI has made code generation cheap but hasn't made thi
 
 The Foundry is how you think before you build.
 
+### Why Spec-First, Not Code-First
+
+AI models are trained on billions of "just ship it" posts. Every instinct in the model screams: start coding, iterate, fix bugs as they come. **This instinct is wrong for AI-assisted development.**
+
+The evidence:
+
+- **LifeModo** spent 10 days in ASSAY+CRUCIBLE before writing a line of code. On day 9, they discovered the product's actual identity — the Life Admin Engine. If they'd started coding on day 2, they'd have built the wrong product and discovered it 3 months later.
+- **IT Concierge** ran a Crucible with 0% false positive rate — 16 real architectural issues found in specs, not in code. Every one would have been a week of debugging if found during implementation.
+- **The METR study** (2025) found experienced developers using AI tools WITHOUT structure took 19% LONGER than without AI at all. Spec-first is the structure that makes AI coding productive.
+
+### The Greenfield Principle
+
+> Build it right the first time. Greenfield is cheap. Brownfield is expensive.
+
+When you have perfect specs and zero existing code, AI generates clean, consistent implementations in hours. When you have imperfect specs and thousands of lines of existing code, AI generates conflicts, regressions, and integration bugs that take days to untangle.
+
+The Foundry pushes coding as late as possible — not because coding is hard, but because coding the WRONG THING is catastrophically expensive. Every hour in ASSAY saves 10 hours in HAMMER. Every Crucible finding saves a week of debugging.
+
+### The "How It Feels" Gap
+
+Specs tell you WHAT the system does. They cannot tell you HOW it FEELS. A Morning Brief specification can define the format, timing, and content — but it can't tell you whether it feels like "having an EA again" or like "another notification digest."
+
+This is the gap between ASSAY and HAMMER. The spec defines the contract. The prototype reveals the experience. The Foundry acknowledges this gap explicitly: **ASSAY produces correctness. HAMMER produces feeling. Both are required.**
+
+The answer is NOT to skip ASSAY and "just build it to see how it feels." The answer is to spec thoroughly (so you know WHAT to build), then prototype precisely (so you know HOW it feels), then iterate on the feeling (not the architecture).
+
+### When AI Pushes Back
+
+AI will tell you to start coding. It will say "we've spent a lot of time on docs." It will suggest "let's just prototype this." Recognize this as a training artifact, not engineering wisdom.
+
+The correct response: "The spec isn't done until I've found the soul of the product. LifeModo found it on day 9. IT Concierge found 16 bugs on day 3. The cost of thinking is always less than the cost of fixing. Keep speccing."
+
 ---
 
 **Created:** March 2026
