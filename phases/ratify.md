@@ -415,6 +415,39 @@ benefit from better documentation.
 
 ---
 
+## The Squeeze — Get the Last 20% (Mandatory at Every Gate)
+
+> "The first pass produces 80%. The squeeze produces the critical 20% that separates good from exceptional."
+
+After every Ratify gate passes — AFTER you think you're done — run the Squeeze. This is not optional. It is the single most important step in the entire Ratify system, because it catches what checklists cannot.
+
+**Why this exists:** During The Foundry's own creation, every Ratify gate "passed" — all content was present, all prompts mapped, all checklists complete. Then the human said "push that last 20%." That push found 6 real issues: two gates had swapped content, one gate was missing entirely, no gate checked budget, no gate verified the previous gate, and no gate checked FSD compliance. ALL of these were invisible to the checklist because the checklist asks "is content here?" not "is the RIGHT content here?"
+
+**The Squeeze Prompt:**
+```
+This seems done. The checklist passes. But I want the last 20%.
+
+What are you holding back? What would you fix if you had no constraints
+and unlimited time? What's the thing you noticed but didn't mention
+because it seemed minor? What would make this not just good but the
+BEST it could possibly be?
+
+Be ambitious, not safe. The 80% is already done. Now squeeze the lemon.
+Don't just confirm your own work — challenge it. What's in the wrong
+place? What's missing that nobody asked for? What would a competitor
+do better?
+```
+
+**When to run it:** After EVERY gate passes. Before declaring done. It takes 60 seconds and catches what hours of checklist-following misses.
+
+**The mechanism:** Permission + challenge + aspiration.
+- "Check your work" → produces confirmation (the AI confirms)
+- "Make it the BEST" → produces ambition (the AI reaches)
+
+The AI's natural path is least resistance. The Squeeze forces the opposite: maximum resistance against your own output.
+
+---
+
 ## The Meta-Rule
 
 > "Verification requires Execution. File existence does not imply functionality."
