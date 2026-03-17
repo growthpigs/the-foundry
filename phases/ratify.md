@@ -6,7 +6,14 @@
 
 Building and reviewing are different cognitive modes. You cannot do both simultaneously. The Ratify gate forces the switch: stop building, start scrutinizing.
 
-**Confidence threshold: ≥ 8/10 to proceed.** Below 8, you fix what's wrong before moving forward. You don't move forward on hope.
+### Gate Types
+
+| Type | Meaning | Threshold |
+|------|---------|-----------|
+| **Hard Gate** | Pipeline STOPS if criteria aren't met. Go back and fix. | Confidence ≥ 8/10 |
+| **Soft Gate** | Flag concerns, proceed with awareness. Document what's unresolved. | Confidence ≥ 6/10 |
+
+Not every gate needs the same rigor. Early phases (MINE, SCOUT) use soft gates — you're still exploring. Later phases (CRUCIBLE → PLAN, HAMMER → TEMPER) use hard gates — you're committing resources.
 
 ---
 

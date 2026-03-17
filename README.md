@@ -13,21 +13,38 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 ## The 7 Phases
 
 ```
-1. IDEATION        Mine the ore — capture raw ideas, firehose, brain dump
-   └── ⚖️ R1: Scope Gate
-2. SCOUT           Prospect — research, competitors, IDEO sprint, art direction
-   └── ⚖️ R2: Vision Gate
-3. METALLURGY      Smelt — thrash specs, FSDs, user stories, 18 admin docs
-   └── ⚖️ R3: Spec Gate
-4. CRUCIBLE        Stress-test — adversarial NotebookLM debates, per domain group
-   └── ⚖️ R4: Adversarial Gate
-5. DARK FACTORY    Autonomous build — digital twin, code drops, Ralph loop
-   └── ⚖️ R5: Build Gate
-6. FORGE           Harden — E2E testing, anti-regression, compliance check
-   └── ⚖️ R6: Harden Gate
-7. HAMMER          Ship — PR, deploy, blood test, CIC validation
-   └── ⚖️ R7: Ship Gate
+  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐
+  │ 1. MINE  │──►──│ 2. SCOUT │──►──│ 3. ASSAY │──►──│4.CRUCIBLE│
+  │ Capture  │  A  │ Research │  A  │  Thrash  │  A  │ Validate │
+  └──────────┘  T  └──────────┘  T  └──────────┘  T  └──────────┘
+                I                I                I        │
+                F                F                F        │ R
+                Y                Y                Y        │ A
+                                                           │ T
+  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐         │ I
+  │ 7. TEMPER│◄─◄──│ 6.HAMMER │◄─◄──│ 5. PLAN  │◄────────┘ F
+  │  Harden  │  A  │  Build   │  A  │Blueprint │           Y
+  └──────────┘  T  └──────────┘  T  └──────────┘
+       │        I                I
+       │        F                F
+       ▼        Y                Y
+  ┌──────────┐
+  │  RALPH   │  ← Learnings from TEMPER feed back to MINE
+  │  LOOP    │
+  └──────────┘
 ```
+
+| # | Stage | What Happens | Duration |
+|---|-------|-------------|----------|
+| 1 | **MINE** | Firehose capture. Raw ideas, links, transcripts. Zero filtering. | 30-60 min |
+| 2 | **SCOUT** | Research. Competitors, APIs, IDEO sprint, art direction. | 1-4 hours |
+| 3 | **ASSAY** | Thrash specs. 18 admin docs, FSDs, user stories + test stubs. | 2-10 days |
+| 4 | **CRUCIBLE** | Adversarial NotebookLM debates. Per domain group. Score ≥ 75%. | 1-2 hrs/group |
+| 5 | **PLAN** | GitHub issues, sprints, epics. "Drop the Hammer" decision. | 1-2 hours |
+| 6 | **HAMMER** | Code. Dark Factory mode. Ralph loop. Digital twin testing. | Days-weeks |
+| 7 | **TEMPER** | Harden. E2E, anti-regression, compliance check, deploy, ship. | 1-4 hrs/PR |
+
+**"Drop the Hammer"** = the decision between PLAN and HAMMER. After this, you commit to building. Before it, everything is reversible.
 
 ## Phase Classification
 
@@ -35,7 +52,7 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 |--------|--------|-----------------|
 | 1-4 | **Thrashing** | Thinking, speccing, debating. Zero code. |
 | 5-6 | **Coding** | Building and hardening. Code is a commodity. |
-| 7 | **Shipping** | Deploying and proving it works. |
+| 7 | **Shipping** | Hardening, deploying, and proving it works. |
 
 ## The Ratify System
 
@@ -43,7 +60,17 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 
 Each gate has a **phase-specific protocol** — different prompts, different checks, different cognitive mode. R1 asks "is this worth building?" R7 asks "prove it's done with evidence."
 
-A Ratify gate requires **confidence ≥ 8/10** to proceed. Below 8, you fix what's wrong. You don't move forward on hope.
+| Gate | After | Type | Threshold |
+|------|-------|------|-----------|
+| R1 Scope | MINE | Soft | ≥ 6/10 |
+| R2 Vision | SCOUT | Soft | ≥ 6/10 |
+| R3 Spec | ASSAY | **Hard** | ≥ 8/10 + Independent Observer |
+| R4 Adversarial | CRUCIBLE | **Hard** | ≥ 8/10 + all domains scored |
+| R5 Ready | PLAN | **Hard** | ≥ 8/10 + "Drop the Hammer" |
+| R6 Build | HAMMER | **Hard** | ≥ 8/10 + tests pass |
+| R7 Ship | TEMPER | **Hard** | ≥ 9/10 + evidence for every claim |
+
+**Hard gate** = pipeline STOPS. Go back and fix. **Soft gate** = flag concerns, proceed with awareness.
 
 ## Industry Lineage
 

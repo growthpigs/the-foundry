@@ -48,13 +48,34 @@ Every project creates 18 living documents in a GitHub Admin milestone:
 17. Test Strategy
 18. Work Ledger (DU tracking)
 
-#### Step 2: FSDs (Functional Specification Documents)
+#### Step 2: FSDs + Test Stubs (VSDD Pattern)
 
-After Admin docs are substantially complete, write FSDs per feature/component:
+After Admin docs are substantially complete, write FSDs per feature/component — **and write test stubs simultaneously.**
+
+This is the VSDD (Verified Spec-Driven Development) pattern: specs and tests are written together, not sequentially. The test stubs define what "done" looks like in executable form. They don't need to pass yet — they're the contract.
+
 - One FSD per logical component
+- Each FSD includes test stubs (acceptance criteria as code)
 - Independent Observer Score ≥ 8/10
 - "Could a competent developer who's never seen this project implement from this FSD alone?"
 - If no → the FSD isn't done
+
+```
+// Example test stub written during ASSAY (not HAMMER)
+describe('Ticket status transitions', () => {
+  it('should allow NEW → ASSIGNED when technician is available', () => {
+    // Stub — implementation comes in HAMMER phase
+    expect(true).toBe(false); // Deliberately failing until implemented
+  });
+
+  it('should BLOCK ASSIGNED → COMPLETED without work order photos', () => {
+    // Failure definition from User Story US-017
+    expect(true).toBe(false);
+  });
+});
+```
+
+**Why test stubs in ASSAY, not HAMMER?** Because writing the test forces you to think about edge cases, failure modes, and acceptance criteria WITH PRECISION. Prose specs hide ambiguity. Code specs expose it.
 
 #### Step 3: Thrash
 
