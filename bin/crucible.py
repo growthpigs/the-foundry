@@ -165,27 +165,26 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
             audio_path = None
 
         # ── STEP 7: Transcribe audio (Rule 7) ──
-        transcript_path = f".foundry/crucible-audio-{domain_slug}.txt"
+        transcript_path = f".foundry/crucible-audio-{domain_slug}-transcript.md"
         transcript_content = None
         if audio_path and os.path.exists(audio_path):
             print(f"\n6. Transcribing audio (Rule 7)...")
             try:
-                subprocess.run(
-                    ["whisper", audio_path, "--output_format", "txt",
-                     "--output_dir", ".foundry/", "--model", "base"],
-                    capture_output=True, timeout=600
-                )
-                if os.path.exists(transcript_path):
-                    with open(transcript_path) as f:
-                        transcript_content = f.read()
-                    print(f"   ✅ Transcript: {transcript_path} ({len(transcript_content)} chars)")
-                else:
-                    print("   ⚠️  Whisper ran but no output file found")
-            except FileNotFoundError:
+                import whisper as whisper_module
+                model = whisper_module.load_model("base")
+                result = model.transcribe(audio_path)
+                transcript_content = result["text"]
+                with open(transcript_path, "w") as tf:
+                    tf.write(f"# Audio Transcript: {domain}\n\n")
+                    tf.write(f"**Source:** `{audio_path}`\n")
+                    tf.write(f"**Model:** whisper-base\n")
+                    tf.write(f"**Date:** {timestamp}\n\n---\n\n")
+                    tf.write(transcript_content)
+                print(f"   ✅ Transcript: {transcript_path} ({len(transcript_content)} chars)")
+            except ImportError:
                 print("   ⚠️  Whisper not installed. Install: pip install openai-whisper")
-                print("   Transcript must be created manually.")
-            except subprocess.TimeoutExpired:
-                print("   ⚠️  Whisper timed out after 10 minutes")
+            except Exception as e:
+                print(f"   ⚠️  Transcription failed: {e}")
         else:
             print("\n6. ⚠️  No audio file to transcribe")
 
