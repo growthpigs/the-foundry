@@ -152,7 +152,7 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
         print(f"   ✅ Audio generated: {final_status.status}")
 
         # ── STEP 6: Download audio ──
-        audio_path = f".foundry/crucible-audio-{domain_slug}.wav"
+        audio_path = f".foundry/crucible-audio-{domain_slug}.mp4"
         try:
             downloaded = await client.artifacts.download_audio(
                 notebook_id=notebook_id,
