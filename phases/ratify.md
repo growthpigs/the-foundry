@@ -117,8 +117,9 @@ What would you do now if you could do anything to make you happy with this visio
 3. Cross-reference check: Do the FSDs agree with the ADRs? Do the user stories match the data model? Do the admin docs contradict each other?
 4. Failure definitions: Every user story has acceptance criteria AND failure definitions?
 5. Assumption Table: Are all assumptions below 70% spiked? Below 50% flagged for Crucible?
-6. Buyer Persona pressure test: Has every FSD been read through each persona's eyes?
-7. Budget check: Are we on track with DU estimates? Does the Work Ledger look realistic?
+6. Structured Persona Walkthrough: Has every primary persona's workday been scripted and traced through User Stories, FSDs, and CRUD matrices? (See ASSAY Step 4)
+7. CRUD Coverage Matrix: Does every FSD include a CRUD matrix with explicit coverage or justified exclusions for every entity? (See ASSAY Step 2 — CRUD Coverage Matrix sub-section)
+8. Budget check: Are we on track with DU estimates? Does the Work Ledger look realistic?
 
 **Prompt Pattern:**
 ```
@@ -142,9 +143,11 @@ of full stack development experience. You can do this using first principles.
 - [ ] Independent Observer Score ≥ 8/10 on each FSD
 - [ ] Zero contradictions between Admin docs
 - [ ] Assumption Table produced — all <70% spiked
-- [ ] Buyer Persona pressure test completed on every FSD
+- [ ] Structured Persona Walkthrough completed for each primary persona (max 3) — Proof Report produced (`.foundry/proof-report.md`)
+- [ ] CRUD Coverage Matrix in every FSD — all entities have explicit coverage, all exclusions justified
+- [ ] Zero empty CRUD cells (every operation is ✅, ⚠️, or ❌ with justification)
 - [ ] Correctness confidence ≥ 8/10
-- [ ] UX/Intent confidence ≥ 7/10 (through Buyer Persona lens)
+- [ ] UX/Intent confidence ≥ 7/10 (through Buyer Persona lens — both walkthrough AND abstract questions)
 - [ ] Work Ledger budget check — are we on track?
 
 ---
@@ -336,6 +339,8 @@ If anything fails: Stop. Tell me what failed. Fix it. Run the check again.
 - [ ] Every claim backed by executed evidence
 - [ ] E2E tests passing in CI
 - [ ] Hardening checklist complete
+- [ ] Persona-Level Code Tracing completed (part of Step 1 Compliance Check; runs in GREENFIELD/FEATURE/SECURE modes; FIX mode if CRUD lifecycle touched) — FSD Gap Report produced (`.foundry/gap-report.md`)
+- [ ] All P0 gaps from FSD Gap Report addressed OR tracked as known debt with GitHub issue numbers
 - [ ] ICE Report produced
 - [ ] Git status clean
 - [ ] Work Ledger updated with actual DUs

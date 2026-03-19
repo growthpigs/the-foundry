@@ -60,6 +60,38 @@ This is the VSDD (Verified Spec-Driven Development) pattern: specs and tests are
 - "Could a competent developer who's never seen this project implement from this FSD alone?"
 - If no → the FSD isn't done
 
+##### CRUD Coverage Matrix (Mandatory per FSD)
+
+**Every FSD MUST include a CRUD Coverage Matrix for every entity it specifies.** This forces explicit decisions about which operations exist — and which are intentionally excluded.
+
+**Born from:** IT Concierge FSD Gap Report (March 2026). 6 of 13 P0 blocking gaps were missing CRUD operations (no edit button, no deactivate flow, no delete). The FSDs were "complete" but never explicitly addressed the full lifecycle. The hard engineering was built; the everyday buttons were not.
+
+**Format (mandatory in every FSD):**
+
+```markdown
+### CRUD Coverage Matrix
+
+| Entity | Create | Read | Update | Deactivate | Delete | Notes |
+|--------|--------|------|--------|------------|--------|-------|
+| Client | ✅ Form + validation | ✅ List + detail | ✅ Edit form (all fields except ID) | ✅ Soft-delete with active ticket guard | ❌ N/A — deactivate only | SIRET validated on create AND edit |
+| Site | ✅ Nested under client | ✅ List + detail | ✅ Edit form | ✅ Blocked if active tickets | ❌ N/A | Emergency contact required |
+| Contact | ✅ Linked to site | ✅ Inline on site detail | ✅ Edit inline | ✅ Soft-delete (is_active) | ❌ N/A | Phone/email must be clickable (tel:/mailto:) |
+| Audit Log | ✅ System-generated | ✅ Admin read-only | ❌ Immutable | ❌ N/A — compliance | ❌ N/A — compliance | Intentionally no U/D — audit trail integrity |
+```
+
+**Rules:**
+- ✅ = Specified with implementation detail (form type, validation, guards)
+- ⚠️ = Partially specified — detail required before R3 (e.g., "edit mode mentioned but editable fields not listed")
+- ❌ = Intentionally excluded with justification
+- Empty cell = **SPEC GAP — must be resolved before R3 gate**
+- Every ❌ must have a "Notes" justification (e.g., "compliance", "system-generated only")
+- Every ⚠️ must be resolved to ✅ or ❌ before R3 gate passes
+- Phone numbers and email addresses on any entity MUST be specified as clickable (`tel:`, `mailto:`)
+
+**What this catches:** Missing edit flows, missing deactivation with guard conditions, missing soft-delete columns, unclickable contact info — the entire class of "the hard engineering is done but the everyday buttons are missing" gaps.
+
+**Edge case:** If an entity has no applicable CRUD operations (e.g., a read-only reference table populated externally), question whether it belongs in this FSD or should be documented as an external dependency in the Dependency & Risk Map.
+
 ```
 // Example test stub written during ASSAY (not HAMMER)
 describe('Ticket status transitions', () => {
@@ -97,19 +129,93 @@ Before thrashing, produce an **Assumption Table** — every assumption the specs
 
 **What is a technical spike?** Spin up the real tool. Test the actual API. Run the query. The DTU (Digital Twin Universe) exists for this — verify assumptions against real services, not documentation.
 
-#### Step 4: Buyer Persona Pressure Test
+#### Step 4: Buyer Persona Pressure Test (Structured Walkthrough)
 
-**Every FSD must be read through the eyes of each Buyer Persona.** Not in the abstract — specifically.
+**Every FSD must be read through the eyes of each Buyer Persona — not with abstract questions, but by scripting their actual workday.**
 
-Load the Buyer Persona document and for each FSD, ask:
+This is a trace-level walkthrough, not an opinion-level review. The difference matters: opinion-level asks "How does Lino experience this?" Trace-level scripts Lino's Monday morning and verifies every action has a User Story, an FSD section, and a CRUD operation.
+
+**Born from:** IT Concierge FSD Gap Report (March 2026). The original abstract questions ("How does Lino experience this?") passed R3 with UX/Intent ≥ 7/10. Then the code-level audit found 49 gaps — 13 of them P0 blocking. The abstract questions missed what the structured walkthrough found.
+
+##### The Structured Walkthrough Protocol
+
+**Step 4a: Script the workday** (1 per primary persona, max 3 personas)
+
+For each primary persona, script a complete workday in chronological order. Each line is one action the persona takes:
+
+```markdown
+### Persona Walkthrough: Lino Lazo (Owner/Dispatcher)
+
+| Time | Action | US Reference | FSD/FR Reference | CRUD Op | Status |
+|------|--------|-------------|------------------|---------|--------|
+| 07:00 | Open dashboard, check KPIs | US-025 | FSD-010 FR-001 | Read | ✅ Specified |
+| 07:00 | Click KPI "Open: 5" to filter to those tickets | US-025 | FSD-010 FR-001 | Read (filtered) | ❌ NOT SPECIFIED |
+| 07:15 | Client calls to change billing address | US-003 | FSD-005 FR-003 | Update (Client) | ⚠️ "Edit mode" mentioned but fields not listed |
+| 07:30 | Create new ticket for emergency call | US-008 | FSD-007 FR-001 | Create (Ticket) | ✅ Specified |
+| 07:35 | Assign ticket to wrong technician, need to reassign | US-009 | FSD-007 FR-003 | Update (Ticket) | ❌ Only title/description editable |
+| 08:00 | Add materials used on completed job | US-017 | — | Create (Ticket Materials) | ❌ NO FSD EXISTS |
+| ... | ... | ... | ... | ... | ... |
+```
+
+**Step 4b: Score the walkthrough**
+
+| Status | Meaning | Action |
+|--------|---------|--------|
+| ✅ Specified | FSD covers this action completely | None |
+| ⚠️ Ambiguous | FSD mentions it but lacks detail | Clarify in FSD before R3 |
+| ❌ NOT SPECIFIED | No FSD section covers this action | Write missing FSD section or add User Story |
+| ❌ NO FSD EXISTS | Entire feature domain has no FSD | Flag as spec gap — may need new FSD |
+
+**Step 4c: Produce Proof Report**
+
+The walkthrough produces a **Proof Report** — a structured gap list that becomes an input to the Crucible (Phase 4) and a checklist for the code-level Compliance Check (Phase 7).
+
+```markdown
+## Proof Report — [Project Name]
+
+### Coverage Summary
+| Persona | Actions Scripted | ✅ Covered | ⚠️ Ambiguous | ❌ Missing |
+|---------|-----------------|-----------|-------------|-----------|
+| Lino (Dispatcher) | 25 | 18 | 3 | 4 |
+| Marc (Technician) | 15 | 12 | 1 | 2 |
+
+### Gaps Found (to resolve before R3)
+1. **[GAP-ID]**: [Action] — [What's missing] — [Which FSD to update]
+2. ...
+
+### CRUD Gaps Found (cross-ref with CRUD Coverage Matrix)
+1. **[Entity]**: [Operation] not specified — [Impact on persona's workflow]
+2. ...
+```
+
+**Artifact location:** The Proof Report is saved to `.foundry/proof-report.md` in the project repo and referenced in progress.txt as `[PROOF] report=.foundry/proof-report.md`.
+
+##### Mode Applicability
+
+| Mode | Runs Walkthrough? | Scope |
+|------|-------------------|-------|
+| GREENFIELD | ✅ Full (all primary personas) | All FSDs |
+| FEATURE | ✅ Scoped (personas affected by this feature only) | Feature FSDs only |
+| FIX | ⏭ Skip | Bug fix — no new specs |
+| HOTFIX | ⏭ Skip | Emergency — skips ASSAY entirely |
+| SPEC | ✅ Full | Architecture exploration |
+| REFACTOR | ⏭ Skip | Behavior-preserving — no spec changes |
+| SECURE | ✅ Security persona only | Security-relevant FSDs |
+
+##### Scaling Rule
+
+- Max 3 personas per walkthrough (pick the 2-3 who use the system most)
+- Max 30 actions per persona (focus on the top daily tasks, not edge cases)
+- Estimated cost: 1-2 DUs per persona (spec-level, no code reading)
+
+##### Original Abstract Questions (Still Valuable — Run After Walkthrough)
+
+After the structured walkthrough, also ask the original abstract questions — they catch emotional/experience gaps that trace-level walks miss:
+
 - "How does **[Persona Name]** experience this feature?"
 - "Does this feel like [the promise] or like [generic software]?"
 - "What would **[Persona Name]** complain about?"
 - "Would **[Persona Name]** even use this, or is it for us?"
-
-**Example (LifeModo):**
-- Jean-Marc (retired CEO): "Does the Morning Brief feel like having an EA again, or like a notification digest?"
-- David (expat): "Does the obligation tracker feel like a concierge helping me navigate French bureaucracy, or like a to-do app?"
 
 The Buyer Persona document must be a mandatory input to every Crucible session (Phase 4) as one of the minimum 3 sources.
 
@@ -121,13 +227,14 @@ The spec is not done on the first pass. Thrash it:
 - Ask "what if the opposite were true?"
 - Find gaps: what did we NOT specify?
 - Run failure scenarios: what happens when things go wrong?
-- **Read every FSD through each Buyer Persona's eyes**
+- **Run the abstract Buyer Persona questions from Step 4** (if not yet done — this is the emotional/experience pass, not a repeat of the trace walkthrough)
 
 ### Outputs
 - 18 Admin Documents (GitHub Issues — gold standard)
 - FSDs per component
 - **Assumption Table** (with confidence scores and spike results)
-- **Buyer Persona pressure test notes** (per FSD)
+- **Proof Report** (`.foundry/proof-report.md`) — structured persona walkthrough gaps
+- **CRUD Coverage Matrices** (embedded in each FSD)
 - Activity Log entries (thinking captured)
 - Work Ledger entries (DUs logged)
 - Sources list for Crucible (Phase 4)
@@ -154,6 +261,7 @@ See [ratify.md](ratify.md#r3-spec-gate-after-assay)
 - [ ] Zero contradictions between Admin docs
 - [ ] Glossary has every term defined
 - [ ] **Assumption Table produced** — all assumptions below 70% have been spiked
-- [ ] **Buyer Persona pressure test completed** on every FSD
+- [ ] **Structured Persona Walkthrough completed** — Proof Report produced (`.foundry/proof-report.md`)
+- [ ] **CRUD Coverage Matrix** in every FSD — all entities covered, all exclusions justified
 - [ ] **Correctness confidence ≥ 8/10**
 - [ ] **UX/Intent confidence ≥ 7/10** (judged through Buyer Persona lens — would the target user FEEL this is what was promised?)

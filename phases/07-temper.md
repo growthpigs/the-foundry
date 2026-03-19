@@ -31,6 +31,56 @@ Compare the implementation against:
 - The acceptance criteria — does it pass?
 - The failure definitions — did we avoid what we said we'd avoid?
 
+##### Persona-Level Code Tracing (Mandatory for UI-touching PRs)
+
+**Born from:** IT Concierge FSD Gap Report (March 2026). Point-by-point FSD compliance said "yes, we built what was specified." But Lino couldn't edit a client, track materials, or export an invoice. The FSD compliance check validates specs vs code. Persona tracing validates that the user can actually run their business.
+
+**Protocol:** For each primary persona (max 3), trace their critical daily path through actual code:
+
+```
+Persona: Lino Lazo (Owner/Dispatcher)
+Action: Edit client billing address
+Path: /clients/[id] page → ClientDetailPage component → [MISSING: no edit button]
+      → ClientForm accepts client prop for edit mode → [MISSING: nothing triggers edit mode]
+      → updateClient() server action → [EXISTS but unreachable from UI]
+Verdict: ❌ GAP — server action exists, UI trigger missing
+```
+
+For each action, trace: **UI Component → Event Handler → Server Action → Database Operation**. A broken link anywhere in that chain = a gap.
+
+**Input:** Use the Proof Report from ASSAY (`.foundry/proof-report.md`) as the checklist. If ASSAY was run with the Structured Walkthrough, the Proof Report already lists every action to verify. If no Proof Report exists (FIX mode, older projects), trace the persona's top 10 daily tasks.
+
+**Output:** FSD Gap Report — prioritized P0/P1/P2/P3, with exact file paths, US references, FR references.
+
+```markdown
+## FSD Gap Report — [Project Name]
+
+### Summary
+| Priority | Count | Impact |
+|----------|-------|--------|
+| P0 — Blocking | X | Cannot run business |
+| P1 — High Value | Y | Daily ops impacted |
+| P2 — Important | Z | Feature completeness |
+
+### Gaps
+- **GAP-01**: [Action] — [Component path] → [Server action] → [DB] — [What's missing] (US-NNN, FSD-NNN FR-NNN)
+- ...
+```
+
+**Artifact location:** `.foundry/gap-report.md` — referenced in progress.txt as `[GAP-REPORT] report=.foundry/gap-report.md`
+
+##### Mode Applicability for Persona Tracing
+
+| Mode | Runs Persona Tracing? | Scope |
+|------|----------------------|-------|
+| GREENFIELD | ✅ Full (all personas, all features) | All FSDs |
+| FEATURE | ✅ Scoped (affected personas, affected features) | Feature FSDs only |
+| FIX | ⏭ Skip (unless fix touches CRUD lifecycle) | — |
+| HOTFIX | ⏭ Skip | — |
+| SPEC | ⏭ Skip (no code to trace) | — |
+| REFACTOR | ⏭ Skip (behavior-preserving) | — |
+| SECURE | ✅ Security-relevant paths only | Auth/RLS paths |
+
 #### Step 2: E2E Testing
 
 Every feature PR must include E2E test assertions:

@@ -18,6 +18,20 @@ Not every task needs every phase. Modes define which phases to run.
 
 ✅ = Run | ⏭ = Skip | ✅✅ = Extra rigor | ✅ (quick) = Abbreviated version
 
+### Sub-Step Applicability (ASSAY + TEMPER Enhancements)
+
+| Mode | CRUD Matrix (ASSAY) | Persona Walkthrough (ASSAY) | Persona Code Tracing (TEMPER) |
+|------|--------------------|-----------------------------|-------------------------------|
+| **GREENFIELD** | ✅ All entities | ✅ All personas (max 3) | ✅ All personas |
+| **FEATURE** | ✅ Feature entities | ✅ Affected personas only | ✅ Affected personas only |
+| **FIX** | ⏭ Skip | ⏭ Skip | ⏭ Skip (unless CRUD lifecycle touched) |
+| **HOTFIX** | ⏭ Skip (ASSAY skipped) | ⏭ Skip | ⏭ Skip |
+| **SPEC** | ✅ All entities | ✅ All personas (max 3) | ⏭ Skip (no code) |
+| **REFACTOR** | ⏭ Skip (behavior unchanged) | ⏭ Skip | ⏭ Skip |
+| **SECURE** | ✅ Security entities | ✅ Security persona only | ✅ Auth/RLS paths only |
+
+**Born from:** IT Concierge FSD Gap Report (March 2026). These sub-steps catch missing CRUD operations and UI dead-ends at spec time (ASSAY) and verify them at code time (TEMPER). See `phases/03-assay.md` Step 2 — CRUD Coverage Matrix sub-section, and Step 4 — Structured Walkthrough, and `phases/07-temper.md` Step 1 — Persona-Level Code Tracing sub-section.
+
 ---
 
 ## Mode Descriptions
