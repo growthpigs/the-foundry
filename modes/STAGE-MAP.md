@@ -82,7 +82,7 @@ See [MODES.md](MODES.md) for which modes skip which phases. Within a phase, the 
 |------|---------------|
 | GREENFIELD | All stages, standard variants |
 | FEATURE | Skips `explore`. Uses `red-team-quick` instead of full `red-team` |
-| FIX | Skips `issue-review`, `fsd`, `pr-review`, `compliance` |
+| FIX | Skips `issue-review`, `fsd`, `pr-review`. Skips `compliance` unless fix touches CRUD lifecycle (in which case persona code tracing runs). |
 | HOTFIX | Only `code` → `validate-fast` → `pr` → `follow-up` |
 | REFACTOR | Uses `anti-regression-critical` (captures test names + file checksums) |
 | SECURE | Uses `pr-restricted` (private branch, embargo) |

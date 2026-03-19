@@ -261,7 +261,9 @@ See [ratify.md](ratify.md#r3-spec-gate-after-assay)
 - [ ] Zero contradictions between Admin docs
 - [ ] Glossary has every term defined
 - [ ] **Assumption Table produced** — all assumptions below 70% have been spiked
-- [ ] **Structured Persona Walkthrough completed** — Proof Report produced (`.foundry/proof-report.md`)
-- [ ] **CRUD Coverage Matrix** in every FSD — all entities covered, all exclusions justified
+- [ ] **Structured Persona Walkthrough completed** for each primary persona (max 3) — Proof Report produced (`.foundry/proof-report.md`)
+- [ ] **CRUD Coverage Matrix** in every FSD — all entities have explicit coverage, all exclusions justified
+- [ ] **Zero empty CRUD cells** (every operation is ✅, ⚠️, or ❌ with justification)
 - [ ] **Correctness confidence ≥ 8/10**
-- [ ] **UX/Intent confidence ≥ 7/10** (judged through Buyer Persona lens — would the target user FEEL this is what was promised?)
+- [ ] **UX/Intent confidence ≥ 7/10** (through Buyer Persona lens — both walkthrough AND abstract questions)
+- [ ] **Work Ledger budget check** — are we on track?

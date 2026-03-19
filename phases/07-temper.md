@@ -162,6 +162,8 @@ See [ratify.md](ratify.md#r7-ship-gate-after-temper)
 - [ ] CIC Validation Report: SAFE TO MERGE (if UI changes)
 - [ ] Anti-regression: no regressions
 - [ ] Compliance Check: implementation matches FSD
+- [ ] Persona-Level Code Tracing completed (GREENFIELD/FEATURE/SECURE; FIX if CRUD lifecycle touched) — FSD Gap Report produced (`.foundry/gap-report.md`)
+- [ ] All P0 gaps from FSD Gap Report addressed OR tracked as known debt with GitHub issue numbers
 - [ ] Production deploy verified (if applicable)
 - [ ] Activity Log updated
 - [ ] Work Ledger updated

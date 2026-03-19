@@ -40,12 +40,12 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 | 0 | **LAUNCH** | Load methodology, load project, pick mode, determine starting phase. | 5 min |
 | 1 | **MINE** | Firehose capture. Raw ideas, links, transcripts. Zero filtering. | 30-60 min |
 | 2 | **SCOUT** | Research. Competitors, APIs, IDEO sprint. **Deployment pipeline setup.** | 1-4 hours |
-| 3 | **ASSAY** | Thrash specs. 18 admin docs, FSDs, user stories + test stubs. Assumption Table. | 2-10 days |
+| 3 | **ASSAY** | Thrash specs. 18 admin docs, FSDs with CRUD matrices, user stories + test stubs. Assumption Table. Persona walkthrough. | 2-10 days |
 | 4 | **CRUCIBLE** | Adversarial NotebookLM debates. Per domain group. Score ≥ 75%. | 1-2 hrs/group |
 | 4b | **EXT. AUDITOR** | Independent model review (Gemini/GPT). Circuit breaker before code. | 30-60 min |
 | 5 | **PLAN** | GitHub issues, sprints, epics. "Drop the Hammer" decision. | 1-2 hours |
 | 6 | **HAMMER** | Code. Dark Factory mode. Ralph loop. Digital twin testing. | Days-weeks |
-| 7 | **TEMPER** | Harden. E2E, anti-regression, compliance check, deploy, ship. | 1-4 hrs/PR |
+| 7 | **TEMPER** | Harden. E2E, anti-regression, compliance check + persona code tracing, deploy, ship. | 1-4 hrs/PR |
 | 8 | **RALPH LOOP** | Capture learnings. Graduate knowledge. Feed back to next epic. | 30-60 min |
 | — | **POST-FOUNDRY** | Bug triage, issue intake (60s), maintenance sprints, client feedback loop. | Ongoing |
 

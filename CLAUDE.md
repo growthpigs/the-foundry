@@ -22,7 +22,7 @@ PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → EXT.AUDITOR
 | `phases/00-launch.md` | Phase 0: run `bin/launch.sh` to generate session prompt |
 | `phases/01-mine.md` | Phase 1: firehose capture |
 | `phases/02-scout.md` | Phase 2: research + deployment pipeline setup |
-| `phases/03-assay.md` | Phase 3: spec (18 admin docs, FSDs, Assumption Table, Buyer Persona test) |
+| `phases/03-assay.md` | Phase 3: spec (18 admin docs, FSDs with CRUD matrices, Assumption Table, Persona walkthrough) |
 | `phases/04-crucible.md` | Phase 4: adversarial NotebookLM debates per domain |
 | `phases/04b-external-auditor.md` | Phase 4b: independent model review (Gemini/GPT circuit breaker) |
 | `phases/05-plan.md` | Phase 5: GitHub issues, sprints, "Drop the Hammer" |
