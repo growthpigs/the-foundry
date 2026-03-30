@@ -54,44 +54,139 @@ scaffold_project() {
 
   mkdir -p docs/05-planning features .foundry
 
-  # CLAUDE.md
+  # CLAUDE.md — Industry best-practice template
+  # Follows Claude Code conventions: WHAT / WHY / HOW structure
+  # Progressive disclosure: essentials here, depth in linked docs
+  # Target: ~150 lines (under 200 — the proven sweet spot)
   cat > CLAUDE.md << CLAUDEMD
-# ${name} — Project Instructions
+# ${name}
 
-**Repo:** ${repo}
-**Vision:** ${vision}
-**Created:** $(date +%Y-%m-%d) via The Foundry scaffold
+**Repo:** \`${repo}\`
+**Created:** $(date +%Y-%m-%d)
 
 ## What This Is
 
 ${vision}
 
-## Key Files
+<!-- FILL IN: 2-3 sentences expanding on the vision. What problem does this solve? Who is it for? -->
 
-| File | Purpose |
-|------|---------|
-| \`CLAUDE.md\` | This file — project identity and AI context |
-| \`HANDOVER.md\` | Live working context (updated continuously during work) |
-| \`features/\` | Living component docs (one file per domain) |
-| \`docs/05-planning/\` | Plans and roadmaps |
-| \`.foundry/\` | Pipeline runtime artifacts |
+## Tech Stack
 
-## Rules
+<!-- FILL IN: List your actual tech stack. Examples below — delete what doesn't apply. -->
 
-1. **GitHub is the single source of truth.** Issues, milestones, project boards.
-2. **HANDOVER.md is ephemeral.** Updated during work, cleared when task completes.
-3. **features/ docs are living.** They grow and evolve over the project lifetime.
-4. **No 10-folder docs/ sprawl.** Only \`docs/05-planning/\` for Claude Code plans.
-5. **Every piece of work gets a GitHub issue.** No work without a tracker entry.
+| Layer | Technology |
+|-------|-----------|
+| Frontend | <!-- React / Next.js / Vue / etc. --> |
+| Backend | <!-- Node.js / Python / Go / etc. --> |
+| Database | <!-- Supabase / PostgreSQL / etc. --> |
+| Hosting | <!-- Vercel / Railway / Render / etc. --> |
+| Auth | <!-- Supabase Auth / NextAuth / etc. --> |
+| CI/CD | <!-- GitHub Actions / etc. --> |
+
+## Project Structure
+
+<!-- FILL IN after initial code is written. Map the key directories. -->
+
+\`\`\`
+${name}/
+├── CLAUDE.md              ← This file (project identity for AI)
+├── HANDOVER.md            ← Live working context (updated during work)
+├── features/              ← Living component docs (one per domain)
+├── docs/05-planning/      ← Plans (Claude Code reads this for plans)
+├── .foundry/              ← Pipeline runtime artifacts
+└── src/                   ← Source code
+\`\`\`
+
+## Conventions
+
+<!-- FILL IN: Coding conventions specific to THIS project. -->
+<!-- Only include what the AI can't infer from the code itself. -->
+<!-- Examples: -->
+
+- **Naming:** <!-- kebab-case files, PascalCase components, camelCase functions -->
+- **Imports:** <!-- absolute imports from src/, barrel exports, etc. -->
+- **Testing:** <!-- Jest / Vitest / Playwright, where tests live -->
+- **Git:** <!-- Branch naming: feature/X, fix/X. Conventional commits. -->
+
+## Key Decisions
+
+<!-- Record WHY decisions were made, not just WHAT. -->
+<!-- These are the things a new developer (or AI) needs to know. -->
+
+| Decision | Why | Date |
+|----------|-----|------|
+| <!-- e.g., "Supabase over Firebase" --> | <!-- e.g., "RLS, PostgreSQL, self-hostable" --> | <!-- date --> |
+
+## GitHub Is the Source of Truth
+
+All project management lives in GitHub:
+
+| What | Where |
+|------|-------|
+| Admin Documents (18) | GitHub issues in \`Admin Documents\` milestone |
+| Activity Log | Pinned issue — updated every session |
+| Work Ledger | Pinned issue — DU tracking |
+| Phase Master Index | Pinned issue — roadmap and priorities |
+| Feature specs | GitHub issues with \`spec\` label |
+| Bug reports | GitHub issues with \`bug\` label |
+
+**Quick access:**
+\`\`\`bash
+gh issue list --repo ${repo}                    # All open issues
+gh issue list --repo ${repo} --milestone "Admin Documents"  # Admin docs
+gh issue list --repo ${repo} --label "epic"     # Epics
+\`\`\`
+
+## Working with This Project
+
+### Starting a Session
+1. Read this file (you're doing it now)
+2. Read \`HANDOVER.md\` for current context
+3. Check \`gh issue list\` for active work
+4. Check \`features/\` for component knowledge
+
+### During Work
+- **HANDOVER.md** — update continuously (not at session end)
+- **features/*.md** — update when a component changes
+- **GitHub issues** — comment with progress, close when done
+
+### Features Documentation
+
+\`features/\` contains living docs — one file per component/domain:
+
+\`\`\`
+features/
+├── AUTH.md           ← Authentication system
+├── BILLING.md        ← Payment/subscription logic
+└── NOTIFICATIONS.md  ← Push/email notification system
+\`\`\`
+
+**Create a feature doc when:**
+- A component has its own credentials or external service
+- A subsystem needs ongoing tracking
+- Multiple sessions reference the same domain
+
+**Format:** Status, Overview, Current State, Architecture, Known Issues
 
 ## Methodology
 
-This project uses **The Software Foundry** (\`growthpigs/the-foundry\`).
-Pipeline: MINE → SCOUT → ASSAY → CRUCIBLE → PLAN → HAMMER → TEMPER → AUTORESEARCH → RALPH LOOP
+This project follows **The Software Foundry** — a spec-first pipeline:
 
-## Active Work
+\`\`\`
+MINE → SCOUT → ASSAY → CRUCIBLE → PLAN → HAMMER → TEMPER → AUTORESEARCH → RALPH LOOP
+\`\`\`
 
-Check GitHub issues: \`gh issue list --repo ${repo}\`
+- Methodology docs: \`growthpigs/the-foundry\`
+- Current phase: <!-- FILL IN: e.g., "ASSAY — writing specs" -->
+- Pipeline runner: \`~/_PAI/operations/the-foundry/bin/foundry.sh\`
+
+## What NOT to Do
+
+- **Don't create random .md files.** Use \`features/\` for component docs.
+- **Don't duplicate GitHub issues locally.** GitHub is the source of truth.
+- **Don't skip Ratify gates.** Every phase transition gets reviewed.
+- **Don't merge without runtime testing.** Tests pass ≠ feature works.
+- **Don't commit secrets.** No \`.env\`, no API keys, no credentials in git.
 CLAUDEMD
 
   # HANDOVER.md
