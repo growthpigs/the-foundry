@@ -32,6 +32,20 @@ Not every task needs every phase. Modes define which phases to run.
 
 **Born from:** IT Concierge FSD Gap Report (March 2026). These sub-steps catch missing CRUD operations and UI dead-ends at spec time (ASSAY) and verify them at code time (TEMPER). See `phases/03-assay.md` Step 2 — CRUD Coverage Matrix sub-section, and Step 4 — Structured Walkthrough, and `phases/07-temper.md` Step 1 — Persona-Level Code Tracing sub-section.
 
+### IT Concierge #147 Gate Applicability
+
+| Mode | State Sync Spike (ASSAY) | Migration Verify (TEMPER) | Error Logging (HAMMER+TEMPER) | Visual Review (TEMPER) | Red-Team (TEMPER) |
+|------|-------------------------|--------------------------|------------------------------|----------------------|------------------|
+| **GREENFIELD** | ✅ If signals present | ✅ If migrations exist | ✅ Always | ✅ If UI touched | ✅ Per epic |
+| **FEATURE** | ✅ If signals present | ✅ If migrations exist | ✅ Always | ✅ If UI touched | ✅ Per epic |
+| **FIX** | ⏭ Skip | ✅ If migrations exist | ✅ Always | ✅ If UI touched | ⏭ Skip (unless 3+ stories) |
+| **HOTFIX** | ⏭ Skip | ✅ If migrations exist | ✅ Always | ⏭ Skip | ⏭ Skip |
+| **SPEC** | ✅ If signals present | ⏭ Skip (no code) | ⏭ Skip (no code) | ⏭ Skip (no code) | ⏭ Skip (no code) |
+| **REFACTOR** | ⏭ Skip | ✅ If migrations exist | ✅ Always | ⏭ Skip (behavior unchanged) | ✅ Breaker + Auditor only |
+| **SECURE** | ✅ If signals present | ✅ If migrations exist | ✅ Always | ✅ Auth UI only | ✅ + security scenarios |
+
+**Born from:** IT Concierge retrospective (growthpigs/it-concierge#147). 34% of production fixes were preventable with these gates. See individual phase files for full protocols.
+
 ---
 
 ## Mode Descriptions
