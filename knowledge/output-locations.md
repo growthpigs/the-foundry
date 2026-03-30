@@ -81,6 +81,7 @@ Project repo: ~/\_PAI/projects/work/war-room/
 | AutoResearch protocol | .foundry/autoresearch/program.md | AUTORESEARCH Step 1 | MD |
 | AutoResearch findings (append-only) | .foundry/autoresearch/findings.md | AUTORESEARCH Step 2 | MD |
 | AutoResearch report | .foundry/autoresearch/report.md | AUTORESEARCH Step 4 | MD |
+| AutoResearch template (shared) | knowledge/autoresearch-template.md | N/A (reference) | MD |
 | Archived progress files | .foundry/archive/ | The Foundry | TXT |
 | Feature specs | features/ | Manual, /explore | MD |
 | Planning docs | docs/05-planning/ | Manual | MD |

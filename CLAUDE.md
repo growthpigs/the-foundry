@@ -48,6 +48,7 @@ PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → EXT.AUDITOR
 | `bin/foundry.sh` | The pipeline runner (Bash 3.2 safe, runs from bare terminal) |
 | `knowledge/anti-regression.md` | Baseline capture specification |
 | `knowledge/progress-txt.md` | Offensive knowledge lifecycle |
+| `knowledge/autoresearch-template.md` | Shared program.md template for AutoResearch (both Foundries) |
 | `knowledge/output-locations.md` | Where artifacts land per project |
 | `research/spec-first-2026.md` | Industry landscape (spec-kit, Kiro, Tessl, StrongDM, METR) |
 | `research/dtu-digital-twin.md` | Digital Twin Universe feasibility assessment |

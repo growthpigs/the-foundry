@@ -54,6 +54,7 @@ get_stage_budget() {
     compliance)          echo 10 ;;
     follow-up)           echo 10 ;;
     fsd)                 echo 15 ;;
+    autoresearch)        echo 15 ;;
     *)                   echo 10 ;;  # default fallback
   esac
 }
@@ -66,7 +67,7 @@ CONSTITUTION_FILE="$SCRIPT_DIR/CONSTITUTION.md"
 # Write stages (code, validate, e2e, pr, fsd) get full permissions.
 stage_needs_write() {
   case "$1" in
-    code|validate|e2e|pr|fsd|follow-up) return 0 ;;  # true — needs write permissions
+    code|validate|e2e|pr|fsd|follow-up|autoresearch) return 0 ;;  # true — needs write permissions
     *)                                  return 1 ;;  # false — read-only
   esac
 }
@@ -253,10 +254,10 @@ get_stages() {
 
   case "$mode" in
     GREENFIELD|FULL)
-      echo "issue user-stories explore issue-review red-team anti-regression code validate e2e pr pr-review compliance follow-up"
+      echo "issue user-stories explore issue-review red-team anti-regression code validate e2e pr pr-review compliance autoresearch follow-up"
       ;;
     FEATURE)
-      echo "issue user-stories red-team-quick anti-regression code validate e2e pr follow-up"
+      echo "issue user-stories red-team-quick anti-regression code validate e2e pr autoresearch follow-up"
       ;;
     FIX)
       echo "issue user-stories explore red-team-quick anti-regression code validate e2e pr follow-up"
@@ -265,10 +266,10 @@ get_stages() {
       echo "issue code validate-fast pr follow-up"
       ;;
     REFACTOR)
-      echo "issue user-stories explore red-team anti-regression-critical code validate e2e pr compliance follow-up"
+      echo "issue user-stories explore red-team anti-regression-critical code validate e2e pr compliance autoresearch follow-up"
       ;;
     SECURE)
-      echo "issue user-stories explore red-team anti-regression code validate e2e pr-restricted pr-review compliance follow-up"
+      echo "issue user-stories explore red-team anti-regression code validate e2e pr-restricted pr-review compliance autoresearch follow-up"
       ;;
     SPEC)
       echo "issue user-stories explore issue-review fsd red-team-spec follow-up"
@@ -359,6 +360,7 @@ run_stage() {
     issue-review)      stage_name="issue-review" ;;
     user-stories)      stage_name="user-stories" ;;
     follow-up)         stage_name="follow-up" ;;
+    autoresearch)      stage_name="autoresearch" ;;
     *)                 stage_name="$stage_key" ;;
   esac
 
