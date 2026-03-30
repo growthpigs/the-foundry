@@ -1,6 +1,12 @@
-# The Foundry — Project Instructions
+# The Software Foundry — Project Instructions
 
-**This is the canonical repository for The Foundry methodology.**
+**This is the canonical repository for The Foundry methodology** (also called **The Software Foundry** for clarity).
+
+**Do not confuse with The Thinking Foundry:**
+- **The Thinking Foundry** (`growthpigs/thinking-foundry`) = Structured thinking for decision-making. Outputs FSDs.
+- **The Software Foundry** (this repo) = Structured building from FSDs. Builds software.
+
+Both use similar phase structures but apply to different domains. See [The Thinking Foundry CLAUDE.md](https://github.com/growthpigs/thinking-foundry/blob/main/CLAUDE.md) for the thinking system.
 
 ## What This Is
 
