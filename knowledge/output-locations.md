@@ -73,7 +73,11 @@ Project repo: ~/\_PAI/projects/work/war-room/
 | Pipeline logs | .foundry/logs/ | The Foundry | TXT |
 | Anti-regression baselines | .foundry/ | The Foundry | MD |
 | Proof Report (persona walkthrough gaps) | .foundry/proof-report.md | ASSAY Step 4 | MD |
+| State Sync Spike (architecture decision) | .foundry/STATE-SYNC-SPIKE.md | ASSAY Step 3 (if triggered) | MD |
 | FSD Gap Report (code tracing gaps) | .foundry/gap-report.md | TEMPER Step 1 | MD |
+| Red-Team Report (3-agent adversarial) | .foundry/red-team-report.md | TEMPER Step 5c | MD |
+| Visual Review screenshots (before) | .foundry/screenshots/before/ | TEMPER Step 5a | PNG |
+| Visual Review screenshots (after) | .foundry/screenshots/after/ | TEMPER Step 5a | PNG |
 | Archived progress files | .foundry/archive/ | The Foundry | TXT |
 | Feature specs | features/ | Manual, /explore | MD |
 | Planning docs | docs/05-planning/ | Manual | MD |
