@@ -85,6 +85,28 @@ Five improvements integrated from IT Concierge retrospective (`growthpigs/it-con
 | Visual Review Gate | TEMPER (Step 5a) | UI regressions invisible to code review |
 | Red-Team After Every Epic | TEMPER (Step 5c) | Systemic issues missed by per-story testing |
 
+## Three-Tier Project System
+
+Ideas flow through three tiers. No repo sprawl.
+
+```
+TIER 1: Thinking Foundry Vault (growthpigs/thinking-foundry-vault)
+  → Each thinking session = one GitHub issue
+  → 90% stay here forever. That's fine.
+  ↓ FSD Approval Gate (confidence >= 7)
+
+TIER 2: Fledgling (growthpigs/fledgling)
+  → Promoted ideas incubating before build
+  → Each gets a folder with FSD + research
+  ↓ "Drop the Hammer" (confidence >= 9, budget allocated)
+
+TIER 3: Project Repo (growthpigs/project-name)
+  → Full scaffold via: launch.sh --new "project-name" "growthpigs" "vision"
+  → Creates: repo, CLAUDE.md, HANDOVER.md, 18 admin issues, labels, Activity Log
+```
+
+**Scaffold command:** `./bin/launch.sh --new "project-name" "org" "vision sentence"`
+
 ## Active Projects Using The Foundry
 
 - LifeModo (`growthpigs/lifemodo`)
