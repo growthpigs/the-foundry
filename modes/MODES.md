@@ -6,15 +6,15 @@ Not every task needs every phase. Modes define which phases to run.
 
 ## Mode Matrix
 
-| Mode | MINE | SCOUT | ASSAY | CRUCIBLE | PLAN | HAMMER | TEMPER | Budget |
-|------|------|-------|-------|----------|------|--------|--------|--------|
-| **GREENFIELD** (alias: FULL) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$29 |
-| **FEATURE** | ⏭ | ⏭ | ✅ | ✅ (quick) | ✅ | ✅ | ✅ | ~$22 |
-| **FIX** | ⏭ | ⏭ | ✅ | ⏭ | ⏭ | ✅ | ✅ | ~$12 |
-| **HOTFIX** | ⏭ | ⏭ | ⏭ | ⏭ | ⏭ | ✅ | ✅ (fast) | ~$8 |
-| **SPEC** | ✅ | ✅ | ✅ | ✅ | ⏭ | ⏭ | ⏭ | ~$15 |
-| **REFACTOR** | ⏭ | ⏭ | ✅ | ⏭ | ✅ | ✅ | ✅✅ | ~$25 |
-| **SECURE** | ⏭ | ⏭ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$27 |
+| Mode | MINE | SCOUT | ASSAY | CRUCIBLE | PLAN | HAMMER | TEMPER | AUTORESEARCH | Budget |
+|------|------|-------|-------|----------|------|--------|--------|-------------|--------|
+| **GREENFIELD** (alias: FULL) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$32 |
+| **FEATURE** | ⏭ | ⏭ | ✅ | ✅ (quick) | ✅ | ✅ | ✅ | ✅ | ~$25 |
+| **FIX** | ⏭ | ⏭ | ✅ | ⏭ | ⏭ | ✅ | ✅ | ⏭ | ~$12 |
+| **HOTFIX** | ⏭ | ⏭ | ⏭ | ⏭ | ⏭ | ✅ | ✅ (fast) | ⏭ | ~$8 |
+| **SPEC** | ✅ | ✅ | ✅ | ✅ | ⏭ | ⏭ | ⏭ | ⏭ | ~$15 |
+| **REFACTOR** | ⏭ | ⏭ | ✅ | ⏭ | ✅ | ✅ | ✅✅ | ✅ | ~$28 |
+| **SECURE** | ⏭ | ⏭ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$30 |
 
 ✅ = Run | ⏭ = Skip | ✅✅ = Extra rigor | ✅ (quick) = Abbreviated version
 

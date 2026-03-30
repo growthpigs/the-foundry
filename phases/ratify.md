@@ -353,6 +353,43 @@ If anything fails: Stop. Tell me what failed. Fix it. Run the check again.
 
 ---
 
+### R-AR: AutoResearch Gate (after AUTORESEARCH) — Hard Gate
+
+**Question:** "Did experiments reveal anything that changes our confidence?"
+
+**Protocol:**
+1. Verify `program.md` was human-authored with specific, measurable questions
+2. Review `findings.md` — is each cycle's signal assessment honest?
+3. Check ratchet integrity — append-only, no deleted cycles
+4. Review any GitHub issues created from findings — are they P0/P1?
+5. Compare confidence pre-AutoResearch vs post — did it go up or down?
+
+**Prompt Pattern:**
+```
+AUTORESEARCH GATE — Review the experiments.
+
+1. Show program.md — were the questions SPECIFIC and MEASURABLE?
+2. Show findings.md — did each cycle produce genuine signal?
+3. How many cycles ran? How many terminated with "no new signal"?
+4. Were any findings concerning enough to block RALPH LOOP?
+5. Confidence delta: pre-AutoResearch vs post-AutoResearch.
+
+If confidence DROPPED below 8: Stop. Route findings back to HAMMER.
+If experiments revealed regressions: Stop. Fix before proceeding.
+```
+
+**Must pass:**
+- [ ] `program.md` written with specific, measurable questions
+- [ ] At least 3 experiment cycles completed (or terminated early with documented reason)
+- [ ] `findings.md` is append-only with signal assessment per cycle
+- [ ] All critical findings have GitHub issues created
+- [ ] No unresolved regressions
+- [ ] Confidence delta documented
+- [ ] If confidence dropped below 8 → findings routed back to HAMMER
+- [ ] AutoResearch Report produced (`.foundry/autoresearch/report.md`)
+
+---
+
 ### R8: The Honest Gate (after EVERY phase — mandatory, ALL modes) — Hard Gate
 
 **Question:** "Are you actually happy with this?"

@@ -22,14 +22,14 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
                 Y                Y                Y                Y        │ A
                                                                            │ T
   ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐  R  ┌──────────┐        │ I
-  │ 8. RALPH │◄─◄──│ 7. TEMPER│◄─◄──│ 6.HAMMER │◄─◄──│ 5. PLAN  │◄───────┘ F
-  │  LOOP    │  A  │  Harden  │  A  │  Build   │  A  │Blueprint │          Y
-  └──────────┘  T  └──────────┘  T  └──────────┘  T  └──────────┘
-       │        I                I                I
-       │        F                F                F
-       ▼        Y                Y                Y
-  ┌──────────┐
-  │  NEXT    │  ← Learnings feed forward to the next epic
+  │ 8. RALPH │◄─◄──│7b.AUTO-  │◄─◄──│ 7. TEMPER│◄─◄──│ 6.HAMMER │◄──┐    │ F
+  │  LOOP    │  A  │ RESEARCH │  A  │  Harden  │  A  │  Build   │   │    │ Y
+  └──────────┘  T  └──────────┘  T  └──────────┘  T  └──────────┘   │
+       │        I                I                I                   │
+       │        F                F                F           ┌──────────┐
+       ▼        Y                Y                Y           │ 5. PLAN  │◄─┘
+  ┌──────────┐                                                │Blueprint │
+  │  NEXT    │  ← Learnings feed forward to the next epic     └──────────┘
   │  EPIC    │
   └──────────┘
 ```
@@ -46,6 +46,7 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 | 5 | **PLAN** | GitHub issues, sprints, epics. "Drop the Hammer" decision. | 1-2 hours |
 | 6 | **HAMMER** | Code. Dark Factory mode. Ralph loop. Digital twin testing. | Days-weeks |
 | 7 | **TEMPER** | Harden. E2E, anti-regression, compliance check + persona code tracing, deploy, ship. | 1-4 hrs/PR |
+| 7b | **AUTORESEARCH** | Karpathy experimental loop. Validate code with runtime experiments. | 1-3 hrs/epic |
 | 8 | **RALPH LOOP** | Capture learnings. Graduate knowledge. Feed back to next epic. | 30-60 min |
 | — | **POST-FOUNDRY** | Bug triage, issue intake (60s), maintenance sprints, client feedback loop. | Ongoing |
 
@@ -57,7 +58,7 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 |--------|--------|-----------------|
 | 1-4 | **Thrashing** | Thinking, speccing, debating. Zero code. |
 | 5-6 | **Coding** | Building and hardening. Code is a commodity. |
-| 7 | **Shipping** | Hardening, deploying, and proving it works. |
+| 7-7b | **Shipping** | Hardening, experimenting, deploying, and proving it works. |
 
 ## The Ratify System
 
@@ -75,6 +76,7 @@ Each gate has a **phase-specific protocol** — different prompts, different che
 | R5 Ready | PLAN | **Hard** | ≥ 8/10 + "Drop the Hammer" |
 | R6 Build | HAMMER | **Hard** | ≥ 8/10 + tests pass |
 | R7 Ship | TEMPER | **Hard** | ≥ 9/10 + evidence for every claim |
+| **R-AR AutoResearch** | **AUTORESEARCH** | **Hard** | program.md written, experiments run, findings ratcheted |
 | **R8 Honest** | **ALL phases** | **Hard** | ≥ 9/10 on all 3 scores + "what am I not asking?" |
 
 **Hard gate** = pipeline STOPS. Go back and fix. **Soft gate** = flag concerns, proceed with awareness.
@@ -119,6 +121,7 @@ the-foundry/
 │   ├── 05-plan.md            # Blueprint (issues, sprints)
 │   ├── 06-hammer.md          # Build (Dark Factory, Ralph loop)
 │   ├── 07-temper.md          # Harden & ship (E2E, deploy)
+│   ├── 07b-autoresearch.md   # Karpathy experimental loop (validate at runtime)
 │   ├── 08-ralph-loop.md      # Capture learnings, feed back to next epic
 │   ├── post-foundry.md       # Bug triage, issue intake, maintenance, feedback loop
 │   └── ratify.md             # The 9 Ratify gates (R1-R8 + R4b Auditor)

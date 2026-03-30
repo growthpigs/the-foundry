@@ -78,6 +78,9 @@ Project repo: ~/\_PAI/projects/work/war-room/
 | Red-Team Report (3-agent adversarial) | .foundry/red-team-report.md | TEMPER Step 5c | MD |
 | Visual Review screenshots (before) | .foundry/screenshots/before/ | TEMPER Step 5a | PNG |
 | Visual Review screenshots (after) | .foundry/screenshots/after/ | TEMPER Step 5a | PNG |
+| AutoResearch protocol | .foundry/autoresearch/program.md | AUTORESEARCH Step 1 | MD |
+| AutoResearch findings (append-only) | .foundry/autoresearch/findings.md | AUTORESEARCH Step 2 | MD |
+| AutoResearch report | .foundry/autoresearch/report.md | AUTORESEARCH Step 4 | MD |
 | Archived progress files | .foundry/archive/ | The Foundry | TXT |
 | Feature specs | features/ | Manual, /explore | MD |
 | Planning docs | docs/05-planning/ | Manual | MD |

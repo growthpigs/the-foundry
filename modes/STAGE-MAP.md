@@ -1,6 +1,6 @@
 # Stage Map — 7 Foundry Phases ↔ 13 Pipeline Stages
 
-The Foundry has **7 conceptual phases** (MINE → TEMPER). The `bin/foundry.sh` runner executes **13 granular stages**. This document maps between them.
+The Foundry has **8 conceptual phases** (MINE → AUTORESEARCH). The `bin/foundry.sh` runner executes **13+ granular stages**. This document maps between them.
 
 ## Why Two Systems?
 
@@ -36,6 +36,9 @@ FOUNDRY PHASE          PIPELINE STAGES (foundry.sh)
                        compliance
                        follow-up
                        (anti-regression comparison — runs after code)
+
+7b. AUTORESEARCH       autoresearch (Karpathy experimental loop)
+                       (writes program.md, runs agent cycles, produces report)
 ```
 
 ## Detailed Mapping
@@ -73,6 +76,7 @@ FOUNDRY PHASE          PIPELINE STAGES (foundry.sh)
 | PLAN | No | GitHub issue creation via `foundry-pipe-02-scrum-master` skill |
 | HAMMER | Yes | `anti-regression` → `code` → `validate` stages |
 | TEMPER | Yes | `e2e` → `pr` → `pr-review` → `compliance` → `follow-up` stages |
+| AUTORESEARCH | Partially | `autoresearch` stage runs agent loop; `program.md` is human-authored |
 
 ## Mode Impact on Stage Execution
 

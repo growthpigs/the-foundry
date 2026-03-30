@@ -14,10 +14,10 @@ A complete product lifecycle methodology for AI-assisted software engineering:
 
 ```
 PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → EXT.AUDITOR
-→ PLAN → HAMMER → TEMPER → RALPH LOOP → POST-FOUNDRY
+→ PLAN → HAMMER → TEMPER → AUTORESEARCH → RALPH LOOP → POST-FOUNDRY
 ```
 
-11 Ratify gates (R0 through R8 + R4b + R-Triage). The Squeeze after every gate.
+12 Ratify gates (R0 through R8 + R4b + R-AR + R-Triage). The Squeeze after every gate.
 
 ## Key Files
 
@@ -34,6 +34,7 @@ PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → EXT.AUDITOR
 | `phases/05-plan.md` | Phase 5: GitHub issues, sprints, "Drop the Hammer" |
 | `phases/06-hammer.md` | Phase 6: build (Dark Factory, Ralph pattern, DTU) |
 | `phases/07-temper.md` | Phase 7: harden, test, deploy, ship |
+| `phases/07b-autoresearch.md` | Phase 7b: Karpathy experimental loop — validate through experimentation |
 | `phases/08-ralph-loop.md` | Phase 8: capture learnings, feed forward |
 | `phases/post-foundry.md` | Bug triage, issue intake (60s), rollback protocol, maintenance |
 | `phases/ratify.md` | The 11 Ratify gates + The Squeeze + toolkit prompts |
