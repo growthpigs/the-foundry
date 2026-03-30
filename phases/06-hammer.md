@@ -89,6 +89,29 @@ If a discovery recurs across 3+ features → graduates to error-patterns.md.
 - Activity Log entries
 - Work Ledger entries (DUs)
 
+### Server Error Logging Standard (Mandatory)
+
+**Born from:** IT Concierge retrospective (growthpigs/it-concierge#147). Silent failures — errors caught but not logged — caused bugs that took days to diagnose. The server returned 200 OK while data was silently corrupted.
+
+**The Standard:** Every server-side error path MUST log before recovering. No silent swallows.
+
+```
+RULE 1: Every catch block MUST log (level: error/warn) before recovering
+RULE 2: Every fallback/default path MUST log (level: warn) explaining WHY the fallback triggered
+RULE 3: No empty catch blocks — zero tolerance (enforced by linter)
+RULE 4: Error logs MUST include: error message, stack trace, context (user ID, request ID, entity ID)
+```
+
+**Browser API Exemptions:**
+- `navigator.geolocation` — may fail legitimately (user denied)
+- `navigator.clipboard` — may fail in non-secure contexts
+- `localStorage.getItem` — may return null legitimately
+- `fetch` for optional analytics/telemetry — non-critical
+
+For these, a `console.warn` is acceptable instead of full error logging. But the exemption must be **commented** in code explaining why.
+
+**Enforcement:** TEMPER Phase 7 includes a Server Error Logging Verification step (grep for empty catch blocks, catch blocks without logging). See Phase 7 for the verification protocol.
+
 ### The HAMMER Rules
 
 1. **Tests first, then code.** Write the test that proves the story works, then write the code to pass it.
@@ -96,6 +119,7 @@ If a discovery recurs across 3+ features → graduates to error-patterns.md.
 3. **Commit early, commit often.** Every logical change is a commit. Not one big commit at the end.
 4. **Draft PR immediately.** As soon as the first commit is pushed, create a draft PR. This enables CodeRabbit and CI to run continuously.
 5. **Don't merge.** HAMMER produces draft PRs. Merging happens in TEMPER after hardening.
+6. **No silent failures.** Every error path logs. Every fallback explains itself. See Server Error Logging Standard above.
 
 ---
 

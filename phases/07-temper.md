@@ -98,6 +98,59 @@ Compare current state against the baseline captured before HAMMER:
 
 Any regression → BLOCK. Fix before proceeding.
 
+#### Step 3b: Migration Verification Gate (from IT Concierge #147)
+
+**Born from:** IT Concierge retrospective (growthpigs/it-concierge#147). SQL migration files were committed to git and passed all code review — but were never actually applied to the database. Tests ran against a stale schema. The app deployed with migration files that the database had never seen. This caused production failures that looked like application bugs but were actually schema mismatches.
+
+**Trigger:** Any PR that includes database migrations (SQL files, Prisma migrations, Drizzle migrations, Supabase migrations, etc.)
+
+**The Verification Protocol:**
+
+```
+STEP 1: List all migration files in the PR
+STEP 2: Connect to the target database (staging or preview branch)
+STEP 3: Verify each migration was APPLIED:
+  - Supabase: Check supabase_migrations.schema_migrations table
+  - Prisma: Check _prisma_migrations table
+  - Drizzle: Check __drizzle_migrations table
+  - Raw SQL: Check that the tables/columns/indexes actually exist
+STEP 4: Run a query that exercises the new schema
+  - SELECT from new columns, INSERT with new constraints, etc.
+STEP 5: Compare schema snapshot (before vs after)
+```
+
+**Evidence required:** Show the migration table entry OR the schema diff proving the migration ran. Screenshots of "migration file exists in git" are NOT evidence.
+
+**What this catches:** Ghost migrations (committed but not run), partial migrations (ran halfway then failed silently), wrong-database migrations (ran against dev but not staging).
+
+**R7 enforcement:** If PR contains migration files and no migration verification evidence → R7 fails.
+
+#### Step 3c: Server Error Logging Verification (from IT Concierge #147)
+
+**Companion to:** HAMMER Phase 6 Server Error Logging Standard.
+
+**The Verification Protocol:**
+
+```bash
+# Check for empty catch blocks (zero tolerance)
+grep -rn 'catch.*{' --include='*.ts' --include='*.tsx' | grep -A1 '{}'
+
+# Check for catch blocks without logging
+# Pattern: catch block that doesn't contain console.error, logger., log.error, etc.
+grep -rn 'catch' --include='*.ts' --include='*.tsx' -A5 | grep -v 'console\.\(error\|warn\)' | grep -v 'logger\.' | grep -v 'log\.'
+
+# Check for bare try-catch-ignore patterns
+# Any catch block that only contains a comment = silent failure
+```
+
+**What to verify:**
+- [ ] Zero empty catch blocks in changed files
+- [ ] Every catch block logs with context (error message + stack + entity ID)
+- [ ] Every fallback/default path has a warn-level log
+- [ ] Browser API exemptions are commented with justification
+
+**R7 enforcement:** Empty catch blocks in any changed file → R7 fails.
+
 #### Step 4: CI Pipeline (5 Gates)
 
 Every PR must pass all 5 CI gates:
@@ -109,14 +162,85 @@ Every PR must pass all 5 CI gates:
 
 **The "All Green" Rule:** If a CI check exists, it must pass. No "it's fine, we know about it."
 
-#### Step 5: CIC Validation (Visual Verification)
+#### Step 5: Visual Review Gate (Enhanced CIC Validation) (from IT Concierge #147)
+
+**Born from:** IT Concierge retrospective (growthpigs/it-concierge#147). Code review approved PRs where the UI was visually broken — misaligned layouts, missing elements, wrong colors. The code was "correct" but the user experience was damaged. Before/after screenshots would have caught it instantly.
 
 For PRs that touch UI:
+
+##### 5a: Before/After Screenshot Comparison (Mandatory)
+
+```
+BEFORE starting HAMMER:
+  → Screenshot every page/component that will be modified
+  → Store in .foundry/screenshots/before/
+
+AFTER HAMMER completes:
+  → Screenshot the same pages/components
+  → Store in .foundry/screenshots/after/
+
+REVIEW:
+  → Side-by-side comparison of before/after
+  → Check: layout, spacing, colors, text, responsive breakpoints
+  → Any visual regression not explained by the PR → BLOCK
+```
+
+**Tools:** CIC screenshot, agent-browser screenshot, or manual screenshot. Any method is acceptable — the evidence is what matters.
+
+**Minimum screenshots:** Every page/component modified by the PR. For component libraries, screenshot the Storybook stories.
+
+##### 5b: CIC Automated Validation
+
 1. CC generates a CIC Validation Prompt (Article 27)
 2. Human pastes prompt into Claude in Chrome
 3. CIC executes visual checks, produces a Validation Report
 4. Human copies report back to CC
 5. CC reads report, decides: merge / create issues / abort
+
+**R7 enforcement:** UI-touching PRs without before/after screenshots → R7 fails. The screenshots are evidence, not optional.
+
+#### Step 5c: Red-Team After Every Epic (from IT Concierge #147)
+
+**Born from:** IT Concierge retrospective (growthpigs/it-concierge#147). Standard testing found bugs individually, but missed systemic issues — interaction effects between features, load behavior, edge cases that only appear when the full epic is integrated. A 3-agent adversarial sequence after epic completion caught issues that per-story testing missed.
+
+**Trigger:** After every epic's stories are merged (not per-story — per-epic). Runs before Ralph Loop captures learnings.
+
+**The 3-Agent Red Team Protocol:**
+
+```
+AGENT 1: BREAKER (Destructive Testing)
+  → Try to break every feature in the epic
+  → Invalid inputs, boundary values, rapid actions, concurrent operations
+  → Network failures mid-operation, timeout scenarios
+  → Output: List of failures with reproduction steps
+
+AGENT 2: AUDITOR (Compliance Verification)
+  → Compare implementation against every FSD acceptance criterion
+  → Verify every failure definition is actually prevented
+  → Check CRUD Coverage Matrix — can the user actually do everything specified?
+  → Output: Compliance scorecard (% of acceptance criteria met)
+
+AGENT 3: USER (Persona Walkthrough)
+  → Walk through the Proof Report from ASSAY as the primary persona
+  → Every action the persona takes: does it work end-to-end?
+  → Focus on the FLOW, not individual features — does the daily workflow feel right?
+  → Output: Persona experience report with friction points
+```
+
+**Duration:** 1-2 hours for the full 3-agent sequence.
+
+**Output:** Red Team Report saved to `.foundry/red-team-report.md`. Any P0 finding blocks the Ralph Loop — fix first, then capture learnings.
+
+**Mode applicability:**
+
+| Mode | Runs Red-Team? | Scope |
+|------|---------------|-------|
+| GREENFIELD | ✅ Full (all 3 agents) | Per epic |
+| FEATURE | ✅ Full (all 3 agents) | Per epic |
+| FIX | ⏭ Skip (unless fix spans 3+ stories) | — |
+| HOTFIX | ⏭ Skip | — |
+| REFACTOR | ✅ Breaker + Auditor only (no Persona) | Per epic |
+| SECURE | ✅ Full + security-specific scenarios | Per epic |
 
 #### Step 6: Merge & Deploy
 
@@ -161,9 +285,13 @@ See [ratify.md](ratify.md#r7-ship-gate-after-temper)
 - [ ] CI pipeline all green (5 gates)
 - [ ] CIC Validation Report: SAFE TO MERGE (if UI changes)
 - [ ] Anti-regression: no regressions
+- [ ] **Migration Verification:** all migration files confirmed applied to database (if PR contains migrations)
+- [ ] **Server Error Logging:** zero empty catch blocks, all error paths log with context
+- [ ] **Visual Review:** before/after screenshots for all UI-touching PRs
 - [ ] Compliance Check: implementation matches FSD
 - [ ] Persona-Level Code Tracing completed (GREENFIELD/FEATURE/SECURE; FIX if CRUD lifecycle touched) — FSD Gap Report produced (`.foundry/gap-report.md`)
 - [ ] All P0 gaps from FSD Gap Report addressed OR tracked as known debt with GitHub issue numbers
+- [ ] **Red-Team Report:** 3-agent sequence completed per epic, all P0 findings addressed (`.foundry/red-team-report.md`)
 - [ ] Production deploy verified (if applicable)
 - [ ] Activity Log updated
 - [ ] Work Ledger updated

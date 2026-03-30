@@ -71,6 +71,18 @@ PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → EXT.AUDITOR
 - Gemini Gem (AI App Intake Workshop) — Implements Pre-Foundry interview.
 - LifeModo #52 — Historical. Deprecated with pointer to this repo.
 
+## Production-Validated Improvements (March 2026)
+
+Five improvements integrated from IT Concierge retrospective (`growthpigs/it-concierge#147`). All proven in production — 34% of IT Concierge fixes were preventable with these gates.
+
+| Improvement | Phase | What It Catches |
+|---|---|---|
+| State Sync Architecture Spike | ASSAY (Step 3) | Complex state bugs from unverified sync assumptions |
+| Migration Verification Gate | TEMPER (Step 3b) | Ghost migrations — committed but never applied to database |
+| Server Error Logging Standard | HAMMER (standard) + TEMPER (Step 3c) | Silent failures — errors caught but never logged |
+| Visual Review Gate | TEMPER (Step 5a) | UI regressions invisible to code review |
+| Red-Team After Every Epic | TEMPER (Step 5c) | Systemic issues missed by per-story testing |
+
 ## Active Projects Using The Foundry
 
 - LifeModo (`growthpigs/lifemodo`)

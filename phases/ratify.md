@@ -143,6 +143,7 @@ of full stack development experience. You can do this using first principles.
 - [ ] Independent Observer Score ≥ 8/10 on each FSD
 - [ ] Zero contradictions between Admin docs
 - [ ] Assumption Table produced — all <70% spiked
+- [ ] **State Sync Architecture Spike completed** (if complex state features detected) — `STATE-SYNC-SPIKE.md` in `.foundry/` — from IT Concierge #147
 - [ ] Structured Persona Walkthrough completed for each primary persona (max 3) — Proof Report produced (`.foundry/proof-report.md`)
 - [ ] CRUD Coverage Matrix in every FSD — all entities have explicit coverage, all exclusions justified
 - [ ] Zero empty CRUD cells (every operation is ✅, ⚠️, or ❌ with justification)
@@ -339,8 +340,12 @@ If anything fails: Stop. Tell me what failed. Fix it. Run the check again.
 - [ ] Every claim backed by executed evidence
 - [ ] E2E tests passing in CI
 - [ ] Hardening checklist complete
+- [ ] **Migration Verification:** all migration files confirmed applied to database (if PR contains migrations) — from IT Concierge #147
+- [ ] **Server Error Logging:** zero empty catch blocks, all error paths log with context — from IT Concierge #147
+- [ ] **Visual Review:** before/after screenshots for all UI-touching PRs — from IT Concierge #147
 - [ ] Persona-Level Code Tracing completed (part of Step 1 Compliance Check; runs in GREENFIELD/FEATURE/SECURE modes; FIX mode if CRUD lifecycle touched) — FSD Gap Report produced (`.foundry/gap-report.md`)
 - [ ] All P0 gaps from FSD Gap Report addressed OR tracked as known debt with GitHub issue numbers
+- [ ] **Red-Team Report:** 3-agent sequence completed per epic, all P0 findings addressed (`.foundry/red-team-report.md`) — from IT Concierge #147
 - [ ] ICE Report produced
 - [ ] Git status clean
 - [ ] Work Ledger updated with actual DUs

@@ -129,6 +129,31 @@ Before thrashing, produce an **Assumption Table** — every assumption the specs
 
 **What is a technical spike?** Spin up the real tool. Test the actual API. Run the query. The DTU (Digital Twin Universe) exists for this — verify assumptions against real services, not documentation.
 
+##### State Sync Architecture Spike (Mandatory for Complex State Features)
+
+**Born from:** IT Concierge retrospective (growthpigs/it-concierge#147). Complex state management (optimistic updates, real-time sync, offline support) caused 34% of preventable bugs. The assumption "we can sync state with X pattern" was never verified before building — leading to weeks of debugging.
+
+**Trigger:** If any of these appear in the feature set, a State Sync Architecture Spike is **mandatory** before R3:
+
+| Signal | Why It Triggers |
+|--------|----------------|
+| Real-time data (WebSocket, SSE, polling) | Server/client state divergence |
+| Optimistic UI updates | Rollback complexity, race conditions |
+| Offline-first or sync-on-reconnect | Conflict resolution strategy needed |
+| Multi-user editing (same entity) | Last-write-wins vs CRDT vs locking |
+| Cross-tab or cross-device state | Shared state coordination |
+
+**The Spike Protocol:**
+1. Build a minimal prototype (1-2 hours max) that exercises the exact sync pattern
+2. Deliberately create conflict scenarios (stale data, concurrent edits, network failure)
+3. Document: What strategy works? What breaks? What's the rollback path?
+4. Add findings to the Assumption Table with measured confidence
+5. If confidence remains below 70% after the spike → escalate to CRUCIBLE
+
+**Output:** A `STATE-SYNC-SPIKE.md` in `.foundry/` with architecture decision, tested pattern, and measured confidence. Referenced in the Assumption Table.
+
+**R3 enforcement:** If State Sync signals are present and no spike was run → R3 fails.
+
 #### Step 4: Buyer Persona Pressure Test (Structured Walkthrough)
 
 **Every FSD must be read through the eyes of each Buyer Persona — not with abstract questions, but by scripting their actual workday.**
