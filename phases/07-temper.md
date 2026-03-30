@@ -11,11 +11,14 @@
 
 The code from HAMMER is hardened through testing, reviewed through compliance check, validated visually through CIC, and shipped to production. This is where draft PRs become merged code and deployed product.
 
-### Inputs
-- Draft PRs from HAMMER
-- Anti-regression baseline
-- Test suite
-- CIC Validation Prompt template
+### Inputs (Phase Contract — TEMPER will NOT start without these)
+- [ ] Draft PRs from HAMMER
+- [ ] Anti-regression baseline
+- [ ] Test suite
+- [ ] CIC Validation Prompt template
+- [ ] **Carry-forward from HAMMER** in progress.txt (what was built, what was tricky, what warnings were raised)
+
+**If any input is missing → TEMPER cannot start. Go back to HAMMER.**
 
 ### Process
 

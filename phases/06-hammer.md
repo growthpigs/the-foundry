@@ -11,11 +11,14 @@
 
 Code drops. The specs from ASSAY, validated by CRUCIBLE, planned in PLAN, are now implemented. This is where the Ralph Loop and Dark Factory patterns come into play.
 
-### Inputs
-- GitHub Issues with acceptance criteria (from PLAN)
-- FSDs (the implementation blueprint)
-- Anti-regression baseline (captured before first code change)
-- Deployment pipeline (verified in PLAN)
+### Inputs (Phase Contract — HAMMER will NOT start without these)
+- [ ] GitHub Issues with acceptance criteria (from PLAN)
+- [ ] FSDs (the implementation blueprint)
+- [ ] Anti-regression baseline (captured before first code change)
+- [ ] Deployment pipeline (verified in PLAN)
+- [ ] **Carry-forward from PLAN** in progress.txt (architectural decisions, dependency order, risks flagged)
+
+**If any input is missing → HAMMER cannot start. Go back to the phase that should have produced it.**
 
 ### Process
 

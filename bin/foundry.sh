@@ -73,10 +73,14 @@ stage_needs_write() {
 }
 
 # Entry limit per stage — architectural stages get more context budget (Crucible March 2026)
+# Entry limits per stage — increased after Self-Audit March 2026.
+# Context amnesia was the #1 architectural flaw: 5 entries per stage
+# destroyed 80% of architectural context at every boundary.
 get_entry_limit() {
   case "$1" in
-    explore|fsd) echo 10 ;;
-    *)           echo 5 ;;
+    explore|fsd) echo 15 ;;
+    code)        echo 15 ;;
+    *)           echo 10 ;;
   esac
 }
 
@@ -432,7 +436,9 @@ After completing your work, append your key discoveries to $(realpath "$PROGRESS
 - DECISION: ...
 - WARNING: ...
 - FIXED: ...
-Maximum $(get_entry_limit "$stage_name") entries. Be specific (file paths, line numbers, root causes). [SECURITY-SURFACE] tagged entries are exempt up to a ceiling of 20 total."
+Maximum $(get_entry_limit "$stage_name") entries. Be specific (file paths, line numbers, root causes). [SECURITY-SURFACE] tagged entries are exempt up to a ceiling of 20 total.
+
+MANDATORY: After your entries, write a ## Carry-Forward section that synthesizes ALL findings into a coherent narrative for the NEXT stage. This is the single most important thing you write — it's how the next agent understands what you discovered. Without it, 80% of your work is lost."
 
   prompt="$full_prompt"
 

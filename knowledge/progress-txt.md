@@ -73,7 +73,8 @@ Every `claude -p` stage receives progress.txt as context (prepended to the promp
 2. **Be specific.** "Fixed the bug" is useless. "Fixed CitationText.tsx:47 — safeInsertParagraphBreaks was splitting table rows across paragraphs because regex didn't account for pipe characters" is useful.
 3. **Include file paths and line numbers.** Future stages (and future humans) need to find the code.
 4. **Include failed approaches.** "Tried X, didn't work because Y" prevents the next stage from repeating the attempt.
-5. **Maximum 5 entries per stage.** Prioritize the most important discoveries.
+5. **Maximum 10 entries per stage** (was 5 — increased after Self-Audit March 2026). Prioritize the most important discoveries, but do NOT compress architectural context.
+6. **Carry-forward summary mandatory.** At the end of each stage, write a `## Carry-Forward` section that synthesizes ALL findings into a coherent narrative. This is what the next stage reads FIRST. The individual entries are supporting evidence.
 
 ### What Does NOT Go In progress.txt
 
@@ -93,6 +94,17 @@ When a discovery in progress.txt recurs across **3 or more different features**,
 | Same discovery in N features | N ≥ 3 |
 | Same file/pattern involved | Must be the same root cause, not coincidence |
 | Actionable prevention | Must be expressible as a rule ("always do X" or "never do Y") |
+| **Runtime-verified** | Must have been confirmed by actual execution, not just AI observation |
+
+**CRITICAL (from Self-Audit March 2026 — Malignant Rule Graduation):**
+A finding that recurs 3+ times is NOT automatically valid. AI hallucinations can recur consistently. Before graduating to error-patterns.md, the finding MUST be verified by runtime evidence:
+- A test that demonstrates the failure
+- A log showing the error in production
+- A reproduction script that triggers the bug
+
+If the finding was only observed by AI code review (no runtime proof), it CANNOT graduate. It stays in progress.txt archives as a hypothesis, not a law.
+
+**Why:** The Self-Audit found that hallucinated anti-patterns were being graduated to permanent rules, then the Red-Team penalized correct code that "violated" the hallucinated rule. This creates a compounding degradation loop.
 
 ### Graduation Process
 
