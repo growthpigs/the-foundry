@@ -190,28 +190,37 @@ MINE → SCOUT → ASSAY → CRUCIBLE → PLAN → HAMMER → TEMPER → AUTORES
 
 ## Reply Footer (MANDATORY — Every Task Completion)
 
-Every reply at task completion MUST include this 7-line status footer:
+Every reply at task completion MUST end with a \`---\` separator followed by this 7-line status footer:
 
 \`\`\`
-🔧 CC Engaged: [#NNN Title](https://github.com/${repo}/issues/NNN) | Status: [In Progress/Complete]
+---
+🔧 CC Engaged: https://github.com/${repo}/issues/NNN | Status: XX% complete
 📋 CC Queue: [queued items waiting their turn]
 💭 Open Loops: [firehose ideas not yet queued as tasks]
 📅 Coming: [planned items, upcoming sprints]
-🔌 MCPs: [connection status of active MCPs]
-✅ X/Y complete | Z% confident
+🔌 MCPs: Chi-GW [✅/❌] | Chrome [✅/❌] | Agent Browser [✅/❌]
+✅ X/Y complete | XX% confident ([context note])
 📊 DD.MM HH:MM | ~Xk tokens | ~\$X.XX
 \`\`\`
 
-**Line 1:** What you're working on RIGHT NOW — ALWAYS include the full GitHub issue URL
-**Line 2:** What's queued for this or next session
-**Line 3:** Firehose ideas that aren't tasks yet
-**Line 4:** Strategic items on the horizon
-**Line 5:** MCP/service connection status
-**Line 6:** Progress and self-assessment confidence
-**Line 7:** Timestamp, token usage, cost estimate
+**Example (real output from War Room session):**
+\`\`\`
+---
+🔧 CC Engaged: https://github.com/growthpigs/alpha-war-room/issues/666 | Status: 90% complete
+📋 CC Queue: Production restart for Mentionlytics token activation
+💭 Open Loops: E2E creds for local blood test
+📅 Coming: Tomorrow 4 AM UTC — first clean health check
+🔌 MCPs: Chi-GW [✅] | Chrome [✅] | Agent Browser [✅]
+✅ 5/6 complete | 88% confident (production restart pending)
+📊 31.03 11:37 | ~80k tokens | ~\$12.00
+\`\`\`
 
 **Rules:**
-- CC Engaged MUST have a clickable issue URL — never bare \`#123\`
+- \`---\` separator ALWAYS precedes the footer
+- CC Engaged MUST have a full clickable GitHub issue URL — never bare \`#123\`
+- Status is a percentage or description (e.g., "90% complete", "In Progress", "Blocked")
+- Confidence line includes parenthetical context explaining what's pending
+- MCP line shows actual service status with ✅/❌
 - Get time with: \`date "+%d.%m %H:%M"\`
 - Pricing: opus=\$15/1M, sonnet=\$3/1M, flash=\$0.60/1M
 - This footer is NON-NEGOTIABLE. Every substantial task gets it.
