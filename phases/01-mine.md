@@ -29,6 +29,8 @@ The firehose. Brain dump everything. No filtering, no judging, no prioritizing. 
    - "If you had unlimited budget, what would you build?"
    - "What's the thing you haven't told me yet?"
 4. **Capture medium** — Slack channel post, Google Doc, GitHub issue, voice memo. Doesn't matter. Just get it down.
+5. **Banana Rule** — When a tangent surfaces during the firehose, don't lose it. Capture it as a separate Ideation item immediately. The tangent gets its own entry — don't let the main conversation swallow it. *(From LifeModo #52)*
+6. **60-Second Ingestion** — Every thought becomes an Ideation item within 60 seconds. If it takes longer, you're filtering too early. Capture raw, organize later.
 
 ### Outputs
 - Raw idea dump (unstructured)

@@ -24,29 +24,29 @@ This is where thinking happens. The 18 Admin Documents are written. FSDs are cra
 
 Every project creates 18 living documents in a GitHub Admin milestone:
 
-**Phase A: Client Interview (Days 1-3)**
-1. Agreement (SOW + MOU combined)
+**Phase 1: Client Interview (Days 1-3)** *(see Constitution Article 14)*
+1. Agreement (SOW + MOU combined) *(see also Article 33)*
 2. Client Requirements (CR-NNN)
 3. User Stories (US-NNN) with failure definitions
 4. User Journeys (UJ-NNN)
 5. Glossary & Terminology
 
-**Phase B: Architecture (Week 1-2)**
+**Phase 2: Architecture (Week 1-2)**
 6. Tech Stack & Integration Map
 7. Architecture Decision Log (ADRs with WHY)
 8. Product Features (F-NNN)
-9. Capabilities (Plugins, Skills, Patterns — JTBD)
-10. Dependency & Risk Map
+9. Dependency & Risk Map
+10. Competitive Landscape
 
-**Phase C: Validation (Week 2-3)**
-11. Competitive Landscape
-12. KPI & Success Metrics
-13. Onboarding Checklist
-14. Prompt Library
-15. Client Prerequisites
-16. Full Cost Breakdown
-17. Test Strategy
-18. Work Ledger (DU tracking)
+**Phase 3: Validation (Week 2-3)**
+11. KPI & Success Metrics
+12. Onboarding Checklist
+13. Prompt Library
+14. Client Prerequisites
+15. Full Cost Breakdown
+16. Test Strategy
+17. Capabilities (Plugins, Skills, Patterns — JTBD)
+18. Work Ledger (DU tracking) *(see also Article 34)*
 
 #### Step 2: FSDs + Test Stubs (VSDD Pattern)
 
@@ -253,6 +253,7 @@ The spec is not done on the first pass. Thrash it:
 - Find gaps: what did we NOT specify?
 - Run failure scenarios: what happens when things go wrong?
 - **Run the abstract Buyer Persona questions from Step 4** (if not yet done — this is the emotional/experience pass, not a repeat of the trace walkthrough)
+- **Accordion Strategy** — Dive into the weeds for edge cases, then zoom to 30,000 feet to check fit. Alternate depth/altitude during thrashing. If you've been in the weeds for 10 minutes, zoom out. If you've been at altitude for 5, pick a detail and drill. *(From LifeModo #52)*
 
 ### Outputs
 - 18 Admin Documents (GitHub Issues — gold standard)

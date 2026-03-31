@@ -59,8 +59,10 @@ get_stage_budget() {
   esac
 }
 
-# Constitution file — prepended to every stage prompt
-CONSTITUTION_FILE="$SCRIPT_DIR/CONSTITUTION.md"
+# Constitution files — core (12KB) loaded every stage, full (86KB) only for ASSAY/CRUCIBLE
+CONSTITUTION_CORE="$SCRIPT_DIR/CONSTITUTION-CORE.md"
+CONSTITUTION_FULL="$SCRIPT_DIR/CONSTITUTION.md"
+CONSTITUTION_FILE="$CONSTITUTION_CORE"  # default to core; overridden per stage below
 
 # Permission tiers — CC3 F1 fix (Via Negativa: remove permissions you don't need)
 # Read-only stages run WITHOUT --dangerously-skip-permissions (safe default).
@@ -373,6 +375,16 @@ run_stage() {
     run_anti_regression "$stage_key"
     return $?
   fi
+
+  # Select Constitution version (#14 context budget fix)
+  # ASSAY and CRUCIBLE need full Constitution (reference articles for 18 docs, quality gates)
+  # All other stages get the 12KB core (86% context reduction)
+  case "$stage_name" in
+    explore|issue-review|red-team*|user-stories)
+      CONSTITUTION_FILE="$CONSTITUTION_FULL" ;;
+    *)
+      CONSTITUTION_FILE="$CONSTITUTION_CORE" ;;
+  esac
 
   # Resolve command file
   local cmd_file

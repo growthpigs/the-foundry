@@ -21,6 +21,17 @@ This is the Foundry's most distinctive phase. Nobody else in the industry does d
 
 ### Process
 
+#### Step 0: Feed NotebookLM (Project "Back Brain")
+
+Before running any Crucible debates, feed ALL project artifacts into NotebookLM as the project's persistent knowledge base. This is a SETUP step, not part of the debate itself. *(From LifeModo #52)*
+
+1. **Gather sources:** All 18 Admin Documents, FSDs, research docs, API references, competitor analysis
+2. **Create project notebook** (or reuse existing): `notebooklm-py` — see Article 35
+3. **Upload all sources** — NotebookLM processes and indexes them
+4. **Verify ingestion** — Ask a basic question to confirm sources are loaded
+
+This notebook persists across all domain group debates. You don't re-feed per group — you already have the full project context loaded.
+
 #### Step 1: Group the Project into Domains
 
 Break the project into 3-7 logical groups. Each group gets its own Crucible session.

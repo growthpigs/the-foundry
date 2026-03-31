@@ -210,3 +210,20 @@ Pre-Foundry captures raw material. It does NOT:
 - Research competitors (that's SCOUT)
 
 Pre-Foundry asks: "What do you need and why?" The Foundry asks: "How do we build it?"
+
+---
+
+## Lifecycle Phase Detection (Auto-Routing)
+
+When `/dev` is invoked, detect the project's current lifecycle phase to route to the correct Foundry mode:
+
+| Signal | Detected Phase | Route To |
+|--------|---------------|----------|
+| No GitHub repo exists | Pre-Foundry | `launch.sh --new` (scaffold) |
+| Repo exists, no Admin milestone | Early lifecycle | `launch.sh --mode GREENFIELD` |
+| Admin milestone exists, <10 issues | ASSAY in progress | `launch.sh --mode SPEC` |
+| Admin milestone exists, 15+ issues, no `src/` | Specs done, no code | `launch.sh --mode FEATURE` |
+| `src/` exists, tests pass | Active development | `launch.sh --mode FEATURE` or `FIX` |
+| Production deployment exists | Live app | Post-Foundry (maintenance mode) |
+
+**Detection is heuristic, not mandatory.** The user can always override with `--mode`.
