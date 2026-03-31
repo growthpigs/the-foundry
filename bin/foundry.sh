@@ -527,6 +527,15 @@ run_anti_regression() {
   npx tsc --noEmit 2>&1 | tail -3 >> "$baseline_file" || echo "(tsc not available)" >> "$baseline_file"
   echo "" >> "$baseline_file"
 
+  # Build status (#21 — was documented but never implemented)
+  echo "### Build" >> "$baseline_file"
+  if npm run build 2>&1 | tail -5 >> "$baseline_file"; then
+    echo "Build: PASS" >> "$baseline_file"
+  else
+    echo "Build: FAIL" >> "$baseline_file"
+  fi
+  echo "" >> "$baseline_file"
+
   # Critical variant: additional captures
   if [[ "$variant" == *"critical"* ]]; then
     echo "### Test Names (Critical Mode)" >> "$baseline_file"
@@ -580,6 +589,15 @@ compare_anti_regression() {
   npx tsc --noEmit 2>&1 | tail -3 >> "$compare_file" || echo "(tsc not available)" >> "$compare_file"
   echo "" >> "$compare_file"
 
+  # Re-run Build (#21 — was documented but never compared)
+  echo "### Build (Post-Code)" >> "$compare_file"
+  if npm run build 2>&1 | tail -5 >> "$compare_file"; then
+    echo "Build: PASS" >> "$compare_file"
+  else
+    echo "Build: FAIL" >> "$compare_file"
+  fi
+  echo "" >> "$compare_file"
+
   # Semantic comparison — extract numbers, don't rely on raw diff (CC3 F2 fix)
   local baseline_tests post_tests
   baseline_tests=$(grep -m1 'Total test files:' "$baseline_file" 2>/dev/null | grep -o '[0-9]*' || echo "0")
@@ -601,6 +619,16 @@ compare_anti_regression() {
   if [ "$post_ts_ok" -gt "$baseline_ts_ok" ] 2>/dev/null; then
     echo "[anti-regression] 🚨 BLOCKING: New TypeScript errors (${baseline_ts_ok} → ${post_ts_ok})"
     echo "[ANTI-REGRESSION] 🚨 BLOCKED — New TypeScript errors (${baseline_ts_ok} → ${post_ts_ok})" >> "$PROGRESS_FILE"
+    regression_found=true
+  fi
+
+  # Check 3: Build broke → BLOCK (#21 — was documented but never checked)
+  local baseline_build post_build
+  baseline_build=$(grep -c 'Build: PASS' "$baseline_file" 2>/dev/null || echo "0")
+  post_build=$(grep -c 'Build: PASS' "$compare_file" 2>/dev/null || echo "0")
+  if [ "$baseline_build" -gt 0 ] && [ "$post_build" -eq 0 ]; then
+    echo "[anti-regression] 🚨 BLOCKING: Build was passing, now failing"
+    echo "[ANTI-REGRESSION] 🚨 BLOCKED — Build regression (PASS → FAIL)" >> "$PROGRESS_FILE"
     regression_found=true
   fi
 
