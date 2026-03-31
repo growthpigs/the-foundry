@@ -187,6 +187,34 @@ MINE → SCOUT → ASSAY → CRUCIBLE → PLAN → HAMMER → TEMPER → AUTORES
 - **Don't skip Ratify gates.** Every phase transition gets reviewed.
 - **Don't merge without runtime testing.** Tests pass ≠ feature works.
 - **Don't commit secrets.** No \`.env\`, no API keys, no credentials in git.
+
+## Reply Footer (MANDATORY — Every Task Completion)
+
+Every reply at task completion MUST include this 7-line status footer:
+
+\`\`\`
+🔧 CC Engaged: [#NNN Title](https://github.com/${repo}/issues/NNN) | Status: [In Progress/Complete]
+📋 CC Queue: [queued items waiting their turn]
+💭 Open Loops: [firehose ideas not yet queued as tasks]
+📅 Coming: [planned items, upcoming sprints]
+🔌 MCPs: [connection status of active MCPs]
+✅ X/Y complete | Z% confident
+📊 DD.MM HH:MM | ~Xk tokens | ~\$X.XX
+\`\`\`
+
+**Line 1:** What you're working on RIGHT NOW — ALWAYS include the full GitHub issue URL
+**Line 2:** What's queued for this or next session
+**Line 3:** Firehose ideas that aren't tasks yet
+**Line 4:** Strategic items on the horizon
+**Line 5:** MCP/service connection status
+**Line 6:** Progress and self-assessment confidence
+**Line 7:** Timestamp, token usage, cost estimate
+
+**Rules:**
+- CC Engaged MUST have a clickable issue URL — never bare \`#123\`
+- Get time with: \`date "+%d.%m %H:%M"\`
+- Pricing: opus=\$15/1M, sonnet=\$3/1M, flash=\$0.60/1M
+- This footer is NON-NEGOTIABLE. Every substantial task gets it.
 CLAUDEMD
 
   # HANDOVER.md

@@ -9,7 +9,7 @@
 Open a terminal in your project directory and run:
 
 ```bash
-~/_PAI/projects/system/the-foundry/bin/launch.sh
+~/_PAI/operations/the-foundry/bin/launch.sh
 ```
 
 That's it. The script:
@@ -22,24 +22,24 @@ That's it. The script:
 
 ```bash
 # Feature work with a specific epic
-~/_PAI/projects/system/the-foundry/bin/launch.sh --mode FEATURE --epic "E1: Platform Foundation"
+~/_PAI/operations/the-foundry/bin/launch.sh --mode FEATURE --epic "E1: Platform Foundation"
 
 # Bug fix on a specific issue
-~/_PAI/projects/system/the-foundry/bin/launch.sh --mode FIX --issue 123
+~/_PAI/operations/the-foundry/bin/launch.sh --mode FIX --issue 123
 
 # New project from scratch
-~/_PAI/projects/system/the-foundry/bin/launch.sh --mode GREENFIELD
+~/_PAI/operations/the-foundry/bin/launch.sh --mode GREENFIELD
 
 # Architecture spec only (no code)
-~/_PAI/projects/system/the-foundry/bin/launch.sh --mode SPEC
+~/_PAI/operations/the-foundry/bin/launch.sh --mode SPEC
 ```
 
 ### The Workflow
 
 ```
 Warp Tab 1 (your project dir):
-  $ cd ~/_PAI/projects/personal/lifemodo
-  $ ~/_PAI/projects/system/the-foundry/bin/launch.sh --mode FEATURE
+  $ cd ~/_PAI/teams/badaboost/lifemodo
+  $ ~/_PAI/operations/the-foundry/bin/launch.sh --mode FEATURE
   → Generates prompt
   → Copy it to clipboard
 

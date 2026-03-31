@@ -64,7 +64,7 @@ Every project that uses The Foundry MUST have an `OUTPUT-MAP.md` in its `.claude
 # Output Map — War Room
 
 ## Output Root
-Project repo: ~/\_PAI/projects/work/war-room/
+Project repo: ~/\_PAI/teams/badaboost/clients/war-room/
 
 ## Locations
 

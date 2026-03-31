@@ -1200,7 +1200,7 @@ Long Run mode ends when:
 | Setting | Value |
 |---------|-------|
 | **Repository** | `growthpigs/linear-ui-library` |
-| **Local path** | `~/_PAI/projects/experiments/linear-ui-library` |
+| **Local path** | `~/_PAI/operations/linear-ui-library` |
 | **Style** | Clean, minimal, professional — inspired by Linear.app |
 | **Components** | Button, Card, Input, Label + extensible |
 | **CSS** | Tailwind CSS with Linear design tokens |
