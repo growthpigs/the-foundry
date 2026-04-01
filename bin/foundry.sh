@@ -541,10 +541,15 @@ run_anti_regression() {
 
   # Build status (#21 — was documented but never implemented)
   echo "### Build" >> "$baseline_file"
-  if npm run build 2>&1 | tail -5 >> "$baseline_file"; then
+  if npm run --silent build 2>&1 | tail -5 >> "$baseline_file"; then
     echo "Build: PASS" >> "$baseline_file"
   else
-    echo "Build: FAIL" >> "$baseline_file"
+    # Check if build script exists before marking as FAIL
+    if node -e "const p=require('./package.json'); if(!p.scripts||!p.scripts.build) process.exit(1)" 2>/dev/null; then
+      echo "Build: FAIL" >> "$baseline_file"
+    else
+      echo "Build: SKIP (no build script)" >> "$baseline_file"
+    fi
   fi
   echo "" >> "$baseline_file"
 
@@ -603,10 +608,14 @@ compare_anti_regression() {
 
   # Re-run Build (#21 — was documented but never compared)
   echo "### Build (Post-Code)" >> "$compare_file"
-  if npm run build 2>&1 | tail -5 >> "$compare_file"; then
+  if npm run --silent build 2>&1 | tail -5 >> "$compare_file"; then
     echo "Build: PASS" >> "$compare_file"
   else
-    echo "Build: FAIL" >> "$compare_file"
+    if node -e "const p=require('./package.json'); if(!p.scripts||!p.scripts.build) process.exit(1)" 2>/dev/null; then
+      echo "Build: FAIL" >> "$compare_file"
+    else
+      echo "Build: SKIP (no build script)" >> "$compare_file"
+    fi
   fi
   echo "" >> "$compare_file"
 
