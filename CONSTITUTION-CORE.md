@@ -4,7 +4,7 @@
 **Status:** RATIFIED (2026-03-13)
 **Scope:** Immutable. Loaded for EVERY pipeline stage.
 
-These are the non-negotiable principles. For detailed reference articles (18 Documents, Activity Log, Crucible, CI Pipeline, etc.), see `CONSTITUTION.md` (full version — loaded for ASSAY and CRUCIBLE stages only).
+These are the non-negotiable principles. For detailed reference articles (18 Documents, Activity Log, Crucible, CI Pipeline, etc.), see `CONSTITUTION.md` (full version — loaded for ASSAY/CRUCIBLE/red-team stages only).
 
 ---
 
@@ -96,43 +96,6 @@ The Crucible prevents building the wrong thing. The Compliance Check prevents dr
 ## Article 8: Anti-Regression Is Non-Negotiable
 
 Every change (except emergency hotfixes) captures a baseline BEFORE implementation: test count, test results, TypeScript compilation status. After implementation, the baseline is compared. Any regression BLOCKS the PR. New bugs are not acceptable as the cost of fixing old ones.
-
----
-
----
-
-## Article 8b: E2E Tests Grow With Features (Non-Negotiable)
-
-**Every feature PR MUST include or update E2E test assertions that map to the Critical Path (Article 20).**
-
-Unit tests prove individual functions work. E2E tests prove the PRODUCT works. If features grow but E2E tests don't, you have increasing coverage of parts and decreasing confidence in the whole.
-
-### The Rule
-
-| PR Type | E2E Requirement |
-|---------|----------------|
-| New feature | MUST add E2E assertions for that feature's Critical Path step(s) |
-| Bug fix affecting Critical Path | MUST add regression E2E test for the specific failure |
-| Refactor | MUST verify existing E2E tests still pass |
-| Docs-only | No E2E requirement |
-
-### PR Review Gate
-
-The existing PR review checklist gains one line:
-
-```
-□ E2E test added/updated for this feature (Article 8b)
-□ E2E test maps to Critical Path step(s) in Test Strategy
-□ UI tested at 375px, 768px, and 1280px viewports (Article 36)
-```
-
-If a feature PR has no E2E assertion, it does NOT pass review.
-
-### Why
-
-Born from IT Concierge (March 16, 2026): 49 unit tests, zero E2E tests. Features shipped as "tested" because units passed — but nobody verified the full user flow worked.
-
----
 
 ---
 
