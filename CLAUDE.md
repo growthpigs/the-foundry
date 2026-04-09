@@ -13,11 +13,11 @@ Both use similar phase structures but apply to different domains. See [The Think
 A complete product lifecycle methodology for AI-assisted software engineering:
 
 ```
-PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → EXT.AUDITOR
-→ PLAN → HAMMER → TEMPER → AUTORESEARCH → RALPH LOOP → POST-FOUNDRY
+PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → PRODUCT-AUDIT
+→ EXT.AUDITOR → PLAN → HAMMER → TEMPER → AUTORESEARCH → RALPH LOOP → POST-FOUNDRY
 ```
 
-12 Ratify gates (R0 through R8 + R4b + R-AR + R-Triage). The Squeeze after every gate.
+13 Ratify gates (R0 through R8 + R4b + R4c + R-AR + R-Triage). The Squeeze after every gate.
 
 ## Key Files
 
@@ -29,7 +29,8 @@ PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → EXT.AUDITOR
 | `phases/01-mine.md` | Phase 1: firehose capture |
 | `phases/02-scout.md` | Phase 2: research + deployment pipeline setup |
 | `phases/03-assay.md` | Phase 3: spec (18 admin docs, FSDs with CRUD matrices, Assumption Table, Persona walkthrough) |
-| `phases/04-crucible.md` | Phase 4: adversarial NotebookLM debates per domain |
+| `phases/04-crucible.md` | Phase 4: adversarial NotebookLM debates per domain (≥9/10 confidence gate) |
+| `phases/04c-product-audit.md` | Phase 4c: post-Crucible product strategy stress-test (5-prompt template) |
 | `phases/04b-external-auditor.md` | Phase 4b: independent model review (Gemini/GPT circuit breaker) |
 | `phases/05-plan.md` | Phase 5: GitHub issues, sprints, "Drop the Hammer" |
 | `phases/06-hammer.md` | Phase 6: build (Dark Factory, Ralph pattern, DTU) |
@@ -37,7 +38,7 @@ PRE-FOUNDRY → LAUNCH → MINE → SCOUT → ASSAY → CRUCIBLE → EXT.AUDITOR
 | `phases/07b-autoresearch.md` | Phase 7b: Karpathy experimental loop — validate through experimentation |
 | `phases/08-ralph-loop.md` | Phase 8: capture learnings, feed forward |
 | `phases/post-foundry.md` | Bug triage, issue intake (60s), rollback protocol, maintenance |
-| `phases/ratify.md` | The 11 Ratify gates + The Squeeze + toolkit prompts |
+| `phases/ratify.md` | The 13 Ratify gates + The Squeeze + toolkit prompts |
 | **System** | |
 | `README.md` | Overview, pipeline diagram, philosophy, quick start |
 | `CONSTITUTION.md` | 37 immutable articles (symlinked from DarkFoundry) |
