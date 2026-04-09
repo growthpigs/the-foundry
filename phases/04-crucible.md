@@ -379,16 +379,20 @@ After Crucible debates are complete and findings dispositioned:
 
 ---
 
-### The 8 Crucible Rules (Updated March 2026 — Incident-Hardened)
+### The 12 Crucible Rules (Updated April 2026 — Convergence Incident-Hardened)
 
 1. **Programmatic execution only** — `teng-lin/notebooklm-py` API. No manual claims. Notebook ID is proof.
 2. **NO source concatenation** — Each file = one `add_text()` call. Combining files destroys cross-referencing.
-3. **Minimum 3 SEPARATE sources per notebook** — Architecture anchor + subject doc + EXTERNAL ground truth
+3. **Minimum 5 SEPARATE sources per notebook** — FSD (full, uncut) + 4-6 web reference sources. See Rule 9.
 4. **External ground truth mandatory** — At least 1 official vendor doc per domain. Your specs debating your specs is an echo chamber.
-5. **One notebook per topic** — Never batch topics into one notebook
-6. **BOTH modalities required** — Chat (Modality 1: targeted Q&A) AND Audio DEBATE (Modality 2: sustained adversarial). They produce different information. Both are captured as separate sections in the Crucible Report.
-7. **Audio must be generated AND transcribed** — `generate_audio(AudioFormat.DEBATE)` + transcription. Audio task must have `status=COMPLETED`.
-8. **Cross-reference specs against external docs** — The best findings come from comparing YOUR implementation against OFFICIAL documentation, not from internal-only review
+5. **One FRESH notebook per Crucible run** — Never reuse a notebook across runs. Old chat history, old sources, and old audio artifacts bias the new debate. Name: `[N]. Crucible: [Feature Name]`.
+6. **BOTH modalities required + minimum 2 audio pieces** — Chat (Modality 1: ≥7 questions) AND Audio (Modality 2: minimum 1 Deep Dive + 1 Debate). Neither is optional. They produce different information.
+7. **Audio must be generated with explicit adversarial instructions** — `generate_audio(AudioFormat.DEBATE, instructions="...stay adversarial, do NOT agree at the end")`. Debate without instructions collapses into agreement.
+8. **Cross-reference specs against external docs** — The best findings come from comparing YOUR implementation against OFFICIAL documentation, not from internal-only review.
+9. **4-6 web reference sources alongside the FSD** — Include: ≥1 academic paper (arxiv), ≥1 domain-specific article, ≥1 authoritative reference (gov portal, official docs), ≥1 opinion/analysis piece (Substack, blog). Web sources seed conceptual frameworks the FSD alone cannot surface.
+10. **Re-upload FSD before any re-run after FSD edits** — The notebook holds the OLD source after edits. Running a re-Crucible without re-uploading = hosts debate a document that no longer exists. Verify by checking that hosts reference new FR numbers in responses.
+11. **Minimum 7 adversarial text questions** — Cover: (1) frame/principle check, (2) trigger pipeline walkthrough, (3) internal FR contradiction, (4) concrete user scenario, (5) removed/changed element rationale, (6) POC scope realism, (7) strategic killer-feature argument. 5 questions stays surface-level; 7 forces specifics.
+12. **`client.chat.ask()` is API-only — not visible in NotebookLM UI** — Programmatic chat exchanges do not populate the browser Chat panel. Save output to a local markdown file and tell the user results are in the file. Do not claim the chat "appears in NotebookLM."
 
 ---
 
@@ -411,5 +415,17 @@ See [ratify.md](ratify.md#r4-adversarial-gate-after-crucible)
 - [ ] "Fix now" items resolved in ASSAY docs
 - [ ] Updated FSDs reflect Crucible learnings
 - [ ] Fresh eyes CTO review on Crucible output
-- [ ] Confidence ≥ 8/10
+- [ ] Confidence ≥ 9/10 (raised from 8 — April 2026: 8.0 still leaves material gaps per Convergence experience)
 - [ ] All notebook IDs posted as GitHub issue comments (audit trail)
+
+### After Crucible: PRODUCT-AUDIT (mandatory before PLAN)
+
+The Crucible is engineering adversarial. It surfaces architectural gaps, missing FRs, and scope risks. It does NOT surface:
+- Competitive positioning insights
+- "What would a competitor miss?" analysis  
+- The magical product moment that makes it worth building
+- Governance and monetisation angles
+
+These require the **PRODUCT-AUDIT phase** — a 5-prompt product strategy session in a fresh NotebookLM notebook using the post-Crucible FSD. See `phases/04c-product-audit.md`.
+
+**Crucible → PRODUCT-AUDIT → EXTERNAL-AUDITOR → PLAN** is the correct sequence. Do not skip PRODUCT-AUDIT. The Convergence FSD discovered its #1 competitive moat (knowledge-doc anchoring), CTCH governance framework, and PMI² dynamic weighting exclusively through PRODUCT-AUDIT — not through Crucible.
