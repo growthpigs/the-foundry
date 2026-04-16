@@ -6,15 +6,15 @@ Not every task needs every phase. Modes define which phases to run.
 
 ## Mode Matrix
 
-| Mode | MINE | SCOUT | ASSAY | CRUCIBLE | PLAN | HAMMER | TEMPER | AUTORESEARCH | Budget |
-|------|------|-------|-------|----------|------|--------|--------|-------------|--------|
-| **GREENFIELD** (alias: FULL) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$32 |
-| **FEATURE** | ⏭ | ⏭ | ✅ | ✅ (quick) | ✅ | ✅ | ✅ | ✅ | ~$25 |
-| **FIX** | ⏭ | ⏭ | ✅ | ⏭ | ⏭ | ✅ | ✅ | ⏭ | ~$12 |
-| **HOTFIX** | ⏭ | ⏭ | ⏭ | ⏭ | ⏭ | ✅ | ✅ (fast) | ⏭ | ~$8 |
-| **SPEC** | ✅ | ✅ | ✅ | ✅ | ⏭ | ⏭ | ⏭ | ⏭ | ~$15 |
-| **REFACTOR** | ⏭ | ⏭ | ✅ | ⏭ | ✅ | ✅ | ✅✅ | ✅ | ~$28 |
-| **SECURE** | ⏭ | ⏭ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$30 |
+| Mode | MINE | SCOUT | ASSAY | CRUCIBLE | PLAN | **LAUNCH** | HAMMER | TEMPER | AUTORESEARCH | Budget |
+|------|------|-------|-------|----------|------|-----------|--------|--------|-------------|--------|
+| **GREENFIELD** (alias: FULL) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ~$35 |
+| **FEATURE** | ⏭ | ⏭ | ✅ | ✅ (quick) | ✅ | ✅ | ✅ | ✅ | ✅ | ~$28 |
+| **FIX** | ⏭ | ⏭ | ✅ | ⏭ | ⏭ | ⏭ | ✅ | ✅ | ⏭ | ~$12 |
+| **HOTFIX** | ⏭ | ⏭ | ⏭ | ⏭ | ⏭ | ⏭ | ✅ | ✅ (fast) | ⏭ | ~$8 |
+| **SPEC** | ✅ | ✅ | ✅ | ✅ | ⏭ | ⏭ | ⏭ | ⏭ | ⏭ | ~$15 |
+| **REFACTOR** | ⏭ | ⏭ | ✅ | ⏭ | ✅ | ⏭ | ✅ | ✅✅ | ✅ | ~$28 |
+| **SECURE** | ⏭ | ⏭ | ✅ | ✅ | ✅ | ⏭ | ✅ | ✅ | ✅ | ~$30 |
 
 ✅ = Run | ⏭ = Skip | ✅✅ = Extra rigor | ✅ (quick) = Abbreviated version
 
@@ -49,6 +49,11 @@ Not every task needs every phase. Modes define which phases to run.
 ---
 
 ## Mode Descriptions
+
+### LAUNCH (between PLAN and HAMMER)
+**Required for:** GREENFIELD, FEATURE
+**Skipped for:** FIX, HOTFIX, SPEC, REFACTOR, SECURE
+**Produces:** `docs/gtm.md` — 11-section go-to-market playbook covering market context, launch phases, channel strategy, content/community plan, KPIs, budget, and risk mitigations. See [FR-METH-2](https://github.com/growthpigs/the-foundry/issues/48) for full spec and `phases/LAUNCH.md` when created.
 
 ### GREENFIELD (~$29)
 **When:** New project from scratch. No existing code.
