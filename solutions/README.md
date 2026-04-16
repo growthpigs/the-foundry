@@ -30,6 +30,7 @@ Each file in `solutions/` follows this template:
 ```markdown
 ## SOLUTION: [Pattern Name]
 **Pattern type:** [API integration / Auth / State / Migration / Queue / etc.]
+**applies_when:** [specific trigger context — e.g., "implementing OAuth2 with Supabase and seeing 403 on token refresh", "adding WebSocket reconnection after Gemini 15-min limit", "concurrent writes failing with unique constraint violations"]
 **Technologies:** [specific packages + versions at time of writing]
 **Project:** [where this was validated]
 **Date:** YYYY-MM-DD
