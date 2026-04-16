@@ -58,6 +58,18 @@ This is the VSDD (Verified Spec-Driven Development) pattern: specs and tests are
 - Each FSD includes test stubs (acceptance criteria as code)
 - Independent Observer Score ≥ 8/10
 - "Could a competent developer who's never seen this project implement from this FSD alone?"
+
+**Agent-Optimized PRD Requirement (FR-METH-3, [#49](https://github.com/growthpigs/the-foundry/issues/49)):**
+
+Every FSD section must also be machine-readable by a coding agent with no clarifying questions:
+
+1. **Named packages** — not "use a form library", but "react-hook-form with zod"
+2. **Real file paths** — not "create the API layer", but `src/api/ministers/knowledge.ts`
+3. **Code examples** in target syntax — 5–10 line snippet showing the pattern
+4. **Measurable thresholds** — not "fast", but "P95 < 300ms, measured via response headers"
+5. **Explicit error states** — what happens when the happy path fails
+
+Agent Readiness Score ≥ 7/10: A separate agent (not the FSD author) must be able to implement any section without asking questions. Add this check alongside Independent Observer review.
 - If no → the FSD isn't done
 
 ##### CRUD Coverage Matrix (Mandatory per FSD)
