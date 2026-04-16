@@ -26,6 +26,8 @@ The code from HAMMER is hardened through testing, reviewed through compliance ch
 
 **Runs before Compliance Check. Separate agent instance — NOT the same agent that wrote the code.**
 
+**Hold-Out Enforcement (FR-METH-14):** The adversarial reviewer MUST NOT read `progress.txt`, HAMMER session notes, or any reasoning the implementing agent wrote. It receives ONLY: the original FSD spec + the git diff + the test suite. It must form its own hypothesis about what the code does before evaluating it. This prevents sycophantic validation of implementation choices.
+
 This is distinct from CRUCIBLE (pre-build, design-level). TEMPER adversarial review is post-build, implementation-level.
 
 The adversarial reviewer constructs **failure scenarios across implementation boundaries**:
@@ -47,7 +49,23 @@ Any FAIL must be addressed before R7. WARNs are triaged (fix now or file as tech
 
 ---
 
-#### Step 1: Compliance Check (Post-Code Red Team)
+#### Step 1: 5-Axis Code Review (FR-METH-15)
+
+**Grade every HAMMER output on exactly five axes. No vague "Is this good?" assessments.**
+
+| Axis | Score (0–10) | What to Check |
+|------|-------------|---------------|
+| **Correctness** | | Does it do what the FSD spec says? Edge cases covered? |
+| **Readability** | | Can a developer unfamiliar with this understand it in 5 minutes? |
+| **Architecture** | | Follows established patterns? No premature abstractions? |
+| **Security** | | OWASP top 10, injection surfaces, auth gaps, RLS coverage |
+| **Performance** | | Meets FSD measurable thresholds (P95 latency, etc.)? |
+
+**Pass criteria:** ≥7 on ALL axes. Any single axis <5 = automatic block. R7 cannot pass until all axes ≥5.
+
+---
+
+#### Step 2: Compliance Check (Post-Code Red Team)
 
 The second of the Two Red Teams (Article 7):
 - CRUCIBLE (Phase 4) asked: "What if we're wrong?" — BEFORE code
