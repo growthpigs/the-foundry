@@ -35,6 +35,21 @@ HAMMER operates differently depending on the mode:
 | REFACTOR | Behavior-preserving — anti-regression is CRITICAL |
 | SECURE | Private branch, restricted access, embargo contract |
 
+#### Step 0: Prior Art Check (FR-METH-7, #53)
+
+**Before starting any story**, search the Solutions Directory for relevant past solutions.
+
+1. Extract keywords from the story: entity names, technology stack, pattern type
+2. Run: `grep -ri "[keyword]" solutions/ --include="*.md"` (or search GitHub issues with `gh search issues`)
+3. If relevant entries found: read them and include a "Prior Art" note in progress.txt
+4. If no entries found: note "uncharted territory" and proceed — this story may become a Solutions Directory entry after RALPH LOOP
+
+This prevents solving the same problem twice and surfaces known failure modes before they're hit.
+
+**Estimated time:** 2–5 minutes. Skip only for HOTFIX mode.
+
+---
+
 #### The Ralph Loop (Autonomous Execution)
 
 For larger features, HAMMER uses the Ralph pattern:
@@ -116,6 +131,9 @@ For these, a `console.warn` is acceptable instead of full error logging. But the
 **Enforcement:** TEMPER Phase 7 includes a Server Error Logging Verification step (grep for empty catch blocks, catch blocks without logging). See Phase 7 for the verification protocol.
 
 ### The HAMMER Rules
+
+**Demoability Gate (FR-METH-4, #50 — mandatory before marking any phase complete):**
+> Before closing a HAMMER phase: (1) the app runs without errors, (2) the built feature can be shown to a user in a browser, (3) no phase leaves the product in a state that cannot be demoed. Infrastructure-only phases: the deployment pipeline succeeds and a health check passes.
 
 1. **Tests first, then code.** Write the test that proves the story works, then write the code to pass it.
 2. **One story at a time.** Don't parallelise stories within the same epic unless they're truly independent.
