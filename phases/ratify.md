@@ -244,6 +244,27 @@ Permission to be frank: approved.
 
 ---
 
+### R-LAUNCH: Go-to-Market Gate (after PLAN, GREENFIELD+FEATURE only) — Soft Gate
+
+**Question:** "Do we know who we're building for and how they'll find out it exists?"
+
+**Applies to:** GREENFIELD, FEATURE modes only. Skip for FIX, HOTFIX, SPEC, REFACTOR, SECURE.
+
+**Must pass:**
+- [ ] `docs/gtm.md` exists with all 11 sections populated
+- [ ] Target user named specifically (not a vague archetype)
+- [ ] Three competitive alternatives named explicitly
+- [ ] Channel #1 ranked with specific community/publication named
+- [ ] Three-phase launch strategy with success criteria per phase
+- [ ] At least 3 GTM risks with mitigations
+- [ ] Confidence ≥ 7/10
+
+**Why soft gate:** GTM plans evolve with market feedback. A hard gate here blocks shipping on uncertainty that can only be resolved by being in market. The gate ensures the plan is specific — not that it's perfect.
+
+**Produced by:** `phases/LAUNCH.md` | **See:** [FR-METH-2 #48](https://github.com/growthpigs/the-foundry/issues/48)
+
+---
+
 ### R6: Build Gate (after HAMMER) — Hard Gate
 
 **Question:** "Did we build what was specified? Does it actually work?"
