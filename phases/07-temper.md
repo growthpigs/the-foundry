@@ -22,6 +22,31 @@ The code from HAMMER is hardened through testing, reviewed through compliance ch
 
 ### Process
 
+#### Step 0: Adversarial Review (FR-METH-6, #52)
+
+**Runs before Compliance Check. Separate agent instance — NOT the same agent that wrote the code.**
+
+This is distinct from CRUCIBLE (pre-build, design-level). TEMPER adversarial review is post-build, implementation-level.
+
+The adversarial reviewer constructs **failure scenarios across implementation boundaries**:
+
+1. **Cross-component failures** — what breaks when component A fails mid-operation while B is running?
+2. **Concurrent load** — race conditions that sequential tests never exercise
+3. **Data boundaries** — null, empty string, max-length, unicode, injection, extreme values
+4. **Integration seams** — every external API call, every DB write, every queue message is a failure surface
+5. **Recovery paths** — what does the system actually do when the happy path fails?
+
+**Output:** A typed "Adversarial Report" in `.foundry/adversarial-report.md`:
+- FAIL: [scenario] — this breaks in production
+- WARN: [scenario] — this is fragile, consider hardening
+- PASS: [scenario] — verified resilient
+
+Any FAIL must be addressed before R7. WARNs are triaged (fix now or file as tech debt issue).
+
+**Note:** For FIX and HOTFIX modes, scope this to the changed components only. Skip for SPEC (no code).
+
+---
+
 #### Step 1: Compliance Check (Post-Code Red Team)
 
 The second of the Two Red Teams (Article 7):
