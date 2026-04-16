@@ -22,7 +22,49 @@ Review progress.txt from this epic:
 - Any discovery that's project-specific → stays in progress.txt archive
 - Any discovery that improves The Foundry methodology → create an issue in `growthpigs/the-foundry`
 
-### 2. Assumption Table Reconciliation
+### 2. Solutions Directory Update (FR-METH-8, #54)
+
+After each epic, extract reusable patterns into the Solutions Directory (`solutions/` in project repo, or `growthpigs/the-foundry/solutions/` for cross-project patterns).
+
+**What qualifies for an entry:**
+- A pattern that took >1 hour to figure out and will appear again
+- A failure mode discovered the hard way
+- A package combination that works unexpectedly well (or badly)
+
+**Entry format:**
+
+```markdown
+## SOLUTION: [Pattern Name]
+**Pattern type:** [API integration / Auth / State management / Migration / etc.]
+**Technologies:** [specific packages + versions]
+**Project:** [project name]
+**Date:** YYYY-MM-DD
+**Status:** Active
+
+### Problem
+[2 sentences]
+
+### Solution
+[code snippet or pattern description]
+
+### Failure modes discovered
+[what didn't work]
+
+### When NOT to use this
+[explicit anti-patterns]
+```
+
+**Quarterly Refresh Cycle (curation rot prevention):**
+Every quarter, RALPH LOOP triggers a `compound-refresh` scan:
+1. Flag all entries older than 90 days
+2. Per entry: **Keep** / **Update** / **Supersede** / **Archive**
+3. Log: "X kept, Y updated, Z archived" in `solutions/REFRESH-LOG.md`
+
+Without this cycle, the Solutions Directory becomes a liability — outdated patterns pulled with false confidence.
+
+---
+
+### 3. Assumption Table Reconciliation
 
 Go back to the Assumption Table from ASSAY:
 - Which assumptions were **validated** by real code? → Update confidence to 95%+
