@@ -64,7 +64,33 @@ Without this cycle, the Solutions Directory becomes a liability — outdated pat
 
 ---
 
-### 3. Assumption Table Reconciliation
+### 3. AutoResearch Self-Improvement Loop (FR-METH-16)
+
+**The Karpathy 3-File Pattern — for measurable quality improvement on any goal.**
+
+Three sacred files — never mix their roles:
+
+| File | Role | Who Edits It |
+|------|------|-------------|
+| `program.md` | The goal / hypothesis to test | Human or Orchestrator |
+| `train.py` (or `implement.md`) | The implementation / solution | **Agent ONLY** |
+| `prepare.py` (or `evaluate.sh`) | The evaluation / metric script | **UNTOUCHABLE — human-written** |
+
+**The Loop:**
+1. Agent reads `program.md` (the goal)
+2. Agent edits `train.py` only (the implementation)
+3. `prepare.py` runs automatically (evaluation — agent cannot touch this)
+4. If metric improves → git commit (keep)
+5. If metric worsens → git revert (discard automatically)
+6. Loop until convergence or N iterations
+
+**Why the untouchable evaluator is critical:** If the agent can edit `prepare.py`, it optimizes the metric rather than the actual goal. The untouchable evaluator is the anti-sycophancy mechanism for self-improvement.
+
+**Apply to:** Performance bottlenecks, quality scores, test coverage gaps — any problem with a measurable target.
+
+---
+
+### 4. Assumption Table Reconciliation
 
 Go back to the Assumption Table from ASSAY:
 - Which assumptions were **validated** by real code? → Update confidence to 95%+
