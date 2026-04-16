@@ -55,12 +55,12 @@ Not every task needs every phase. Modes define which phases to run.
 **Skipped for:** FIX, HOTFIX, SPEC, REFACTOR, SECURE
 **Produces:** `docs/gtm.md` — 11-section go-to-market playbook covering market context, launch phases, channel strategy, content/community plan, KPIs, budget, and risk mitigations. See [FR-METH-2](https://github.com/growthpigs/the-foundry/issues/48) for full spec and `phases/LAUNCH.md` when created.
 
-### GREENFIELD (~$29)
+### GREENFIELD (~$35, includes LAUNCH phase)
 **When:** New project from scratch. No existing code.
 **Runs:** All 7 phases, full depth.
 **Example:** Starting IT Concierge, LifeModo V6.
 
-### FEATURE (~$22)
+### FEATURE (~$28, includes LAUNCH phase)
 **When:** Adding a new feature to an existing project.
 **Skips:** MINE (project exists), SCOUT (architecture known).
 **Starts at:** ASSAY (spec the feature), CRUCIBLE (quick stress-test), PLAN, HAMMER, TEMPER.
