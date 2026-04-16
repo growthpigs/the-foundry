@@ -70,6 +70,18 @@ Every FSD section must also be machine-readable by a coding agent with no clarif
 5. **Explicit error states** — what happens when the happy path fails
 
 Agent Readiness Score ≥ 7/10: A separate agent (not the FSD author) must be able to implement any section without asking questions. Add this check alongside Independent Observer review.
+
+**Scoring rubric (1 point per criterion, ≥ 4/5 = passes = ≥ 7/10):**
+
+| Criterion | 0 (fail) | 1 (pass) |
+|-----------|---------|---------|
+| Named packages | Vague ("use a form library") | Specific ("react-hook-form with zod") |
+| Real file paths | Implied ("in the API layer") | Explicit (`src/api/ministers/knowledge.ts`) |
+| Code example | Absent or pseudocode | 5–10 lines in target language showing the pattern |
+| Measurable threshold | Vague ("fast", "secure") | Specific ("P95 < 300ms, measured via Railway headers") |
+| Error states | Happy path only | At least 2 failure scenarios specified with system response |
+
+Any single criterion scoring 0 that is deemed critical (e.g., no error states for an auth FSD) can be a manual veto regardless of total score.
 - If no → the FSD isn't done
 
 ##### CRUD Coverage Matrix (Mandatory per FSD)
