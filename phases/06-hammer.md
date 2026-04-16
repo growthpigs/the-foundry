@@ -48,6 +48,12 @@ This prevents solving the same problem twice and surfaces known failure modes be
 
 **Estimated time:** 2–5 minutes. Skip only for HOTFIX mode.
 
+**Sub-step: Skill Wizard (FR-METH-18)** — For any story referencing a specific library:
+1. Identify libraries named in the story (e.g., `react-hook-form`, `zod`, `drizzle-orm`)
+2. Use Context 7 or fetch current docs to generate `skills/[library].md`
+3. Skill file contains: exact current API signatures, dos, don'ts, known mistakes
+4. Agent reads this skill file before writing any code — prevents hallucinated API calls
+
 ---
 
 #### The Ralph Loop (Autonomous Execution)
@@ -134,6 +140,12 @@ For these, a `console.warn` is acceptable instead of full error logging. But the
 
 **Demoability Gate (FR-METH-4, #50 — mandatory before marking any phase complete):**
 > Before closing a HAMMER phase: (1) the app runs without errors, (2) the built feature can be shown to a user in a browser, (3) no phase leaves the product in a state that cannot be demoed. Infrastructure-only phases: the deployment pipeline succeeds and a health check passes.
+
+**Domain Locking (FR-METH-10 — for multi-agent runs):**
+> Each agent only gets read/write access to its own domain. Frontend agent: `src/components/`, `src/pages/`. Backend agent: `src/api/`, `src/services/`. Infra agent: `infrastructure/`, `scripts/`. Define scopes in `.foundry/domains.json`.
+
+**Workflow State Checkpoints (FR-METH-13):**
+> Persist `.foundry/workflow-state.json` at every story boundary. Fields: `phase`, `epic`, `story`, `status` (executing/awaiting-approval/complete), `completed_stories[]`, `destructive_ops_completed[]`. On any new session start: read this file first. Skip completed stories. Never re-run destructive ops.
 
 1. **Tests first, then code.** Write the test that proves the story works, then write the code to pass it.
 2. **One story at a time.** Don't parallelise stories within the same epic unless they're truly independent.
