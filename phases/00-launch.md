@@ -1,5 +1,9 @@
 # Phase 0: LAUNCH — Start a Foundry Session
 
+> ⚠️ **Naming note (2026-04-16):** This file (`phases/00-launch.md`) is the **session startup script** — it generates your session prompt and detects mode. It is NOT the GTM Planning phase.
+> The **GTM LAUNCH phase** (go-to-market planning, runs between PLAN and HAMMER for GREENFIELD/FEATURE modes) lives in `phases/LAUNCH.md`. See [FR-METH-2 #48](https://github.com/growthpigs/the-foundry/issues/48).
+> A future rename of this file to `phases/00-start.md` is tracked in [FR-METH-2 #48](https://github.com/growthpigs/the-foundry/issues/48).
+
 **Metaphor:** Before you enter the foundry, you suit up. Load the methodology, load the project, pick your mode.
 
 ---
