@@ -147,6 +147,32 @@ For these, a `console.warn` is acceptable instead of full error logging. But the
 **Workflow State Checkpoints (FR-METH-13):**
 > Persist `.foundry/workflow-state.json` at every story boundary. Fields: `phase`, `epic`, `story`, `status` (executing/awaiting-approval/complete), `completed_stories[]`, `destructive_ops_completed[]`. On any new session start: read this file first. Skip completed stories. Never re-run destructive ops.
 
+**Isolated Work Trees — Parallel HAMMER Execution (FR-METH-12, [#58](https://github.com/growthpigs/the-foundry/issues/58)):**
+
+For GREENFIELD or large FEATURE builds: run independent epics in parallel using git worktrees. Each agent gets a full isolated copy of the repo — no merge conflicts, no context bleed.
+
+```bash
+# Create isolated worktree per epic
+git worktree add .foundry/worktrees/epic-auth feature/epic-auth
+git worktree add .foundry/worktrees/epic-api feature/epic-api
+git worktree add .foundry/worktrees/epic-ui feature/epic-ui
+
+# Each agent runs in its own worktree path — same codebase, separate file system
+# Agent 1: cwd = .foundry/worktrees/epic-auth
+# Agent 2: cwd = .foundry/worktrees/epic-api
+# Agent 3: cwd = .foundry/worktrees/epic-ui
+
+# After all complete: merge to main feature branch
+git worktree remove .foundry/worktrees/epic-auth
+```
+
+**Rules:**
+- One worktree per epic — never per story (too much overhead)
+- Each worktree agent reads `.foundry/tool-registry.json` from the main worktree (read-only)
+- Worktrees share git history — commits from all worktrees appear in the same log
+- Clean up worktrees immediately after merge: `git worktree prune`
+- **When NOT to use:** Single-epic builds, < 3 independent epics, or when epics share database migrations (migrations must run serially)
+
 1. **Tests first, then code.** Write the test that proves the story works, then write the code to pass it.
 2. **One story at a time.** Don't parallelise stories within the same epic unless they're truly independent.
 3. **Commit early, commit often.** Every logical change is a commit. Not one big commit at the end.

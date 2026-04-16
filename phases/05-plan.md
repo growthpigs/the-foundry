@@ -49,6 +49,40 @@ Organize stories into sprints:
 - Priority: What's blocking production first, user value second, tech debt third
 - Dependencies: Which stories must complete before others can start
 
+#### Step 4.5: Metadata Tool Registry (FR-METH-11, [#57](https://github.com/growthpigs/the-foundry/issues/57))
+
+**Before HAMMER runs, define what each agent type is allowed to call.** This prevents agents from triggering destructive ops outside their scope and reduces context noise from irrelevant tools.
+
+Create `.foundry/tool-registry.json`:
+
+```json
+{
+  "agents": {
+    "hammer-frontend": {
+      "allowed_tools": ["Read", "Edit", "Write", "Bash", "Glob", "Grep"],
+      "allowed_domains": ["src/components/", "src/pages/", "public/"],
+      "prohibited_tools": ["gh", "git push", "rm -rf"]
+    },
+    "hammer-backend": {
+      "allowed_tools": ["Read", "Edit", "Write", "Bash", "Glob", "Grep"],
+      "allowed_domains": ["src/api/", "src/services/", "src/db/"],
+      "prohibited_tools": ["gh", "git push", "rm -rf"]
+    },
+    "temper-reviewer": {
+      "allowed_tools": ["Read", "Glob", "Grep", "Bash"],
+      "allowed_domains": ["*"],
+      "prohibited_tools": ["Edit", "Write", "git commit"]
+    }
+  }
+}
+```
+
+**Why define it here:** Orchestrators reference this registry at workflow start, not mid-build. Defining it during PLAN keeps it alongside the story decomposition that drove the agent structure.
+
+**Orchestrator use:** At HAMMER start, the orchestrator reads `tool-registry.json` and passes each agent only its allowed tools. Agents that receive the full tool list are implicitly untrusted.
+
+---
+
 #### Step 5: The Hammer Decision
 
 This is the explicit moment where you say: "The specs are done. The Crucible found nothing blocking. The issues are created. We are ready to code."
