@@ -103,13 +103,30 @@ TIER 2: Fledgling (growthpigs/fledgling)
 
 TIER 3: Project Repo (growthpigs/project-name)
   → Full scaffold via: launch.sh --new "project-name" "growthpigs" "vision"
-  → Creates: repo, CLAUDE.md, HANDOVER.md, 18 admin issues, labels, Activity Log
+  → Creates: repo, slim CLAUDE.md, HANDOVER.md, 18 admin issues, labels,
+    pinned [PROJECT INDEX] issue (canonical TOC), .github/ISSUE_TEMPLATE/
 ```
 
 **Scaffold command:** `./bin/launch.sh --new "project-name" "org" "vision sentence"`
+
+⚠️ **`bin/launch.sh` is currently behind the new pattern** — it still creates the legacy `Activity Log` issue instead of the `[PROJECT INDEX]` master TOC. The `/bootstrap` skill at [growthpigs/pai-system](https://github.com/growthpigs/pai-system) (`.claude/commands/bootstrap.md`) has the canonical updated flow. Tracking issue for `launch.sh` reconciliation: see #1 of this repo (filed alongside this commit).
 
 ## Active Projects Using The Foundry
 
 - LifeModo (`growthpigs/lifemodo`)
 - IT Concierge (`growthpigs/it-concierge`)
 - War Room (`growthpigs/alpha-war-room`)
+
+---
+
+## Governance pattern (PAI-wide, applies here)
+
+This methodology repo follows the same GitHub-as-SOT pattern as the projects it scaffolds. Three cross-repo references:
+
+- **[growthpigs/lifemodo#559](https://github.com/growthpigs/lifemodo/issues/559)** — PAI Frontend / UI Golden Rules (modal portal, CSS specificity, runtime verification, +15 more). Project-agnostic patterns.
+- **[growthpigs/lifemodo#560](https://github.com/growthpigs/lifemodo/issues/560)** — `/bootstrap` skill update tracking (the new pattern this repo's launch.sh should adopt).
+- **[growthpigs/lifemodo#561](https://github.com/growthpigs/lifemodo/issues/561)** — 12 PAI projects governance restructure (this repo is in the catalog).
+
+Cross-repo references always use full `org/repo#N` form, never bare `#N`.
+
+When updating phases/ or knowledge/, follow the [PAI Golden Rules #559](https://github.com/growthpigs/lifemodo/issues/559) for any UI/CSS/component documentation conventions.
