@@ -313,11 +313,11 @@ BRAND_BODY=$(cat <<'EOF'
 
 Locked brand truths. What this project IS, who it serves, how it sounds. Single source of truth for any copy / design / content decision.
 
-> **🚀 Filling this out: run the `Impact` skill** (`~/.claude/skills/Impact/`).
-> Impact is a 7-phase Content Intelligence Analysis (CIA) system that researches
+> **🚀 Filling this out: run the `CIA` skill** (`~/.claude/skills/CIA/`).
+> CIA is a 7-phase Content Intelligence Analysis (CIA) system that researches
 > the audience, market, competitors, and emotional landscape, then produces the
 > full Marketing Blueprint covering Jon Benson's BNSN 112-point framework.
-> Trigger: say "run impact" or "marketing research".
+> Trigger: say "run cia" or "marketing research".
 
 ## 🧱 Marketing Blueprint Skeleton (BNSN-aligned)
 
@@ -408,7 +408,7 @@ Fill in each section. Every field below should be answered with specifics — no
 
 ---
 
-> **Reference**: full BNSN 7-category framework in `~/.claude/skills/Impact/PROMPTS/phase-6-convergence.md`.
+> **Reference**: full BNSN 7-category framework in `~/.claude/skills/CIA/PROMPTS/phase-6-convergence.md`.
 > Working template example: Drive doc "Serene Mind + Marketing Blueprint" (showing the structure applied to a real project).
 EOF
 )
