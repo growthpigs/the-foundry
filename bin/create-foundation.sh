@@ -311,19 +311,86 @@ GLOSSARY_NUM=$(create_doc_issue "GLOSSARY — Project Terms (Disambiguation)" "$
 BRAND_BODY=$(cat <<'EOF'
 ## Purpose
 
-Locked brand truths. What this project IS, who it serves, how it sounds.
+Locked brand truths. What this project IS, who it serves, how it sounds. Single source of truth for any copy / design / content decision.
 
-## Positioning (LOCKED — do not edit without explicit approval)
+> **🚀 Filling this out: run the `Impact` skill** (`~/.claude/skills/Impact/`).
+> Impact is a 7-phase Content Intelligence Analysis (CIA) system that researches
+> the audience, market, competitors, and emotional landscape, then produces the
+> full Marketing Blueprint covering Jon Benson's BNSN 112-point framework.
+> Trigger: say "run impact" or "marketing research".
 
-### IS
-- <truth>
+## 🧱 Marketing Blueprint Skeleton (BNSN-aligned)
 
-### IS NOT
-- <anti-truth>
+Fill in each section. Every field below should be answered with specifics — no hand-waving.
 
-## Audience (LOCKED)
+### Identity & Positioning
+- **[Name]**: <project name>
+- **[URL]**: <domain>
+- **[Niche]**:
+- **[Key Thematics]**:
+- **[Core SEO Keywords]**:
+- **[Mission]**:
+- **[Vision]**:
+- **[Core Values]**:
+- **[Tone and Personality]**:
 
-<Specific target audience.>
+### Avatar (audience psychology — BNSN points 1-25)
+- **[Avatar]**:
+- **[Avatar Story]**:
+- **[Target Audience]**:
+- **[Core Emotions]**:
+- **[Biggest Fears]**:
+- **[Key Relationships Affected]**:
+- **[Hurtful Relationship Soundbites]**:
+
+### Pain Points & Problems (BNSN points 26-45)
+- **[Core Problem]**:
+- **[Primary Complaint]**:
+- **[Secondary Complaints]**:
+- **[Failed Solutions]**:
+- **[Failed Solution Soundbites]**:
+- **[Deal Breaker Fixes]**:
+- **[Deal Breaker Soundbites]**:
+
+### Desires & Goals (BNSN points 46-65)
+- **[Primary Goal]**:
+- **[Secondary Goals]**:
+- **[Primary Transformation]**:
+- **[Key Relationship Post Transformation]**:
+- **[Key Relationship Post Transformation Soundbites]**:
+- **[Market Success Hinges-on]**:
+- **[Market Success By Giving Up]**:
+
+### Objections & Resistance (BNSN points 66-80)
+- **[Primary Objection]**:
+- **[Ultimate Fear]**:
+- **[Mistaken Beliefs]**:
+- **[Expensive Alternatives]**:
+- **[Market Blames]**:
+- **[Market Objections]**:
+
+### Solution Positioning (BNSN points 81-95)
+- **[Promises]**:
+- **[Benefits]**:
+- **[Unique Mechanism]**:
+- **[Emotionalized Unique Mechanism]**:
+- **[Gaddie Product Story]**:
+- **[Simple Product Story]**:
+- **[Market]**:
+- **[Market Narrative]**:
+
+### Trust & Credibility (BNSN points 96-105)
+- **Flagship case study**:
+- **Authority indicators**:
+- **Social proof elements**:
+- **Customer transformation evidence**:
+
+### Conversion Psychology (BNSN points 106-112)
+- **Urgency triggers**:
+- **Decision catalysts**:
+- **Funnel**:
+- **[Content Goal 1]**:
+- **[Content Goal 2]**:
 
 ## Voice & tone
 
@@ -338,6 +405,11 @@ Locked brand truths. What this project IS, who it serves, how it sounds.
 | Decision | Issue |
 |---|---|
 | <decision> | <issue ref> |
+
+---
+
+> **Reference**: full BNSN 7-category framework in `~/.claude/skills/Impact/PROMPTS/phase-6-convergence.md`.
+> Working template example: Drive doc "Serene Mind + Marketing Blueprint" (showing the structure applied to a real project).
 EOF
 )
 BRAND_NUM=$(create_doc_issue "BRAND STRATEGY — Positioning, Voice, Audience" "$BRAND_BODY")
