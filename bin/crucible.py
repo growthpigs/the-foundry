@@ -34,6 +34,15 @@ import sys
 from datetime import datetime, timezone
 
 
+EXTRACTION_QUERIES = [
+    "List every architectural gap, vulnerability, or design flaw identified by this Crucible, with severity and source evidence.",
+    "For each CRITICAL and HIGH finding, what concrete fix is required before this can be considered production-ready?",
+    "What assumptions in our architecture did the uploaded sources contradict? Cite the source evidence.",
+    "What second-order effects could our current plan create in adjacent systems, workflows, or operator behavior?",
+    "Score this architecture 1-10 for readiness. What must be fixed before code, and what can be deferred?",
+]
+
+
 def fetch_external_url(url: str) -> str:
     """Fetch external docs. Prefers raw GitHub/MDX. Falls back to curl."""
     try:
@@ -47,6 +56,60 @@ def fetch_external_url(url: str) -> str:
         return content
     except Exception as e:
         raise RuntimeError(f"Failed to fetch {url}: {e}") from e
+
+
+async def extract_findings(client, notebook_id: str, domain: str, domain_slug: str):
+    """Self-process the completed NotebookLM Crucible into durable findings."""
+    findings = []
+    total_chars = 0
+
+    print(f"\n7. Extracting Crucible findings from NotebookLM (self-processing protocol)...")
+    for i, query in enumerate(EXTRACTION_QUERIES, 1):
+        print(f"   Extraction Q{i}: {query[:90]}...")
+        result = await client.chat.ask(notebook_id=notebook_id, question=query)
+        answer = (result.answer or "").strip()
+        if len(answer) < 50:
+            print(f"   ❌ Extraction Q{i} returned too little content ({len(answer)} chars)")
+            sys.exit(1)
+        total_chars += len(answer)
+        findings.append({
+            "query_number": i,
+            "query": query,
+            "answer": answer,
+            "answer_chars": len(answer),
+        })
+        await asyncio.sleep(3)
+
+    if total_chars < 250:
+        print(f"   ❌ Extraction findings too short ({total_chars} chars total)")
+        sys.exit(1)
+
+    findings_json_path = f".foundry/crucible-findings-{domain_slug}.json"
+    findings_md_path = f".foundry/crucible-findings-{domain_slug}.md"
+
+    with open(findings_json_path, "w") as jf:
+        json.dump({
+            "domain": domain,
+            "notebook_id": notebook_id,
+            "query_count": len(findings),
+            "total_answer_chars": total_chars,
+            "findings": findings,
+        }, jf, indent=2)
+
+    with open(findings_md_path, "w") as mf:
+        mf.write(f"# Crucible Findings: {domain}\n\n")
+        mf.write(f"**Notebook ID:** `{notebook_id}`\n")
+        mf.write(f"**Queries:** {len(findings)}\n")
+        mf.write(f"**Total answer chars:** {total_chars}\n\n")
+        for item in findings:
+            mf.write(f"## Query {item['query_number']}\n\n")
+            mf.write(f"**Question:** {item['query']}\n\n")
+            mf.write(item["answer"])
+            mf.write("\n\n---\n\n")
+
+    print(f"   ✅ Findings JSON: {findings_json_path}")
+    print(f"   ✅ Findings MD: {findings_md_path}")
+    return findings, findings_json_path, findings_md_path, total_chars
 
 
 async def run_crucible(domain: str, source_files: list, external_urls: list,
@@ -206,10 +269,14 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
         else:
             print("\n6. ⚠️  No audio file to transcribe")
 
+        findings, findings_json_path, findings_md_path, findings_chars = await extract_findings(
+            client, notebook_id, domain, domain_slug
+        )
+
         # ── STEP 8: Compile dual-modality Crucible Report (Rule 8) ──
         report_path = f".foundry/crucible-report-{domain_slug}.md"
         manifest_path = f".foundry/crucible-manifest-{domain_slug}.json"
-        print(f"\n7. Compiling Crucible Report (Rule 8 — TWO modalities)...")
+        print(f"\n8. Compiling Crucible Report (Rule 8 — TWO modalities)...")
 
         with open(report_path, "w") as report:
             report.write(f"# Crucible Report: {domain}\n\n")
@@ -241,7 +308,16 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
             else:
                 report.write("**[TRANSCRIPT PENDING]**\n")
                 report.write(f"Audio file: `{audio_path or 'download from NotebookLM UI'}`\n")
-                report.write("Transcribe with: `whisper .foundry/crucible-audio-*.wav --output_format txt`\n")
+                report.write("Findings extraction completed and is recorded below.\n")
+
+            report.write("\n\n---\n\n")
+            report.write("## SELF-PROCESSED FINDINGS\n\n")
+            report.write("_Mandatory post-audio NotebookLM extraction. This is what prevents asking the human to listen before the pipeline can continue._\n\n")
+            for item in findings:
+                report.write(f"### Extraction Query {item['query_number']}\n\n")
+                report.write(f"**Question:** {item['query']}\n\n")
+                report.write(item["answer"])
+                report.write("\n\n---\n\n")
 
             report.write("\n\n---\n\n")
             report.write("## Verification Artifacts\n\n")
@@ -250,6 +326,8 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
             report.write(f"- Report: `{report_path}`\n")
             report.write(f"- Audio: `{audio_path}`\n")
             report.write(f"- Transcript: `{transcript_path}`\n")
+            report.write(f"- Findings JSON: `{findings_json_path}`\n")
+            report.write(f"- Findings MD: `{findings_md_path}`\n")
 
         print(f"   ✅ Report saved: {report_path}")
 
@@ -262,6 +340,9 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
                 "report_path": report_path,
                 "audio_path": audio_path,
                 "transcript_path": transcript_path if transcript_content else None,
+                "findings_json_path": findings_json_path,
+                "findings_md_path": findings_md_path,
+                "findings_chars": findings_chars,
                 "source_count": source_count,
                 "sources": source_records,
                 "external_count": len(external_urls),
@@ -275,6 +356,7 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
             with open(progress_file, "a") as pf:
                 pf.write(f"\n[CRUCIBLE] notebook_id={notebook_id} "
                          f"audio_task={audio_status.task_id} "
+                         f"findings_chars={findings_chars} "
                          f"report={report_path} domain={domain}\n")
             print(f"   ✅ Appended to {progress_file}")
 
@@ -287,6 +369,7 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
         print(f"  Report:     {report_path}")
         print(f"  Sources:    {source_count} (separate, with external ground truth)")
         print(f"  Chat:       {len(chat_results)} queries")
+        print(f"  Findings:   {len(findings)} extraction queries ({findings_chars} chars)")
         print(f"  Transcript: {'✅' if transcript_content else '⚠️  PENDING'}")
         print(f"{'='*60}\n")
 
