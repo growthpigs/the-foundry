@@ -19,7 +19,7 @@ set -euo pipefail
 # CONSTANTS
 # ─────────────────────────────────────────────────
 
-VERSION="2.5.0"
+VERSION="2.5.1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL_DIR="$SCRIPT_DIR"
 GLOBAL_COMMANDS="$HOME/.claude/commands"
@@ -69,9 +69,34 @@ CONSTITUTION_FILE="$CONSTITUTION_CORE"  # default to core; overridden per stage 
 # Write stages (code, validate, e2e, pr, fsd) get full permissions.
 stage_needs_write() {
   case "$1" in
-    code|validate|e2e|pr|fsd|follow-up|autoresearch) return 0 ;;  # true — needs write permissions
+    code|pr|fsd|follow-up|autoresearch) return 0 ;;  # true — needs write permissions
     *)                                  return 1 ;;  # false — read-only
   esac
+}
+
+has_npm_script() {
+  node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts[process.argv[1]] ? 0 : 1)" "$1" 2>/dev/null
+}
+
+run_npm_script_if_present() {
+  local script_name="$1"
+  local label="$2"
+  local output_file="$3"
+  local tail_lines="${4:-8}"
+
+  if has_npm_script "$script_name"; then
+    echo "Command: npm run ${script_name}" >> "$output_file"
+    if npm run --silent "$script_name" 2>&1 | tail -"$tail_lines" >> "$output_file"; then
+      echo "${label}: PASS" >> "$output_file"
+      return 0
+    else
+      echo "${label}: FAIL" >> "$output_file"
+      return 1
+    fi
+  fi
+
+  echo "${label}: SKIP (no ${script_name} script)" >> "$output_file"
+  return 2
 }
 
 # Entry limit per stage — architectural stages get more context budget (Crucible March 2026)
@@ -177,8 +202,13 @@ if [ -z "$ISSUE_NUM" ]; then
   exit 1
 fi
 
-# Default to current directory
+# Default to current directory and normalize once.
 PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
+if [ ! -d "$PROJECT_DIR" ]; then
+  echo "ERROR: Project directory not found: $PROJECT_DIR"
+  exit 1
+fi
+PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)"
 PROJECT_COMMANDS="$PROJECT_DIR/.claude/commands"
 
 # ─────────────────────────────────────────────────
@@ -391,8 +421,9 @@ run_stage() {
   cmd_file=$(resolve_command "$stage_name")
 
   if [ -z "$cmd_file" ]; then
-    echo "[WARN] No command file found for stage '${stage_name}' — skipping"
-    return 0
+    echo "[ERROR] No command file found for required stage '${stage_name}'"
+    echo "[ERROR] Checked: $PROJECT_COMMANDS, $GLOBAL_COMMANDS, $SE_SKILLS"
+    return 1
   fi
 
   # Build prompt — use awk for safe literal substitution (CC4 Finding 4)
@@ -522,41 +553,34 @@ run_anti_regression() {
   echo "Issue: #${ISSUE_NUM}" >> "$baseline_file"
   echo "" >> "$baseline_file"
 
-  # Test count
+  # Test discovery and results
   echo "### Test Count" >> "$baseline_file"
-  local test_count
-  test_count=$(npx jest --listTests 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+  local test_count=0
+  if [ -d server ]; then
+    test_count=$((test_count + $(find server -type f \( -name '*.test.ts' -o -name '*.spec.ts' -o -name '*.test.tsx' -o -name '*.spec.tsx' \) 2>/dev/null | wc -l | tr -d ' ')))
+  fi
+  if [ -d client ]; then
+    test_count=$((test_count + $(find client -type f \( -name '*.test.ts' -o -name '*.spec.ts' -o -name '*.test.tsx' -o -name '*.spec.tsx' \) 2>/dev/null | wc -l | tr -d ' ')))
+  fi
   echo "Total test files: ${test_count}" >> "$baseline_file"
   echo "" >> "$baseline_file"
 
-  # Test results
   echo "### Test Results" >> "$baseline_file"
-  npx jest --passWithNoTests --no-coverage 2>&1 | tail -5 >> "$baseline_file" || echo "(tests not available)" >> "$baseline_file"
+  run_npm_script_if_present "test" "Tests" "$baseline_file" 8 || true
   echo "" >> "$baseline_file"
 
-  # TypeScript
   echo "### TypeScript" >> "$baseline_file"
-  npx tsc --noEmit 2>&1 | tail -3 >> "$baseline_file" || echo "(tsc not available)" >> "$baseline_file"
+  run_npm_script_if_present "check" "TypeScript" "$baseline_file" 8 || true
   echo "" >> "$baseline_file"
 
-  # Build status (#21 — was documented but never implemented)
   echo "### Build" >> "$baseline_file"
-  if npm run --silent build 2>&1 | tail -5 >> "$baseline_file"; then
-    echo "Build: PASS" >> "$baseline_file"
-  else
-    # Check if build script exists before marking as FAIL
-    if node -e "const p=require('./package.json'); if(!p.scripts||!p.scripts.build) process.exit(1)" 2>/dev/null; then
-      echo "Build: FAIL" >> "$baseline_file"
-    else
-      echo "Build: SKIP (no build script)" >> "$baseline_file"
-    fi
-  fi
+  run_npm_script_if_present "build" "Build" "$baseline_file" 8 || true
   echo "" >> "$baseline_file"
 
   # Critical variant: additional captures
   if [[ "$variant" == *"critical"* ]]; then
     echo "### Test Names (Critical Mode)" >> "$baseline_file"
-    npx jest --listTests 2>/dev/null | sort >> "$baseline_file" || true
+    find . -type f \( -name '*.test.ts' -o -name '*.spec.ts' -o -name '*.test.tsx' -o -name '*.spec.tsx' \) 2>/dev/null | sort >> "$baseline_file" || true
     echo "" >> "$baseline_file"
 
     echo "### Key File Checksums" >> "$baseline_file"
@@ -596,27 +620,26 @@ compare_anti_regression() {
 
   # Re-run test count
   echo "### Test Count (Post-Code)" >> "$compare_file"
-  local post_test_count
-  post_test_count=$(npx jest --listTests 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+  local post_test_count=0
+  if [ -d server ]; then
+    post_test_count=$((post_test_count + $(find server -type f \( -name '*.test.ts' -o -name '*.spec.ts' -o -name '*.test.tsx' -o -name '*.spec.tsx' \) 2>/dev/null | wc -l | tr -d ' ')))
+  fi
+  if [ -d client ]; then
+    post_test_count=$((post_test_count + $(find client -type f \( -name '*.test.ts' -o -name '*.spec.ts' -o -name '*.test.tsx' -o -name '*.spec.tsx' \) 2>/dev/null | wc -l | tr -d ' ')))
+  fi
   echo "Total test files: ${post_test_count}" >> "$compare_file"
   echo "" >> "$compare_file"
 
-  # Re-run TypeScript
-  echo "### TypeScript (Post-Code)" >> "$compare_file"
-  npx tsc --noEmit 2>&1 | tail -3 >> "$compare_file" || echo "(tsc not available)" >> "$compare_file"
+  echo "### Test Results (Post-Code)" >> "$compare_file"
+  run_npm_script_if_present "test" "Tests" "$compare_file" 8 || true
   echo "" >> "$compare_file"
 
-  # Re-run Build (#21 — was documented but never compared)
+  echo "### TypeScript (Post-Code)" >> "$compare_file"
+  run_npm_script_if_present "check" "TypeScript" "$compare_file" 8 || true
+  echo "" >> "$compare_file"
+
   echo "### Build (Post-Code)" >> "$compare_file"
-  if npm run --silent build 2>&1 | tail -5 >> "$compare_file"; then
-    echo "Build: PASS" >> "$compare_file"
-  else
-    if node -e "const p=require('./package.json'); if(!p.scripts||!p.scripts.build) process.exit(1)" 2>/dev/null; then
-      echo "Build: FAIL" >> "$compare_file"
-    else
-      echo "Build: SKIP (no build script)" >> "$compare_file"
-    fi
-  fi
+  run_npm_script_if_present "build" "Build" "$compare_file" 8 || true
   echo "" >> "$compare_file"
 
   # Semantic comparison — extract numbers, don't rely on raw diff (CC3 F2 fix)
@@ -719,21 +742,29 @@ main() {
   # Capture start time (used in pipeline report)
   START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-  # Auth preflight — fail fast if claude -p can't authenticate
-  echo "[AUTH] Verifying claude -p authentication..."
-  if ! claude -p "Say OK" --max-budget-usd 0.01 >/dev/null 2>&1; then
+  cd "$PROJECT_DIR"
+
+  # Auth preflight — fail fast if claude -p can't authenticate.
+  # Dry-run intentionally skips auth so planning works in unauthenticated audit sessions.
+  if [ "$DRY_RUN" != true ]; then
+    echo "[AUTH] Verifying claude -p authentication..."
+    if ! claude -p "Say OK" --max-budget-usd 0.01 >/dev/null 2>&1; then
+      echo ""
+      echo "╔═══════════════════════════════════════════════╗"
+      echo "║  ❌ AUTH FAILED                               ║"
+      echo "║                                               ║"
+      echo "║  claude -p cannot authenticate.               ║"
+      echo "║  Run: ~/.claude/skills/DarkFoundry/bin/claude-reauth.sh"
+      echo "║  Then retry the pipeline.                     ║"
+      echo "╚═══════════════════════════════════════════════╝"
+      exit 1
+    fi
+    echo "[AUTH] ✅ Authenticated"
     echo ""
-    echo "╔═══════════════════════════════════════════════╗"
-    echo "║  ❌ AUTH FAILED                               ║"
-    echo "║                                               ║"
-    echo "║  claude -p cannot authenticate.               ║"
-    echo "║  Run: ~/.claude/skills/DarkFoundry/bin/claude-reauth.sh"
-    echo "║  Then retry the pipeline.                     ║"
-    echo "╚═══════════════════════════════════════════════╝"
-    exit 1
+  else
+    echo "[AUTH] Skipped for dry-run"
+    echo ""
   fi
-  echo "[AUTH] ✅ Authenticated"
-  echo ""
 
   # Classify
   PIPELINE_MODE=$(classify_issue "$ISSUE_NUM")
@@ -782,9 +813,16 @@ main() {
         cmd_file="${cmd_file:-NOT FOUND}"
       fi
       echo "  ${i}. ${display_name} → ${cmd_file}"
+      if [ "$cmd_file" = "NOT FOUND" ]; then
+        missing_commands=true
+      fi
       i=$((i + 1))
     done
     echo ""
+    if [ "${missing_commands:-false}" = true ]; then
+      echo "[DRY RUN] ERROR: Required command files are missing."
+      exit 1
+    fi
     echo "[DRY RUN] No changes made."
     exit 0
   fi
@@ -845,7 +883,9 @@ main() {
   local commit_hash
   commit_hash=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
   local files_changed
-  files_changed=$(git diff --stat main...HEAD 2>/dev/null | tail -1 || echo "unknown")
+  local base_ref
+  base_ref=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || echo main)
+  files_changed=$(git diff --stat "origin/${base_ref}...HEAD" 2>/dev/null | tail -1 || git diff --stat main...HEAD 2>/dev/null | tail -1 || echo "unknown")
 
   # Extract user stories from progress.txt
   local stories=""
