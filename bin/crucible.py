@@ -52,7 +52,7 @@ def fetch_external_url(url: str) -> str:
 async def run_crucible(domain: str, source_files: list, external_urls: list,
                        questions: list, audio_focus: str):
     """Execute the full Crucible — all 8 rules, no shortcuts."""
-    from notebooklm import NotebookLMClient, AudioFormat
+    from notebooklm import NotebookLMClient, AudioFormat, AudioLength
 
     os.makedirs(".foundry", exist_ok=True)
     domain_slug = domain.lower().replace(" ", "-").replace("&", "and")
@@ -63,7 +63,14 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
     print(f"  {timestamp}")
     print(f"{'='*60}\n")
 
-    async with await NotebookLMClient.from_storage() as client:
+    storage_path = os.environ.get("NOTEBOOKLM_STORAGE")
+    if not storage_path:
+        profile_storage = os.path.expanduser("~/.notebooklm/profiles/default/storage_state.json")
+        legacy_storage = os.path.expanduser("~/.notebooklm/storage_state.json")
+        storage_path = profile_storage if os.path.exists(profile_storage) else legacy_storage
+
+    client = await NotebookLMClient.from_storage(storage_path)
+    async with client:
 
         # ── STEP 1: Create notebook (Rule 5: one per domain) ──
         print("1. Creating NotebookLM notebook...")
@@ -134,6 +141,7 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
         audio_status = await client.artifacts.generate_audio(
             notebook_id=notebook_id,
             audio_format=AudioFormat.DEBATE,
+            audio_length=AudioLength.SHORT,
             instructions=audio_focus
         )
 
@@ -143,9 +151,9 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
             timeout=1200.0  # 20 minutes
         )
 
-        if final_status.status not in ("completed", "complete"):
+        if final_status.status not in ("completed", "complete", 3):
             print(f"   ❌ Audio generation FAILED: {final_status.status}")
-            print(f"   Error: {final_status.error}")
+            print(f"   Error: {getattr(final_status, 'error', None)}")
             print("   The Crucible is INCOMPLETE without audio. Fix and retry.")
             sys.exit(1)
 

@@ -19,7 +19,7 @@ set -euo pipefail
 # CONSTANTS
 # ─────────────────────────────────────────────────
 
-VERSION="2.5.1"
+VERSION="2.5.2"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL_DIR="$SCRIPT_DIR"
 GLOBAL_COMMANDS="$HOME/.claude/commands"
@@ -133,6 +133,7 @@ DRY_RUN=false
 DEFCON=false
 ISSUE_NUM=""
 PROJECT_DIR=""
+ENGINE="claude"
 
 usage() {
   echo "Dark Foundry v${VERSION} — Autonomous Pipeline Orchestrator"
@@ -145,6 +146,7 @@ usage() {
   echo "  --gated         Add human checkpoints after explore and code"
   echo "  --dry-run       Show pipeline plan without executing"
   echo "  --project DIR   Project directory (default: current directory)"
+  echo "  --engine NAME   Execution engine (claude|codex; default: claude)"
   echo "  --help          Show this help"
   echo ""
   echo "Examples:"
@@ -152,6 +154,7 @@ usage() {
   echo "  $0 --mode REFACTOR #456     Force REFACTOR mode"
   echo "  $0 --defcon #789            Production emergency"
   echo "  $0 --gated --mode FULL #123 Full pipeline with human gates"
+  echo "  $0 --engine codex --mode FEATURE #123 Run stages with Codex exec"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -174,6 +177,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --project)
       PROJECT_DIR="$2"
+      shift 2
+      ;;
+    --engine)
+      ENGINE=$(echo "$2" | tr '[:upper:]' '[:lower:]')
+      case "$ENGINE" in
+        claude|codex) ;;
+        *) echo "ERROR: Unknown engine: $ENGINE (expected claude|codex)"; exit 1 ;;
+      esac
       shift 2
       ;;
     --help|-h)
@@ -507,7 +518,20 @@ MANDATORY: After your entries, write a ## Carry-Forward section that synthesizes
       echo "  [permissions] Read-only stage — running with default permissions"
     fi
 
-    if claude -p "$prompt" \
+    if [ "$ENGINE" = "codex" ]; then
+      local codex_sandbox="read-only"
+      if stage_needs_write "$stage_name"; then
+        codex_sandbox="workspace-write"
+      fi
+      if printf '%s' "$prompt" | codex exec - \
+        --cd "$PROJECT_DIR" \
+        --sandbox "$codex_sandbox" \
+        2>&1 | tee "$LOG_DIR/${stage_name}.log"; then
+        echo ""
+        echo "[${stage_name}] ✅ Complete"
+        return 0
+      fi
+    elif claude -p "$prompt" \
       $perm_flag \
       --max-budget-usd "$budget" \
       2>&1 | tee "$LOG_DIR/${stage_name}.log"; then
@@ -744,23 +768,39 @@ main() {
 
   cd "$PROJECT_DIR"
 
-  # Auth preflight — fail fast if claude -p can't authenticate.
-  # Dry-run intentionally skips auth so planning works in unauthenticated audit sessions.
+  # Engine preflight. Dry-run intentionally skips auth so planning works in audit sessions.
   if [ "$DRY_RUN" != true ]; then
-    echo "[AUTH] Verifying claude -p authentication..."
-    if ! claude -p "Say OK" --max-budget-usd 0.01 >/dev/null 2>&1; then
+    if [ "$ENGINE" = "codex" ]; then
+      echo "[AUTH] Verifying codex exec availability..."
+      if ! codex exec "Say OK" --cd "$PROJECT_DIR" --sandbox read-only --output-last-message /tmp/foundry-codex-preflight.txt >/dev/null 2>&1; then
+        echo ""
+        echo "╔═══════════════════════════════════════════════╗"
+        echo "║  ❌ CODEX PREFLIGHT FAILED                    ║"
+        echo "║                                               ║"
+        echo "║  codex exec is not available or authenticated.║"
+        echo "║  Run: codex exec \"Say OK\"                    ║"
+        echo "║  Then retry the pipeline.                     ║"
+        echo "╚═══════════════════════════════════════════════╝"
+        exit 1
+      fi
+      echo "[AUTH] ✅ Codex available"
       echo ""
-      echo "╔═══════════════════════════════════════════════╗"
-      echo "║  ❌ AUTH FAILED                               ║"
-      echo "║                                               ║"
-      echo "║  claude -p cannot authenticate.               ║"
-      echo "║  Run: ~/.claude/skills/DarkFoundry/bin/claude-reauth.sh"
-      echo "║  Then retry the pipeline.                     ║"
-      echo "╚═══════════════════════════════════════════════╝"
-      exit 1
+    else
+      echo "[AUTH] Verifying claude -p authentication..."
+      if ! claude -p "Say OK" --max-budget-usd 0.01 >/dev/null 2>&1; then
+        echo ""
+        echo "╔═══════════════════════════════════════════════╗"
+        echo "║  ❌ AUTH FAILED                               ║"
+        echo "║                                               ║"
+        echo "║  claude -p cannot authenticate.               ║"
+        echo "║  Run: ~/.claude/skills/DarkFoundry/bin/claude-reauth.sh"
+        echo "║  Then retry the pipeline.                     ║"
+        echo "╚═══════════════════════════════════════════════╝"
+        exit 1
+      fi
+      echo "[AUTH] ✅ Authenticated"
+      echo ""
     fi
-    echo "[AUTH] ✅ Authenticated"
-    echo ""
   else
     echo "[AUTH] Skipped for dry-run"
     echo ""
@@ -769,6 +809,7 @@ main() {
   # Classify
   PIPELINE_MODE=$(classify_issue "$ISSUE_NUM")
   echo "[CLASSIFY] Issue #${ISSUE_NUM} → Mode: ${PIPELINE_MODE}"
+  echo "[ENGINE] ${ENGINE}"
 
   # Get stage list
   local stages
@@ -904,7 +945,7 @@ main() {
   report_body=$(cat <<REPORT_EOF
 ## Dark Foundry Pipeline Report
 
-**Mode:** ${PIPELINE_MODE} | **Stages:** ${completed}/${stage_count} | **Retries:** ${TOTAL_RETRIES}
+**Mode:** ${PIPELINE_MODE} | **Engine:** ${ENGINE} | **Stages:** ${completed}/${stage_count} | **Retries:** ${TOTAL_RETRIES}
 **Branch:** \`${branch_name}\` | **Commit:** \`${commit_hash}\`
 **Started:** ${START_TIME:-unknown} | **Finished:** ${end_time}
 
