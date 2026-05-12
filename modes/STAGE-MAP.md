@@ -23,6 +23,7 @@ FOUNDRY PHASE          PIPELINE STAGES (foundry.sh)
 
 4. CRUCIBLE            issue-review
                        red-team / red-team-quick / red-team-spec
+                       notebook-crucible (when --require-notebook-crucible)
 
 5. PLAN                (manual — GitHub issue creation via scrum-master skill)
 
@@ -53,6 +54,7 @@ FOUNDRY PHASE          PIPELINE STAGES (foundry.sh)
 | `red-team` | CRUCIBLE | Adversarial stress-test (predictive) |
 | `red-team-quick` | CRUCIBLE | Abbreviated red-team for FIX mode |
 | `red-team-spec` | CRUCIBLE | Spec-only red-team (no code review) |
+| `notebook-crucible` | CRUCIBLE | Built-in hard gate verifying NotebookLM source and completed audio artifacts |
 | `anti-regression` | HAMMER | Capture baseline before code changes |
 | `anti-regression-critical` | HAMMER | Extended baseline for REFACTOR mode |
 | `code` | HAMMER | Main implementation work |
@@ -72,7 +74,7 @@ FOUNDRY PHASE          PIPELINE STAGES (foundry.sh)
 | MINE | No | Human firehose capture, interviews, brain dumps |
 | SCOUT | Partially | `explore` stage runs, but IDEO sprint / art direction are manual skills |
 | ASSAY | Yes | `issue` → `user-stories` → `fsd` stages |
-| CRUCIBLE | Yes | `issue-review` → `red-team` stages. NotebookLM debates are manual. |
+| CRUCIBLE | Yes | `issue-review` → `red-team` stages. NotebookLM artifact verification is enforced when `--require-notebook-crucible` is set. |
 | PLAN | No | GitHub issue creation via `foundry-pipe-02-scrum-master` skill |
 | HAMMER | Yes | `anti-regression` → `code` → `validate` stages |
 | TEMPER | Yes | `e2e` → `pr` → `pr-review` → `compliance` → `follow-up` stages |

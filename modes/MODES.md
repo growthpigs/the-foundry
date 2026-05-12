@@ -111,6 +111,19 @@ Default (no matching labels)           → FEATURE
 
 Override: `./bin/foundry.sh --mode HOTFIX #123`
 
+NotebookLM Crucible enforcement is opt-in at the runner level:
+
+```
+./bin/foundry.sh --require-notebook-crucible --mode SPEC #123
+```
+
+When enabled, the runner inserts a built-in `notebook-crucible` gate immediately after `red-team`, `red-team-quick`, or `red-team-spec`. The gate blocks unless it can verify a real NotebookLM notebook with at least three ready sources, at least one completed Audio artifact, and a saved findings extraction response. Provide either:
+
+- `NOTEBOOKLM_CRUCIBLE_NOTEBOOK_ID=<id>` to verify an existing notebook.
+- `NOTEBOOKLM_CRUCIBLE_CMD='<command>'` to run a command that creates a notebook and prints `CRUCIBLE_NOTEBOOK_ID=<id>`.
+
+Use `--verify-notebook-crucible-only` to verify the NotebookLM gate without running the full pipeline.
+
 ---
 
 ## Ratify Gates Per Mode

@@ -39,9 +39,32 @@ notebooklm doctor
 notebooklm source list --notebook 490ce25d-479a-4cd8-8797-bd2179234693 --json
 notebooklm artifact list --notebook 490ce25d-479a-4cd8-8797-bd2179234693 --json
 notebooklm ask --notebook 490ce25d-479a-4cd8-8797-bd2179234693 --json "Based on the completed debate audio context and the three sources, what is the top risk that could still allow fake Crucible claims, and what concrete runner change would prevent it?"
+NOTEBOOKLM_CRUCIBLE_NOTEBOOK_ID=490ce25d-479a-4cd8-8797-bd2179234693 ./bin/foundry.sh --verify-notebook-crucible-only --project /Users/rodericandrews/_PAI/badaboost/clients/war-room 2389
 ```
+
+The Foundry gate verifier produced:
+
+```text
+[notebook-crucible] Verifying notebook: 490ce25d-479a-4cd8-8797-bd2179234693
+[notebook-crucible] ✅ Verified NotebookLM Crucible artifacts
+[notebook-crucible] Report: /Users/rodericandrews/_PAI/badaboost/clients/war-room/.foundry/notebook-crucible-2389.md
+```
+
+Gate report summary:
+
+```text
+Ready sources: 3
+Completed audio artifacts: 1
+Extracted findings chars: 1534
+Verdict: PASS
+```
+
+The hard gate now requires all three classes of proof:
+
+1. Ready NotebookLM sources.
+2. A completed NotebookLM Audio artifact.
+3. A saved NotebookLM findings extraction JSON.
 
 ## Verdict
 
 This was a real NotebookLM Crucible smoke test. It created a real notebook, uploaded three separate sources, generated a completed debate-format audio artifact, and extracted findings with citations.
-

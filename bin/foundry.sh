@@ -19,7 +19,7 @@ set -euo pipefail
 # CONSTANTS
 # ─────────────────────────────────────────────────
 
-VERSION="2.5.2"
+VERSION="2.5.3"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL_DIR="$SCRIPT_DIR"
 GLOBAL_COMMANDS="$HOME/.claude/commands"
@@ -134,6 +134,8 @@ DEFCON=false
 ISSUE_NUM=""
 PROJECT_DIR=""
 ENGINE="claude"
+REQUIRE_NOTEBOOK_CRUCIBLE=false
+VERIFY_NOTEBOOK_CRUCIBLE_ONLY=false
 
 usage() {
   echo "Dark Foundry v${VERSION} — Autonomous Pipeline Orchestrator"
@@ -147,6 +149,8 @@ usage() {
   echo "  --dry-run       Show pipeline plan without executing"
   echo "  --project DIR   Project directory (default: current directory)"
   echo "  --engine NAME   Execution engine (claude|codex; default: claude)"
+  echo "  --require-notebook-crucible  Require verified NotebookLM audio artifact gate"
+  echo "  --verify-notebook-crucible-only  Verify NotebookLM gate and exit"
   echo "  --help          Show this help"
   echo ""
   echo "Examples:"
@@ -173,6 +177,15 @@ while [[ $# -gt 0 ]]; do
       ;;
     --dry-run)
       DRY_RUN=true
+      shift
+      ;;
+    --require-notebook-crucible)
+      REQUIRE_NOTEBOOK_CRUCIBLE=true
+      shift
+      ;;
+    --verify-notebook-crucible-only)
+      VERIFY_NOTEBOOK_CRUCIBLE_ONLY=true
+      REQUIRE_NOTEBOOK_CRUCIBLE=true
       shift
       ;;
     --project)
@@ -328,6 +341,31 @@ get_stages() {
   esac
 }
 
+
+add_notebook_crucible_stage() {
+  local stages="$1"
+  local output=""
+  local inserted=false
+
+  for stage in $stages; do
+    output="${output}${stage} "
+    case "$stage" in
+      red-team|red-team-quick|red-team-spec)
+        if [ "$inserted" = false ]; then
+          output="${output}notebook-crucible "
+          inserted=true
+        fi
+        ;;
+    esac
+  done
+
+  if [ "$inserted" = false ]; then
+    output="${output}notebook-crucible "
+  fi
+
+  echo "$output" | sed 's/[[:space:]]*$//'
+}
+
 # ─────────────────────────────────────────────────
 # STAGE EXECUTION
 # ─────────────────────────────────────────────────
@@ -373,6 +411,8 @@ init_pipeline() {
 # progress.txt — Dark Foundry Pipeline
 # Issue: #${ISSUE_NUM} — ${issue_title}
 # Mode: ${PIPELINE_MODE}
+# Engine: ${ENGINE}
+# Notebook Crucible Required: ${REQUIRE_NOTEBOOK_CRUCIBLE}
 # Started: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 # Labels: ${issue_labels}
 # Project: $(basename "$PROJECT_DIR")
@@ -411,9 +451,13 @@ run_stage() {
     *)                 stage_name="$stage_key" ;;
   esac
 
-  # Anti-regression is built-in, not a command file
+  # Built-in stages
   if [[ "$stage_name" == "anti-regression" ]]; then
     run_anti_regression "$stage_key"
+    return $?
+  fi
+  if [[ "$stage_name" == "notebook-crucible" ]]; then
+    run_notebook_crucible
     return $?
   fi
 
@@ -518,23 +562,25 @@ MANDATORY: After your entries, write a ## Carry-Forward section that synthesizes
       echo "  [permissions] Read-only stage — running with default permissions"
     fi
 
+    local stage_ok=false
     if [ "$ENGINE" = "codex" ]; then
-      local codex_sandbox="read-only"
-      if stage_needs_write "$stage_name"; then
-        codex_sandbox="workspace-write"
-      fi
+      # Codex stages must be able to append .foundry/progress.txt as instructed.
+      # Project-level workspace-write is the narrowest stable Codex sandbox that permits that.
+      local codex_sandbox="workspace-write"
       if printf '%s' "$prompt" | codex exec - \
         --cd "$PROJECT_DIR" \
         --sandbox "$codex_sandbox" \
         2>&1 | tee "$LOG_DIR/${stage_name}.log"; then
-        echo ""
-        echo "[${stage_name}] ✅ Complete"
-        return 0
+        stage_ok=true
       fi
     elif claude -p "$prompt" \
       $perm_flag \
       --max-budget-usd "$budget" \
       2>&1 | tee "$LOG_DIR/${stage_name}.log"; then
+      stage_ok=true
+    fi
+
+    if [ "$stage_ok" = true ]; then
       echo ""
       echo "[${stage_name}] ✅ Complete"
       return 0
@@ -553,6 +599,110 @@ MANDATORY: After your entries, write a ## Carry-Forward section that synthesizes
 
   echo "[${stage_name}] ❌ Max retries exhausted. Aborting pipeline."
   exit 1
+}
+
+
+# ─────────────────────────────────────────────────
+# NOTEBOOKLM CRUCIBLE GATE (Built-in Stage)
+# ─────────────────────────────────────────────────
+
+run_notebook_crucible() {
+  local report_file="$PROJECT_DIR/$DARK_FOUNDRY_DIR/notebook-crucible-${ISSUE_NUM}.md"
+  local raw_dir="$PROJECT_DIR/$DARK_FOUNDRY_DIR/notebook-crucible-${ISSUE_NUM}"
+  local source_json="$raw_dir/sources.json"
+  local artifact_json="$raw_dir/artifacts.json"
+  local findings_json="$raw_dir/findings.json"
+  local notebook_id="${NOTEBOOKLM_CRUCIBLE_NOTEBOOK_ID:-}"
+
+  echo ""
+  echo "═══════════════════════════════════════════════"
+  echo "  Stage: NotebookLM Crucible Gate"
+  echo "═══════════════════════════════════════════════"
+  echo ""
+
+  mkdir -p "$raw_dir"
+
+  if ! command -v notebooklm >/dev/null 2>&1; then
+    echo "[notebook-crucible] ❌ notebooklm CLI not found"
+    return 1
+  fi
+
+  if [ -n "${NOTEBOOKLM_CRUCIBLE_CMD:-}" ]; then
+    echo "[notebook-crucible] Running NOTEBOOKLM_CRUCIBLE_CMD..."
+    local cmd_log="$raw_dir/command.log"
+    if ! bash -lc "$NOTEBOOKLM_CRUCIBLE_CMD" 2>&1 | tee "$cmd_log"; then
+      echo "[notebook-crucible] ❌ Crucible command failed"
+      return 1
+    fi
+    notebook_id=$(grep -E '^(CRUCIBLE_NOTEBOOK_ID|NOTEBOOKLM_CRUCIBLE_NOTEBOOK_ID)=' "$cmd_log" | tail -1 | cut -d= -f2-)
+  fi
+
+  if [ -z "$notebook_id" ]; then
+    echo "[notebook-crucible] ❌ No notebook id provided"
+    echo "[notebook-crucible] Set NOTEBOOKLM_CRUCIBLE_NOTEBOOK_ID to verify an existing notebook,"
+    echo "[notebook-crucible] or set NOTEBOOKLM_CRUCIBLE_CMD to run a command that prints CRUCIBLE_NOTEBOOK_ID=<id>."
+    return 1
+  fi
+
+  echo "[notebook-crucible] Verifying notebook: $notebook_id"
+
+  if ! notebooklm source list --notebook "$notebook_id" --json > "$source_json"; then
+    echo "[notebook-crucible] ❌ Could not list NotebookLM sources"
+    return 1
+  fi
+
+  if ! notebooklm artifact list --notebook "$notebook_id" --json > "$artifact_json"; then
+    echo "[notebook-crucible] ❌ Could not list NotebookLM artifacts"
+    return 1
+  fi
+
+  local source_count audio_count
+  source_count=$(node -e "const fs=require('fs'); const data=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); const sources=data.sources||[]; const ready=sources.filter(s => String(s.status||'').toLowerCase()==='ready' || s.status_id===2 || s.status_id===3); console.log(ready.length);" "$source_json")
+  audio_count=$(node -e "const fs=require('fs'); const data=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); const artifacts=data.artifacts||[]; const complete=artifacts.filter(a => String(a.type||'').toLowerCase()==='audio' && (String(a.status||'').toLowerCase()==='completed' || a.status_id===3)); console.log(complete.length);" "$artifact_json")
+
+  if [ "$source_count" -lt 3 ] 2>/dev/null; then
+    echo "[notebook-crucible] ❌ Need at least 3 ready sources; found $source_count"
+    return 1
+  fi
+
+  if [ "$audio_count" -lt 1 ] 2>/dev/null; then
+    echo "[notebook-crucible] ❌ Need at least 1 completed Audio artifact; found $audio_count"
+    return 1
+  fi
+
+  echo "[notebook-crucible] Extracting findings from NotebookLM..."
+  if ! notebooklm ask --notebook "$notebook_id" --json \
+    "For this Crucible, list the top architectural gap, the evidence from the uploaded sources, and the concrete fix required before the runner can claim the Crucible is complete." > "$findings_json"; then
+    echo "[notebook-crucible] ❌ Could not extract NotebookLM findings"
+    return 1
+  fi
+
+  local findings_chars
+  findings_chars=$(node -e "const fs=require('fs'); const data=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); const answer=String(data.answer||''); console.log(answer.trim().length);" "$findings_json")
+  if [ "$findings_chars" -lt 50 ] 2>/dev/null; then
+    echo "[notebook-crucible] ❌ Extracted findings are empty or too short (${findings_chars} chars)"
+    return 1
+  fi
+
+  cat > "$report_file" <<REPORT
+# NotebookLM Crucible Gate
+
+- Issue: #${ISSUE_NUM}
+- Notebook ID: ${notebook_id}
+- Ready sources: ${source_count}
+- Completed audio artifacts: ${audio_count}
+- Extracted findings chars: ${findings_chars}
+- Source manifest: ${source_json}
+- Artifact manifest: ${artifact_json}
+- Findings manifest: ${findings_json}
+- Verified: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+Verdict: PASS
+REPORT
+
+  echo "[notebook-crucible] ✅ Verified NotebookLM Crucible artifacts"
+  echo "[notebook-crucible] Report: $report_file"
+  echo "[NOTEBOOK-CRUCIBLE] ✅ notebook_id=${notebook_id} sources=${source_count} completed_audio=${audio_count} findings_chars=${findings_chars} report=${report_file}" >> "$PROGRESS_FILE"
 }
 
 # ─────────────────────────────────────────────────
@@ -768,6 +918,24 @@ main() {
 
   cd "$PROJECT_DIR"
 
+  if [ "$VERIFY_NOTEBOOK_CRUCIBLE_ONLY" = true ]; then
+    mkdir -p "$PROJECT_DIR/$DARK_FOUNDRY_DIR/logs"
+    if [ ! -f "$PROGRESS_FILE" ]; then
+      cat > "$PROGRESS_FILE" <<SEED
+# progress.txt — Dark Foundry Pipeline
+# Issue: #${ISSUE_NUM}
+# Mode: ${MODE:-VERIFY}
+# Engine: ${ENGINE}
+# Notebook Crucible Required: true
+# Started: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+## Discoveries
+SEED
+    fi
+    run_notebook_crucible
+    exit $?
+  fi
+
   # Engine preflight. Dry-run intentionally skips auth so planning works in audit sessions.
   if [ "$DRY_RUN" != true ]; then
     if [ "$ENGINE" = "codex" ]; then
@@ -814,6 +982,9 @@ main() {
   # Get stage list
   local stages
   stages=$(get_stages "$PIPELINE_MODE")
+  if [ "$REQUIRE_NOTEBOOK_CRUCIBLE" = true ]; then
+    stages=$(add_notebook_crucible_stage "$stages")
+  fi
   local stage_count
   stage_count=$(echo "$stages" | wc -w | tr -d ' ')
   echo "[PLAN] ${stage_count} stages: ${stages}"
@@ -832,6 +1003,7 @@ main() {
         compliance)        display_name="red-team (compliance)" ;;
         validate-fast)     display_name="validate (--fast)" ;;
         anti-regression*)  display_name="anti-regression (BUILT-IN)" ;;
+        notebook-crucible) display_name="notebook-crucible (BUILT-IN)" ;;
         pr-restricted)     display_name="pr (--restricted)" ;;
       esac
       # CC4 Fix A: red-team variants now have their own command files
@@ -842,12 +1014,13 @@ main() {
         compliance)       base_name="red-team-compliance" ;;
         validate-fast)    base_name="validate" ;;
         anti-regression*) base_name="anti-regression" ;;
+        notebook-crucible) base_name="notebook-crucible" ;;
         pr-restricted)    base_name="pr" ;;
         pr-review)        base_name="pr-review" ;;
         *)                base_name="$stage" ;;
       esac
       local cmd_file
-      if [[ "$base_name" == "anti-regression" ]]; then
+      if [[ "$base_name" == "anti-regression" || "$base_name" == "notebook-crucible" ]]; then
         cmd_file="BUILT-IN"
       else
         cmd_file=$(resolve_command "$base_name")
@@ -945,7 +1118,7 @@ main() {
   report_body=$(cat <<REPORT_EOF
 ## Dark Foundry Pipeline Report
 
-**Mode:** ${PIPELINE_MODE} | **Engine:** ${ENGINE} | **Stages:** ${completed}/${stage_count} | **Retries:** ${TOTAL_RETRIES}
+**Mode:** ${PIPELINE_MODE} | **Engine:** ${ENGINE} | **Notebook Crucible:** ${REQUIRE_NOTEBOOK_CRUCIBLE} | **Stages:** ${completed}/${stage_count} | **Retries:** ${TOTAL_RETRIES}
 **Branch:** \`${branch_name}\` | **Commit:** \`${commit_hash}\`
 **Started:** ${START_TIME:-unknown} | **Finished:** ${end_time}
 
@@ -953,7 +1126,7 @@ main() {
 $(for s in $stages; do
   if [ -f "${LOG_DIR}/${s}.log" ] && [ -s "${LOG_DIR}/${s}.log" ]; then
     echo "- ✅ **${s}**"
-  elif echo "$s" | grep -q "anti-regression"; then
+  elif echo "$s" | grep -q "anti-regression\|notebook-crucible"; then
     echo "- ✅ **${s}** (built-in)"
   else
     echo "- ⬜ **${s}**"

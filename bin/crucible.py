@@ -27,6 +27,7 @@ Output:
 
 import asyncio
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -42,15 +43,14 @@ def fetch_external_url(url: str) -> str:
         )
         content = result.stdout.strip()
         if not content or len(content) < 100:
-            print(f"  ⚠️  External URL returned very little content: {url}")
+            raise RuntimeError(f"External URL returned too little content: {url}")
         return content
     except Exception as e:
-        print(f"  ❌ Failed to fetch {url}: {e}")
-        return f"[FETCH FAILED: {url} — {e}]"
+        raise RuntimeError(f"Failed to fetch {url}: {e}") from e
 
 
 async def run_crucible(domain: str, source_files: list, external_urls: list,
-                       questions: list, audio_focus: str):
+                       questions: list, audio_focus: str, progress_file: str = None):
     """Execute the full Crucible — all 8 rules, no shortcuts."""
     from notebooklm import NotebookLMClient, AudioFormat, AudioLength
 
@@ -81,36 +81,46 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
         # ── STEP 2: Upload sources SEPARATELY (Rule 2: NO concatenation) ──
         print(f"\n2. Uploading {len(source_files)} sources (SEPARATE — Rule 2)...")
         source_count = 0
+        source_records = []
         for filepath in source_files:
             if not os.path.exists(filepath):
                 print(f"   ❌ File not found: {filepath}")
-                continue
+                sys.exit(1)
             with open(filepath) as f:
                 content = f.read()
+            if not content.strip():
+                print(f"   ❌ Empty source file: {filepath}")
+                sys.exit(1)
             title = os.path.basename(filepath)
-            await client.sources.add_text(
+            source = await client.sources.add_text(
                 notebook_id=notebook_id,
                 title=title,
                 content=content,
                 wait=True
             )
             source_count += 1
+            source_records.append({"id": source.id, "title": title, "kind": "internal"})
             print(f"   ✅ [{source_count}] {title} ({len(content)} chars)")
 
         # ── STEP 3: Fetch + upload external ground truth (Rule 4) ──
         print(f"\n3. Fetching {len(external_urls)} external ground truth sources (Rule 4)...")
         for url in external_urls:
             print(f"   Fetching: {url[:80]}...")
-            content = fetch_external_url(url)
+            try:
+                content = fetch_external_url(url)
+            except RuntimeError as e:
+                print(f"   ❌ {e}")
+                sys.exit(1)
             # Extract a clean title from the URL
             title = f"EXTERNAL: {url.split('/')[-1]}"
-            await client.sources.add_text(
+            source = await client.sources.add_text(
                 notebook_id=notebook_id,
                 title=title,
                 content=content,
                 wait=True
             )
             source_count += 1
+            source_records.append({"id": source.id, "title": title, "kind": "external", "url": url})
             print(f"   ✅ [{source_count}] {title} ({len(content)} chars)")
 
         # Verify minimum 3 sources (Rule 3)
@@ -198,6 +208,7 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
 
         # ── STEP 8: Compile dual-modality Crucible Report (Rule 8) ──
         report_path = f".foundry/crucible-report-{domain_slug}.md"
+        manifest_path = f".foundry/crucible-manifest-{domain_slug}.json"
         print(f"\n7. Compiling Crucible Report (Rule 8 — TWO modalities)...")
 
         with open(report_path, "w") as report:
@@ -207,6 +218,10 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
             report.write(f"**Audio Task ID:** `{audio_status.task_id}`\n")
             report.write(f"**Sources:** {source_count} (separate uploads, no concatenation)\n")
             report.write(f"**External ground truth:** {len(external_urls)} official docs\n\n")
+            report.write("## Source IDs\n\n")
+            for source in source_records:
+                report.write(f"- `{source['id']}` — {source['title']} ({source['kind']})\n")
+            report.write("\n---\n\n")
             report.write("---\n\n")
 
             # Modality 1
@@ -238,8 +253,24 @@ async def run_crucible(domain: str, source_files: list, external_urls: list,
 
         print(f"   ✅ Report saved: {report_path}")
 
+        with open(manifest_path, "w") as manifest:
+            json.dump({
+                "domain": domain,
+                "notebook_id": notebook_id,
+                "audio_task_id": audio_status.task_id,
+                "audio_status": final_status.status,
+                "report_path": report_path,
+                "audio_path": audio_path,
+                "transcript_path": transcript_path if transcript_content else None,
+                "source_count": source_count,
+                "sources": source_records,
+                "external_count": len(external_urls),
+                "observed_at": timestamp,
+            }, manifest, indent=2)
+        print(f"   ✅ Manifest saved: {manifest_path}")
+
         # ── STEP 9: Append to progress.txt ──
-        progress_file = "progress.txt"
+        progress_file = progress_file or os.environ.get("FOUNDRY_PROGRESS_FILE") or ".foundry/progress.txt"
         if os.path.exists(progress_file):
             with open(progress_file, "a") as pf:
                 pf.write(f"\n[CRUCIBLE] notebook_id={notebook_id} "
@@ -271,6 +302,7 @@ def main():
     parser.add_argument("--external", required=True, nargs="+", help="External ground truth URLs (1+ required)")
     parser.add_argument("--questions", required=True, nargs="+", help="Adversarial chat questions")
     parser.add_argument("--audio-focus", required=True, help="Instructions for the DEBATE audio")
+    parser.add_argument("--progress-file", help="Foundry progress file to append artifacts to")
 
     args = parser.parse_args()
 
@@ -284,7 +316,7 @@ def main():
 
     notebook_id, audio_task_id, report_path = asyncio.run(
         run_crucible(args.domain, args.sources, args.external,
-                     args.questions, args.audio_focus)
+                     args.questions, args.audio_focus, args.progress_file)
     )
 
     # Print artifacts for the calling CC to capture
