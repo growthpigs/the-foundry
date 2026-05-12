@@ -612,6 +612,7 @@ run_notebook_crucible() {
   local source_json="$raw_dir/sources.json"
   local artifact_json="$raw_dir/artifacts.json"
   local findings_json="$raw_dir/findings.json"
+  local gate_manifest="$raw_dir/gate-manifest.json"
   local notebook_id="${NOTEBOOKLM_CRUCIBLE_NOTEBOOK_ID:-}"
 
   echo ""
@@ -700,8 +701,45 @@ run_notebook_crucible() {
 Verdict: PASS
 REPORT
 
+  node - "$gate_manifest" "$ISSUE_NUM" "$notebook_id" "$source_count" "$audio_count" "$findings_chars" "$source_json" "$artifact_json" "$findings_json" "$report_file" <<'NODE'
+const fs = require('fs');
+const [
+  out,
+  issue,
+  notebookId,
+  readySources,
+  completedAudioArtifacts,
+  extractedFindingsChars,
+  sourceManifest,
+  artifactManifest,
+  findingsManifest,
+  reportPath,
+] = process.argv.slice(2);
+
+const manifest = {
+  verdict: 'PASS',
+  issue: Number(issue),
+  notebook_id: notebookId,
+  ready_sources: Number(readySources),
+  completed_audio_artifacts: Number(completedAudioArtifacts),
+  extracted_findings_chars: Number(extractedFindingsChars),
+  source_manifest: sourceManifest,
+  artifact_manifest: artifactManifest,
+  findings_manifest: findingsManifest,
+  report_path: reportPath,
+  verified_at: new Date().toISOString(),
+};
+
+if (!manifest.notebook_id || manifest.ready_sources < 3 || manifest.completed_audio_artifacts < 1 || manifest.extracted_findings_chars < 50) {
+  throw new Error(`invalid NotebookLM Crucible gate manifest: ${JSON.stringify(manifest)}`);
+}
+
+fs.writeFileSync(out, JSON.stringify(manifest, null, 2));
+NODE
+
   echo "[notebook-crucible] ✅ Verified NotebookLM Crucible artifacts"
   echo "[notebook-crucible] Report: $report_file"
+  echo "[notebook-crucible] Manifest: $gate_manifest"
   echo "[NOTEBOOK-CRUCIBLE] ✅ notebook_id=${notebook_id} sources=${source_count} completed_audio=${audio_count} findings_chars=${findings_chars} report=${report_file}" >> "$PROGRESS_FILE"
 }
 
