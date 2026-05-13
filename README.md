@@ -52,6 +52,8 @@ Every phase transition passes through a **Ratify** gate — a forced cognitive m
 
 **"Drop the Hammer"** = the decision between PLAN and HAMMER. After this, you commit to building. Before it, everything is reversible.
 
+The decision must be recorded in GitHub before HAMMER starts. See [Hammer Gate and Execution Authorization Contract](knowledge/hammer-gate.md). Vague phrases such as `go`, `continue`, `execute`, `I trust you`, or `do your best` may continue planning, but they do not authorize HAMMER.
+
 ## Phase Classification
 
 | Phases | Domain | What's Happening |
@@ -73,7 +75,7 @@ Each gate has a **phase-specific protocol** — different prompts, different che
 | R3 Spec | ASSAY | **Hard** | ≥ 8/10 + Independent Observer |
 | R4 Adversarial | CRUCIBLE | **Hard** | ≥ 8/10 + all domains scored |
 | **R4b Auditor** | **Ext. Auditor** | **Hard** | Different model, verdict YES/CONDITIONAL |
-| R5 Ready | PLAN | **Hard** | ≥ 8/10 + "Drop the Hammer" |
+| R5 Ready | PLAN | **Hard** | ≥ 8/10 + GitHub Hammer Authorization Record |
 | R6 Build | HAMMER | **Hard** | ≥ 8/10 + tests pass |
 | R7 Ship | TEMPER | **Hard** | ≥ 9/10 + evidence for every claim |
 | **R-AR AutoResearch** | **AUTORESEARCH** | **Hard** | program.md written, experiments run, findings ratcheted |
