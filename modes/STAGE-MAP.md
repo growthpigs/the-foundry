@@ -75,8 +75,8 @@ FOUNDRY PHASE          PIPELINE STAGES (foundry.sh)
 | SCOUT | Partially | `explore` stage runs, but IDEO sprint / art direction are manual skills |
 | ASSAY | Yes | `issue` → `user-stories` → `fsd` stages |
 | CRUCIBLE | Yes | `issue-review` → `red-team` stages. NotebookLM artifact verification is enforced when `--require-notebook-crucible` is set. |
-| PLAN | No | GitHub issue creation via `foundry-pipe-02-scrum-master` skill |
-| HAMMER | Yes | `anti-regression` → `code` → `validate` stages |
+| PLAN | No | GitHub issue creation via `foundry-pipe-02-scrum-master` skill. Stops at backlog readiness unless the GitHub Hammer Authorization Record exists. |
+| HAMMER | Yes | Starts only after Hammer Gate preflight, then `anti-regression` → `code` → `validate` stages. |
 | TEMPER | Yes | `e2e` → `pr` → `pr-review` → `compliance` → `follow-up` stages |
 | AUTORESEARCH | Partially | `autoresearch` stage runs agent loop; `program.md` is human-authored |
 

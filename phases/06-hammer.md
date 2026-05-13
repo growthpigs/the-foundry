@@ -17,10 +17,25 @@ Code drops. The specs from ASSAY, validated by CRUCIBLE, planned in PLAN, are no
 - [ ] Anti-regression baseline (captured before first code change)
 - [ ] Deployment pipeline (verified in PLAN)
 - [ ] **Carry-forward from PLAN** in progress.txt (architectural decisions, dependency order, risks flagged)
+- [ ] **Hammer Authorization Record** in GitHub, scoped to this issue/epic/milestone
 
 **If any input is missing → HAMMER cannot start. Go back to the phase that should have produced it.**
 
 ### Process
+
+#### Step -1: Hammer Gate Preflight
+
+Before any code, worktree, migration, or infrastructure change:
+
+1. Read the canonical GitHub parent issue, PRD issue, or epic issue.
+2. Confirm it contains a `Hammer Authorization Record`.
+3. Confirm the authorization phrase is one of: `Drop the Hammer`, `HAMMER_AUTHORIZED`, or `Start HAMMER for <specific issue/epic>`.
+4. Confirm the requested work is inside the authorized scope.
+5. Confirm production-bound line items are explicitly approved when relevant.
+
+Vague phrases such as `go`, `continue`, `execute`, `I trust you`, `do your best`, or `keep going` do not pass this gate.
+
+If the record is missing or incomplete, stop. Post the missing authorization need to GitHub and return to PLAN.
 
 #### Execution Modes
 
@@ -68,8 +83,8 @@ For larger features, HAMMER uses the Ralph pattern:
 #### Dark Factory Mode (Level 5)
 
 When running fully autonomous (Long Run Mode, Article 30):
-- No approval needed for: branches, commits, issue updates, doc changes, test runs, draft PRs
-- Still needs approval for: merging to main, production deploys, destructive git operations
+- No additional approval needed for authorized reversible work: branches, commits, issue updates, doc changes, test runs, draft PRs
+- Still needs explicit line-item approval for: merging to main, production deploys, live database migrations, destructive SQL, paid infrastructure changes, secrets changes, destructive git operations, and external communications
 - Activity Log updated every turn (not just at end)
 - Work Ledger updated at session wrap
 

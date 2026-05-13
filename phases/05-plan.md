@@ -87,7 +87,17 @@ Create `.foundry/tool-registry.json`:
 
 This is the explicit moment where you say: "The specs are done. The Crucible found nothing blocking. The issues are created. We are ready to code."
 
-**This is NOT automatic.** It's a conscious decision. The Candid Self-Assessment (Article 24) runs here:
+**This is NOT automatic.** It's a conscious decision, and it must be recorded in GitHub before HAMMER starts. See [Hammer Gate and Execution Authorization Contract](../knowledge/hammer-gate.md).
+
+Only explicit scoped authorization starts HAMMER:
+
+- `Drop the Hammer`
+- `HAMMER_AUTHORIZED`
+- `Start HAMMER for <specific issue/epic>`
+
+Phrases such as `go`, `continue`, `execute`, `I trust you`, `do your best`, or `keep going` are not enough. They may authorize continued planning or cleanup, but they do not authorize implementation.
+
+The Candid Self-Assessment (Article 24) runs here:
 
 ```
 1. WHERE ARE WE NOW? Status, what changed, what's unchanged.
@@ -101,12 +111,37 @@ This is the explicit moment where you say: "The specs are done. The Crucible fou
 
 Any score below 7 → BLOCKED. Go back to ASSAY.
 
+#### Hammer Authorization Record
+
+Post the authorization as a GitHub issue comment on the parent issue, PRD issue, or epic issue:
+
+```md
+## Hammer Authorization Record
+
+Scope: <issue/epic/milestone URL>
+Authorized by: Roderic
+Authorization phrase: "Drop the Hammer"
+Allowed operations:
+- Branches, commits, tests, docs, issue comments, draft PRs
+
+Explicitly not authorized unless separately approved:
+- Merges to main or production branches
+- Production deploys
+- Live database migrations or destructive SQL
+- Paid infrastructure creation or upgrades
+- Secrets rotation or credential changes
+- External client/user communications
+```
+
+Production-bound infrastructure, live database migrations, secrets, paid resources, deploys, merges, destructive operations, and partner-visible binding decisions require explicit line-item authorization in GitHub even after HAMMER starts.
+
 ### Outputs
 - GitHub Issues (all stories with acceptance criteria)
 - Sprint plan (stories assigned to sprints)
 - Epic dependency graph
 - Work Ledger updated with planning DUs
-- "Hammer Decision" documented in Activity Log
+- Hammer Authorization Record posted to GitHub
+- Optional local mirrors updated from the GitHub record
 
 ---
 
