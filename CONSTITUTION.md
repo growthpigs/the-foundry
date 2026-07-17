@@ -20,7 +20,7 @@ The Constitution loads in tiers so a run only carries the rules it needs (the #1
 - **CORE tier** — the methodology engine. How the pipeline itself works. Loaded on **every** stage (mirrored in `CONSTITUTION-CORE.md`). Articles 1–13, 15, 17, 18, 20, 21, 24–32, 35, 36.
 - **CLIENT tier** — client-delivery doctrine. The paperwork and billing of running a paid engagement. Loaded **only for client-delivery projects**; internal / tooling / methodology runs skip it. Articles 14 (the 18 Documents), 19 (Admin Doc Quality Gate), 23 (Service Billing Pre-Flight), 33 (Agreement), 34 (Work Ledger / DU billing).
 
-> **How the tier is decided:** an article tagged `📎 CLIENT tier` is binding only when the project is a client engagement. The pipeline loader (`bin/foundry.sh`) gates inclusion on project type — see #72 for the loader wiring that enforces this map. Until that lands, the tags are advisory: a session may skip CLIENT-tier articles when the work is plainly internal.
+> **How the tier is decided:** an article tagged `📎 CLIENT tier` is binding only when the project is a client engagement. The pipeline loader (`bin/foundry.sh`) gates inclusion on project type — see #73 for the loader wiring that enforces this map. Until that lands, the tags are advisory: a session may skip CLIENT-tier articles when the work is plainly internal.
 
 > **Amending the map:** moving an article between tiers is a `constitution`-labeled amendment (close-on-diff rule applies). Borderline articles under review for CLIENT tier: 16 (Slack Console), 22 (Platform Self-Awareness), 31 (Linear UI) — left in CORE pending #71 thrash.
 
