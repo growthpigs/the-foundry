@@ -1,10 +1,11 @@
 # The Foundry — Constitution
 
-**Version:** 3.0
-**Status:** RATIFIED (2026-03-13) · v3 amendments ratified 2026-07-17 (issue #69)
+**Version:** 3.2
+**Status:** RATIFIED (2026-03-13) · v3 amendments ratified 2026-07-17 (issues #69, #71, #73)
 **Scope:** Applies to ALL pipeline runs, ALL projects, ALL modes. Amendable ONLY via the process in the Amendments section — never edited autonomously by an AI agent.
 
 **Changelog:**
+- v3.2 (2026-07-17, #71/#73): Borderline articles resolved — 16 (Slack Console) moved to CLIENT tier (its own text is engagement-shaped: "For EVERY LifeModo (and similar) project… invisible to the client"); 22 and 31 stay CORE (each carries its own product-shape applicability gate — 31 explicitly covers "Internal tools"). Loader enforcement landed: `bin/lib/constitution-loader.sh` strips CLIENT-tier articles for internal projects; tags are no longer advisory.
 - v3.1 (2026-07-17, #71): Progressive-disclosure tiering (A6, ratified "conditional"). Added the Loading Map below; tagged the client-engagement articles (14, 19, 23, 33, 34) as **CLIENT tier** — binding only for client-delivery projects, skippable for internal/methodology runs. One canonical Constitution that indexes its own tiers; no split.
 - v3.0 (2026-07-17, #69): Article 13 rewritten for the 7-phase pipeline (Dark Foundry router description was a dead-system fossil); Article 15 model list replaced with a pointer to global CLAUDE.md model policy; Article 20 vestigial "(#16)/Document #15/count at 16" corrected to Document #16 (Test Strategy) of 18; header "Immutable" replaced with amendable-by-process; Amendments section gained the close-on-diff rule.
 - v1.0 (2026-03-13): Initial ratification, 37 articles.
@@ -17,12 +18,14 @@ This document is prepended to every `claude -p` invocation in the pipeline. Thes
 
 The Constitution loads in tiers so a run only carries the rules it needs (the #14 context-budget principle). This map IS the index: every article names its tier and links to its own detail.
 
-- **CORE tier** — the methodology engine. How the pipeline itself works. Loaded on **every** stage (mirrored in `CONSTITUTION-CORE.md`). Articles 1–13, 15, 17, 18, 20, 21, 24–32, 35, 36.
-- **CLIENT tier** — client-delivery doctrine. The paperwork and billing of running a paid engagement. Loaded **only for client-delivery projects**; internal / tooling / methodology runs skip it. Articles 14 (the 18 Documents), 19 (Admin Doc Quality Gate), 23 (Service Billing Pre-Flight), 33 (Agreement), 34 (Work Ledger / DU billing).
+- **CORE tier** — the methodology engine. How the pipeline itself works. Loaded on **every** stage (mirrored in `CONSTITUTION-CORE.md`). Articles 1–13 (incl. 8b), 15, 17, 18, 20–22, 24–32, 35, 36.
+- **CLIENT tier** — client-delivery doctrine. The paperwork, interface conventions, and billing of running a paid engagement. Loaded **only for client-delivery projects**; internal / tooling / methodology runs skip it. Articles 14 (the 18 Documents), 16 (Slack Is The Console), 19 (Admin Doc Quality Gate), 23 (Service Billing Pre-Flight), 33 (Agreement), 34 (Work Ledger / DU billing).
 
-> **How the tier is decided:** an article tagged `📎 CLIENT tier` is binding only when the project is a client engagement. The pipeline loader (`bin/foundry.sh`) gates inclusion on project type — see #73 for the loader wiring that enforces this map. Until that lands, the tags are advisory: a session may skip CLIENT-tier articles when the work is plainly internal.
+> **How the tier is decided:** the tier axis is **engagement type**. Engagement-shaped doctrine (client paperwork, client-facing interface conventions) is CLIENT; articles that carry their own product-shape applicability gates (22's "When This Applies" table, 31's explicit "Internal tools" coverage) stay CORE. An article tagged `📎 CLIENT tier` is binding only when the project is a client engagement.
 
-> **Amending the map:** moving an article between tiers is a `constitution`-labeled amendment (close-on-diff rule applies). Borderline articles under review for CLIENT tier: 16 (Slack Console), 22 (Platform Self-Awareness), 31 (Linear UI) — left in CORE pending #71 thrash.
+> **Enforcement (#73):** `bin/lib/constitution-loader.sh` strips CLIENT-tier articles from the prompt for internal projects. Project type resolves from `FOUNDRY_PROJECT_TYPE` env, then `.foundry/project-type` (one line: `client` or `internal`), defaulting to **client** — fail-safe: loading extra rules is harmless, silently skipping binding rules is not. Tested by `bin/__tests__/constitution-tiering.test.sh`; the article list there MUST stay in sync with this map.
+
+> **Amending the map:** moving an article between tiers is a `constitution`-labeled amendment (close-on-diff rule applies) and MUST update the loader's article list in the same commit.
 
 ---
 
@@ -296,6 +299,8 @@ AI sessions drift. Models get deprecated. APIs change. Documentation goes stale.
 ---
 
 ## Article 16: Slack Is The Console
+
+> **📎 CLIENT tier** — binding for client-delivery projects; internal / tooling / methodology runs may skip. See the Loading Map.
 
 For EVERY LifeModo (and similar) project: **Slack is the primary interface.** The Console.
 
