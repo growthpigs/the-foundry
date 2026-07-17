@@ -120,6 +120,41 @@ FOUNDRY_SH="$REPO_ROOT/bin/foundry.sh"
 grep -q 'if \[ -f "\$SCRIPT_DIR/bin/lib/constitution-loader.sh" \]' "$FOUNDRY_SH"; check "foundry.sh guards the source (not a bare '. lib')" $?
 ! grep -qE '^\. "\$SCRIPT_DIR/bin/lib/constitution-loader.sh"' "$FOUNDRY_SH"; check "no unguarded top-level source remains" $?
 
+echo "# synthetic fence adversarial cases (#75): tilde fences + nested syntaxes"
+echo "# must not let a fake '## ' heading inside a code block reopen the strip"
+SAVED_ARTS="$FOUNDRY_CLIENT_TIER_ARTICLES"
+FOUNDRY_CLIENT_TIER_ARTICLES="14"
+FIX="$TMPDIR_T/fixture.md"
+
+# Case A — a ~~~ fenced block inside a stripped article, wrapping a fake H2.
+# Backtick-only fence tracking (pre-#75) would miss the ~~~, see the fake H2 as a
+# real heading, unskip, and leak the article tail + the CORE article's identity.
+printf '%s\n' \
+  '## Article 14: Client' '> banner' 'body A' \
+  '~~~' '## Fake tilde heading' 'x' '~~~' \
+  'tail-of-14-CANARY' \
+  '## Article 15: Core' 'kept-body-A' > "$FIX"
+OUT_A="$(load_constitution "$FIX" internal)"
+not_contains "$OUT_A" "Fake tilde heading"; check "A: fake H2 inside ~~~ fence not leaked" $?
+not_contains "$OUT_A" "tail-of-14-CANARY";  check "A: stripped article tail not leaked" $?
+contains     "$OUT_A" "## Article 15: Core"; check "A: following CORE article survives" $?
+contains     "$OUT_A" "kept-body-A";         check "A: CORE body survives" $?
+
+# Case B — a ``` block whose CONTENT includes a ~~~ line and a fake H2. A naive
+# both-toggle tracker (flip on ``` OR ~~~) would treat the inner ~~~ as a close,
+# fall outside the fence, and leak the fake H2. Char-tracking keeps the ``` open.
+printf '%s\n' \
+  '## Article 14: Client' '> banner' \
+  '```' '~~~ inner tilde is content' '## Fake heading in backtick block' '```' \
+  'tail-of-14-CANARY-B' \
+  '## Article 15: Core' 'kept-body-B' > "$FIX"
+OUT_B="$(load_constitution "$FIX" internal)"
+not_contains "$OUT_B" "Fake heading in backtick block"; check "B: fake H2 in \`\`\` (w/ inner ~~~) not leaked" $?
+not_contains "$OUT_B" "tail-of-14-CANARY-B"; check "B: article tail not leaked past nested syntax" $?
+contains     "$OUT_B" "kept-body-B";         check "B: CORE body survives" $?
+
+FOUNDRY_CLIENT_TIER_ARTICLES="$SAVED_ARTS"
+
 echo ""
 echo "constitution-tiering: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1
