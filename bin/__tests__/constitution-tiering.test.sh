@@ -101,6 +101,25 @@ CLI_BYTES="$(printf '%s' "$CLIENT" | wc -c)"
 SAVED=$((CLI_BYTES - INT_BYTES))
 [ "$SAVED" -gt 17000 ]; check "internal strip saves >17KB (actual: ${SAVED} bytes)" $?
 
+echo "# defensive source: a MISSING loader lib must NOT brick foundry.sh"
+echo "# (it runs under 'set -euo pipefail'; a bare failed source aborts at startup)"
+# Reproduce the exact guard block from bin/foundry.sh against a missing path.
+MISS_OUT="$(bash -c '
+  set -euo pipefail
+  SCRIPT_DIR="/tmp/does-not-exist-$$"
+  if [ -f "$SCRIPT_DIR/bin/lib/constitution-loader.sh" ] && . "$SCRIPT_DIR/bin/lib/constitution-loader.sh"; then :; else
+    foundry_project_type() { printf "client"; }
+    load_constitution() { cat "$1"; }
+  fi
+  printf "continued:%s" "$(foundry_project_type /x)"
+' 2>/dev/null)"; MISS_RC=$?
+[ "$MISS_RC" -eq 0 ]; check "missing lib does not abort under set -e (rc=$MISS_RC)" $?
+[ "$MISS_OUT" = "continued:client" ]; check "missing lib falls back to client (loads full constitution)" $?
+# And prove foundry.sh actually contains the defensive guard, not a bare source.
+FOUNDRY_SH="$REPO_ROOT/bin/foundry.sh"
+grep -q 'if \[ -f "\$SCRIPT_DIR/bin/lib/constitution-loader.sh" \]' "$FOUNDRY_SH"; check "foundry.sh guards the source (not a bare '. lib')" $?
+! grep -qE '^\. "\$SCRIPT_DIR/bin/lib/constitution-loader.sh"' "$FOUNDRY_SH"; check "no unguarded top-level source remains" $?
+
 echo ""
 echo "constitution-tiering: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1
