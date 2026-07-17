@@ -1,7 +1,7 @@
 # The Foundry — Constitution (Core Principles)
 
-**Version:** 3.0
-**Status:** RATIFIED (2026-03-13) · v3 amendments ratified 2026-07-17 (issue #69)
+**Version:** 3.2
+**Status:** RATIFIED (2026-03-13) · v3 amendments ratified 2026-07-17 (issues #69, #71, #73) — no CORE-tier article text changed after v3.0; version tracks `CONSTITUTION.md`
 **Scope:** Loaded for EVERY pipeline stage. Amendable ONLY via the Amendments process in `CONSTITUTION.md` — never edited autonomously by an AI agent. Mirrored articles must stay in sync with `CONSTITUTION.md` (the authoritative text).
 
 These are the non-negotiable principles. For detailed reference articles (18 Documents, Activity Log, Crucible, CI Pipeline, etc.), see `CONSTITUTION.md` (full version — loaded for ASSAY/CRUCIBLE/red-team stages only).

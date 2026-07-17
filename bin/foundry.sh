@@ -64,6 +64,10 @@ CONSTITUTION_CORE="$SCRIPT_DIR/CONSTITUTION-CORE.md"
 CONSTITUTION_FULL="$SCRIPT_DIR/CONSTITUTION.md"
 CONSTITUTION_FILE="$CONSTITUTION_CORE"  # default to core; overridden per stage below
 
+# Progressive-disclosure tiering (#73): CLIENT-tier articles are stripped for
+# internal projects per the Loading Map in CONSTITUTION.md.
+. "$SCRIPT_DIR/bin/lib/constitution-loader.sh"
+
 # Permission tiers — CC3 F1 fix (Via Negativa: remove permissions you don't need)
 # Read-only stages run WITHOUT --dangerously-skip-permissions (safe default).
 # Write stages (code, validate, e2e, pr, fsd) get full permissions.
@@ -499,9 +503,15 @@ run_stage() {
 
   # Build the full prompt with context layers
   # Layer 1: Constitution (immutable rules — always first)
+  # Tiering (#73): internal projects skip CLIENT-tier articles (Loading Map).
   local full_prompt=""
   if [ -f "$CONSTITUTION_FILE" ]; then
-    full_prompt="$(cat "$CONSTITUTION_FILE")
+    local project_type
+    project_type="$(foundry_project_type "$PROJECT_DIR/$DARK_FOUNDRY_DIR")"
+    if [ "$project_type" = "internal" ] && [ "$CONSTITUTION_FILE" = "$CONSTITUTION_FULL" ]; then
+      echo "[constitution] internal project — CLIENT-tier articles (14,16,19,23,33,34) skipped"
+    fi
+    full_prompt="$(load_constitution "$CONSTITUTION_FILE" "$project_type")
 
 ---
 

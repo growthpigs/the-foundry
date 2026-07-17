@@ -1,0 +1,22 @@
+name: Foundry CI
+
+# First CI for this repo (#73). GitHub-hosted ubuntu-latest on purpose — must not
+# depend on the self-hosted Mac fleet being awake.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  constitution-tiering:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Syntax-check orchestrator + loader lib
+        run: bash -n bin/foundry.sh && bash -n bin/lib/constitution-loader.sh
+      - name: Constitution tiering unit tests
+        run: bash bin/__tests__/constitution-tiering.test.sh
