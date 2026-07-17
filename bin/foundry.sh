@@ -66,7 +66,19 @@ CONSTITUTION_FILE="$CONSTITUTION_CORE"  # default to core; overridden per stage 
 
 # Progressive-disclosure tiering (#73): CLIENT-tier articles are stripped for
 # internal projects per the Loading Map in CONSTITUTION.md.
-. "$SCRIPT_DIR/bin/lib/constitution-loader.sh"
+# DEFENSIVE SOURCE: a missing lib must NOT brick the orchestrator (it runs under
+# 'set -euo pipefail', where a bare failed source aborts at startup — strictly
+# worse than the pre-#73 warn-and-continue behavior). If the lib is absent or
+# fails to load, fall back to full-constitution loading (old behavior) with a
+# warning; the pipeline still runs, just without tier stripping.
+if [ -f "$SCRIPT_DIR/bin/lib/constitution-loader.sh" ] \
+   && . "$SCRIPT_DIR/bin/lib/constitution-loader.sh"; then
+  :
+else
+  echo "[WARN] constitution-loader.sh missing/failed — CLIENT-tier stripping disabled; loading full constitution (safe: more rules, never fewer)." >&2
+  foundry_project_type() { printf 'client'; }
+  load_constitution() { cat "$1"; }
+fi
 
 # Permission tiers — CC3 F1 fix (Via Negativa: remove permissions you don't need)
 # Read-only stages run WITHOUT --dangerously-skip-permissions (safe default).
