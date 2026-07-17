@@ -83,7 +83,7 @@ Project repo: ~/\_PAI/teams/badaboost/clients/war-room/
 | AutoResearch report | .foundry/autoresearch/report.md | AUTORESEARCH Step 4 | MD |
 | AutoResearch template (shared) | knowledge/autoresearch-template.md | N/A (reference) | MD |
 | Archived progress files | .foundry/archive/ | The Foundry | TXT |
-| Feature specs | features/ | Manual, /explore | MD |
+| Feature specs | features/ | Manual, SCOUT phase | MD |
 | Planning docs | docs/05-planning/ | Manual | MD |
 | Health check reports | scripts/ output | full-blood-test.py | JSON, TXT |
 | Gamma decks | ~/decks/gamma-pdfs/WarRoom/ | Gamma skill | PDF |

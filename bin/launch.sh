@@ -222,7 +222,7 @@ Every reply at task completion MUST end with a \`---\` separator followed by thi
 - Confidence line includes parenthetical context explaining what's pending
 - MCP line shows actual service status with ✅/❌
 - Get time with: \`date "+%d.%m %H:%M"\`
-- Pricing: opus=\$15/1M, sonnet=\$3/1M, flash=\$0.60/1M
+- Pricing: never hardcode rates — check current vendor pricing pages (hardcoded lists rot; Constitution Art 15)
 - This footer is NON-NEGOTIABLE. Every substantial task gets it.
 CLAUDEMD
 
