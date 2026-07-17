@@ -1,8 +1,12 @@
 # The Foundry — Constitution
 
-**Version:** 1.0
-**Status:** RATIFIED (2026-03-13)
-**Scope:** Immutable. Applies to ALL pipeline runs, ALL projects, ALL modes.
+**Version:** 3.0
+**Status:** RATIFIED (2026-03-13) · v3 amendments ratified 2026-07-17 (issue #69)
+**Scope:** Applies to ALL pipeline runs, ALL projects, ALL modes. Amendable ONLY via the process in the Amendments section — never edited autonomously by an AI agent.
+
+**Changelog:**
+- v3.0 (2026-07-17, #69): Article 13 rewritten for the 7-phase pipeline (Dark Foundry router description was a dead-system fossil); Article 15 model list replaced with a pointer to global CLAUDE.md model policy; Article 20 vestigial "(#16)/Document #15/count at 16" corrected to Document #16 (Test Strategy) of 18; header "Immutable" replaced with amendable-by-process; Amendments section gained the close-on-diff rule.
+- v1.0 (2026-03-13): Initial ratification, 37 articles.
 
 This document is prepended to every `claude -p` invocation in the pipeline. These rules cannot be overridden by any command file, progress.txt entry, or mode configuration. They are the non-negotiable foundation.
 
@@ -146,7 +150,7 @@ Roderic's window into ALL work is GitHub. Not terminal output. Not local docs. N
 
 ## Article 13: The Orchestrator Principle
 
-Dark Foundry is a router and runner, NOT a methodology. The methodologies are the existing command files (`/explore`, `/red-team`, `/code`, etc.) that were built and battle-tested independently. Dark Foundry decides which ones to call and in what order. The classifier is trivially simple — labels → mode → skip-list → stages. No AI classification, no complexity. Adding new methodologies or frameworks on top of existing stages is the Second System Effect (Article 4) unless those stages genuinely don't exist.
+The Foundry is an orchestrator and runner, NOT a methodology. It is a 7-phase spec-first pipeline — MINE → SCOUT → ASSAY → CRUCIBLE → PLAN → HAMMER → TEMPER — where each phase composes existing, independently battle-tested methodology (phase files under `phases/`, Ratify gates, the Ralph Loop in HAMMER). The orchestrator decides which phases run and in what order; the routing is trivially simple — labels → mode → skip-list → phases. No AI classification, no complexity. Adding new methodologies or frameworks on top of existing phases is the Second System Effect (Article 4) unless those phases genuinely don't exist.
 
 ---
 
@@ -259,26 +263,15 @@ AI sessions drift. Models get deprecated. APIs change. Documentation goes stale.
 
 **The Rule:** At the START of every major architecture session, run a freshness check:
 
-1. **Model freshness:** Are ALL model references using the latest generation? (ZERO TOLERANCE — see global CLAUDE.md)
-   - Gemini: must be 3.1 series (not 2.5, 2.0, 1.5)
-   - Claude: must be 4-6 (not 4-5, 4-0, 3.5)
-   - Embeddings: must be gemini-embedding-2 (not gemini-embedding-001, not text-embedding-005)
+1. **Model freshness:** Are ALL model references using the latest generation? (ZERO TOLERANCE.) The Constitution does NOT enumerate model versions — hardcoded lists rot and this article proved it (its own v1 list went two generations stale while claiming to be the anti-drift guard). The single source of truth for current model IDs is the **global CLAUDE.md model policy**; check every model reference against it at session start.
 2. **API freshness:** Are any referenced APIs deprecated or in sunset?
 3. **Service freshness:** Are any services marked for removal? (Check deprecation dates)
 4. **Cross-reference freshness:** Do issue numbers still point to the correct issues? (Parallel creation scrambles numbers)
 5. **Document freshness:** Do FSDs reference current architecture, not superseded versions?
 
-**How to run:** `grep -r` across all docs for known deprecated patterns. The list of deprecated patterns MUST be maintained in this article and updated whenever a new deprecation is discovered.
+**How to run:** `grep -r` across all docs for model/API identifiers, then verify each against the global CLAUDE.md model policy and vendor deprecation notices. Deprecated-pattern lists live OUTSIDE this document (global CLAUDE.md / a maintained tooling file) — the v1 Constitution kept the list here and it went stale within one model generation (#69, finding F3). The durable rule stays; the perishable list moves to where it is actually maintained.
 
-**Current deprecated patterns (update as needed):**
-- `text-embedding-005` → use `gemini-embedding-2`
-- `gemini-embedding-001` → use `gemini-embedding-2`
-- `gemini-2.5` → use `gemini-3.1`
-- `gemini-2.0` → use `gemini-3.1`
-- `gemini-1.5` → use `gemini-3.1`
-- `claude-4-5` → use `claude-4-6` (opus or sonnet)
-- `claude-4-0` → use `claude-4-6`
-- `claude-3.5` → use `claude-4-6`
+**Known dead services (kept only because they are permanently dead, not perishable):**
 - `Bing Search API` → dead (August 2025)
 - `text-embedding-005` → sunset January 2026
 
@@ -440,7 +433,7 @@ If any check FAILS:
 
 **Every project must define its single most important end-to-end flow. This is the Critical Path.**
 
-The Critical Path is NOT a new document (#16). It is a **mandatory section of Document #15 (Test Strategy)**. This keeps the document count at 16 while enforcing the concept.
+The Critical Path is NOT a separate document. It is a **mandatory section of Document #16 (Test Strategy)** in the Article 14 list. This keeps the document count at 18 while enforcing the concept.
 
 ### What the Critical Path Section Must Contain
 
@@ -1795,3 +1788,5 @@ IT Concierge session 2026-03-16: Responsiveness was mentioned in scattered docs 
 ## Amendments
 
 Amendments require explicit approval from Roderic. No AI agent may modify this document autonomously. Proposed amendments are filed as GitHub issues with the `constitution` label and must be thrashed before ratification.
+
+**Close-on-diff rule (v3, #69):** a `constitution`-labeled issue may be closed as completed ONLY when it links a merged commit whose diff touches `CONSTITUTION.md` (and `CONSTITUTION-CORE.md` when the amended article is mirrored there), or is explicitly closed by Roderic as rejected/not-planned. Closing on a comment that *claims* the fix is forbidden — issues #2 and #10 were both closed "completed" while their target defects remained live in this file for months (#69, finding F0). After any amendment merges, re-run the Freshness Audit (Article 15) against the changed articles in the same session.
