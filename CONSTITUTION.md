@@ -22,9 +22,9 @@ The Constitution loads in tiers so a run only carries the rules it needs (the #1
 - **CLIENT tier** — client-delivery doctrine. The paperwork, interface conventions, and billing of running a paid engagement. Loaded **only for client-delivery projects**; internal / tooling / methodology runs skip it. Articles 14 (the 18 Documents), 16 (Slack Is The Console), 19 (Admin Doc Quality Gate), 23 (Service Billing Pre-Flight), 33 (Agreement), 34 (Work Ledger / DU billing).
 
 > **How the tier is decided:** the tier axis is **engagement type**. Engagement-shaped doctrine (client paperwork, client-facing interface conventions) is CLIENT; articles that carry their own product-shape applicability gates (22's "When This Applies" table, 31's explicit "Internal tools" coverage) stay CORE. An article tagged `📎 CLIENT tier` is binding only when the project is a client engagement.
-
+>
 > **Enforcement (#73):** `bin/lib/constitution-loader.sh` strips CLIENT-tier articles from the prompt for internal projects. Project type resolves from `FOUNDRY_PROJECT_TYPE` env, then `.foundry/project-type` (one line: `client` or `internal`), defaulting to **client** — fail-safe: loading extra rules is harmless, silently skipping binding rules is not. Tested by `bin/__tests__/constitution-tiering.test.sh`; the article list there MUST stay in sync with this map.
-
+>
 > **Amending the map:** moving an article between tiers is a `constitution`-labeled amendment (close-on-diff rule applies) and MUST update the loader's article list in the same commit.
 
 ---

@@ -76,22 +76,22 @@ echo "# project-type resolution"
 TMPDIR_T="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR_T"' EXIT
 
-T="$(FOUNDRY_PROJECT_TYPE= foundry_project_type "$TMPDIR_T")"
+T="$(FOUNDRY_PROJECT_TYPE="" foundry_project_type "$TMPDIR_T")"
 [ "$T" = "client" ]; check "no config anywhere → client (fail-safe default)" $?
 
 printf 'internal\n' > "$TMPDIR_T/project-type"
-T="$(FOUNDRY_PROJECT_TYPE= foundry_project_type "$TMPDIR_T")"
+T="$(FOUNDRY_PROJECT_TYPE="" foundry_project_type "$TMPDIR_T")"
 [ "$T" = "internal" ]; check "project-type file 'internal' honored" $?
 
 printf ' Internal \n' > "$TMPDIR_T/project-type"
-T="$(FOUNDRY_PROJECT_TYPE= foundry_project_type "$TMPDIR_T")"
+T="$(FOUNDRY_PROJECT_TYPE="" foundry_project_type "$TMPDIR_T")"
 [ "$T" = "internal" ]; check "whitespace + case normalized" $?
 
 T="$(FOUNDRY_PROJECT_TYPE=client foundry_project_type "$TMPDIR_T")"
 [ "$T" = "client" ]; check "env var overrides file" $?
 
 printf 'banana\n' > "$TMPDIR_T/project-type"
-T="$(FOUNDRY_PROJECT_TYPE= foundry_project_type "$TMPDIR_T" 2>/dev/null)"
+T="$(FOUNDRY_PROJECT_TYPE="" foundry_project_type "$TMPDIR_T" 2>/dev/null)"
 [ "$T" = "client" ]; check "unknown value → client (fail-safe)" $?
 
 echo "# context savings are real (floor set near true savings so partial-strip"

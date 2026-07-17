@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Syntax-check orchestrator + loader lib
         run: bash -n bin/foundry.sh && bash -n bin/lib/constitution-loader.sh
       - name: Constitution tiering unit tests
