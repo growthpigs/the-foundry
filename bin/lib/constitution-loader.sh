@@ -40,11 +40,16 @@ foundry_project_type() {
 # articles (header through the line before the next '## ' heading). CORE-tier
 # articles and non-article sections (Loading Map, Amendments) are never touched.
 #
-# FENCE-AWARE (adversarial review, #73): article bodies contain fenced code
+# FENCE-AWARE (adversarial review, #73 / #75): article bodies contain fenced code
 # templates with lines that LOOK like H2 headings (e.g. '## Work Ledger' inside
-# Article 34's template). Heading rules only apply outside ``` fences — a
+# Article 34's template). Heading rules only apply OUTSIDE code fences — a
 # fence-blind version leaked Article 34's entire DU rate card into internal
-# output. Fence state is tracked on every line, including skipped ones.
+# output. Both fence syntaxes are handled: ``` and ~~~. Per CommonMark they are
+# independent — a fence opened with one char is closed only by the SAME char, so
+# a ~~~ line inside a ``` block (or vice-versa) is content, not a delimiter. We
+# track the OPENING fence char, not a naive toggle, so nested-syntax cases can't
+# spuriously flip fence state and reopen the leak. State tracks every line,
+# including skipped ones.
 load_constitution() {
   local file="$1"
   local project_type="${2:-client}"
@@ -53,8 +58,12 @@ load_constitution() {
     return
   fi
   awk -v arts="$FOUNDRY_CLIENT_TIER_ARTICLES" '
-    BEGIN { pat = "^## Article (" arts "):" ; skip = 0 ; fence = 0 }
-    /^```/             { fence = !fence }
+    BEGIN { pat = "^## Article (" arts "):" ; skip = 0 ; fence = 0 ; fchar = "" }
+    /^(```|~~~)/ {
+      ch = substr($0, 1, 1)
+      if (fence == 0)      { fence = 1; fchar = ch }
+      else if (ch == fchar){ fence = 0; fchar = "" }
+    }
     !fence && $0 ~ pat { skip = 1; next }
     !fence && /^## /   { skip = 0 }
     !skip              { print }
