@@ -5,10 +5,24 @@
 **Scope:** Applies to ALL pipeline runs, ALL projects, ALL modes. Amendable ONLY via the process in the Amendments section — never edited autonomously by an AI agent.
 
 **Changelog:**
+- v3.1 (2026-07-17, #71): Progressive-disclosure tiering (A6, ratified "conditional"). Added the Loading Map below; tagged the client-engagement articles (14, 19, 23, 33, 34) as **CLIENT tier** — binding only for client-delivery projects, skippable for internal/methodology runs. One canonical Constitution that indexes its own tiers; no split.
 - v3.0 (2026-07-17, #69): Article 13 rewritten for the 7-phase pipeline (Dark Foundry router description was a dead-system fossil); Article 15 model list replaced with a pointer to global CLAUDE.md model policy; Article 20 vestigial "(#16)/Document #15/count at 16" corrected to Document #16 (Test Strategy) of 18; header "Immutable" replaced with amendable-by-process; Amendments section gained the close-on-diff rule.
 - v1.0 (2026-03-13): Initial ratification, 37 articles.
 
 This document is prepended to every `claude -p` invocation in the pipeline. These rules cannot be overridden by any command file, progress.txt entry, or mode configuration. They are the non-negotiable foundation.
+
+---
+
+## Loading Map (progressive disclosure — read this as the index)
+
+The Constitution loads in tiers so a run only carries the rules it needs (the #14 context-budget principle). This map IS the index: every article names its tier and links to its own detail.
+
+- **CORE tier** — the methodology engine. How the pipeline itself works. Loaded on **every** stage (mirrored in `CONSTITUTION-CORE.md`). Articles 1–13, 15, 17, 18, 20, 21, 24–32, 35, 36.
+- **CLIENT tier** — client-delivery doctrine. The paperwork and billing of running a paid engagement. Loaded **only for client-delivery projects**; internal / tooling / methodology runs skip it. Articles 14 (the 18 Documents), 19 (Admin Doc Quality Gate), 23 (Service Billing Pre-Flight), 33 (Agreement), 34 (Work Ledger / DU billing).
+
+> **How the tier is decided:** an article tagged `📎 CLIENT tier` is binding only when the project is a client engagement. The pipeline loader (`bin/foundry.sh`) gates inclusion on project type — see #72 for the loader wiring that enforces this map. Until that lands, the tags are advisory: a session may skip CLIENT-tier articles when the work is plainly internal.
+
+> **Amending the map:** moving an article between tiers is a `constitution`-labeled amendment (close-on-diff rule applies). Borderline articles under review for CLIENT tier: 16 (Slack Console), 22 (Platform Self-Awareness), 31 (Linear UI) — left in CORE pending #71 thrash.
 
 ---
 
@@ -155,6 +169,8 @@ The Foundry is an orchestrator and runner, NOT a methodology. It is a 7-phase sp
 ---
 
 ## Article 14: The 18 Documents — Documentation Before Code (Non-Negotiable)
+
+> **📎 CLIENT tier** — binding for client-delivery projects; internal / tooling / methodology runs may skip. See the Loading Map.
 
 **"Documentation is everything. Coding is a commodity."** — Roderic Andrews, March 2026
 
@@ -369,6 +385,8 @@ This applies to ALL projects. LifeModo, War Room, IT Concierge, everything. The 
 ---
 
 ## Article 19: Admin Document Quality Gate (Post-Scaffolding)
+
+> **📎 CLIENT tier** — binding for client-delivery projects; internal / tooling / methodology runs may skip. See the Loading Map.
 
 After creating the 18 Admin documents for any project, run this quality gate BEFORE moving on. No exceptions.
 
@@ -686,6 +704,8 @@ Any question that produces a blank stare, generic answer, or white-label violati
 ---
 
 ## Article 23: Service Billing Pre-Flight (External Dependencies)
+
+> **📎 CLIENT tier** — binding for client-delivery projects; internal / tooling / methodology runs may skip. See the Loading Map.
 
 **Born from:** War Room Perplexity quota exhaustion (March 16, 2026). Web search silently failed for hours because the API returned 401 "quota exceeded" and the code treated it as "temporarily unavailable."
 
@@ -1331,6 +1351,8 @@ This is the "round trip" — from spec to production with quality checks at ever
 
 ## Article 33: Agreement — Client-Developer Contract (Non-Negotiable)
 
+> **📎 CLIENT tier** — binding for client-delivery projects; internal / tooling / methodology runs may skip. See the Loading Map.
+
 **Every project MUST have an Agreement document in the Admin milestone.** This is a combined SOW + MOU — the single canonical contract that governs the entire engagement.
 
 ### Why It's Document #1
@@ -1379,6 +1401,8 @@ The Agreement issue is the **gold standard** (per Article 18). Individual .md fi
 ---
 
 ## Article 34: Work Ledger — DU Value Tracking (Non-Negotiable)
+
+> **📎 CLIENT tier** — binding for client-delivery projects; internal / tooling / methodology runs may skip. See the Loading Map.
 
 **Every project MUST have a Work Ledger document in the Admin milestone.** This is the running financial record of all value delivered, tracked in Development Units (DUs).
 
