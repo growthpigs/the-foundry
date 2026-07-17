@@ -16,7 +16,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Syntax-check orchestrator + loader lib
-        run: bash -n bin/foundry.sh && bash -n bin/lib/constitution-loader.sh
+      - name: Syntax-check ALL shell executables
+        run: |
+          for f in bin/*.sh bin/lib/*.sh bin/__tests__/*.sh; do
+            echo "bash -n $f"; bash -n "$f"
+          done
+      - name: Syntax-check python
+        run: python3 -m py_compile bin/crucible.py
       - name: Constitution tiering unit tests
         run: bash bin/__tests__/constitution-tiering.test.sh
+      - name: Orchestrator dry-run smoke test (engine coverage)
+        run: bash bin/__tests__/foundry-dryrun.test.sh
