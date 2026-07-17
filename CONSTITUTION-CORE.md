@@ -1,8 +1,8 @@
 # The Foundry — Constitution (Core Principles)
 
-**Version:** 1.0
-**Status:** RATIFIED (2026-03-13)
-**Scope:** Immutable. Loaded for EVERY pipeline stage.
+**Version:** 3.0
+**Status:** RATIFIED (2026-03-13) · v3 amendments ratified 2026-07-17 (issue #69)
+**Scope:** Loaded for EVERY pipeline stage. Amendable ONLY via the Amendments process in `CONSTITUTION.md` — never edited autonomously by an AI agent. Mirrored articles must stay in sync with `CONSTITUTION.md` (the authoritative text).
 
 These are the non-negotiable principles. For detailed reference articles (18 Documents, Activity Log, Crucible, CI Pipeline, etc.), see `CONSTITUTION.md` (full version — loaded for ASSAY/CRUCIBLE/red-team stages only).
 
@@ -172,7 +172,7 @@ Roderic's window into ALL work is GitHub. Not terminal output. Not local docs. N
 
 ## Article 13: The Orchestrator Principle
 
-Dark Foundry is a router and runner, NOT a methodology. The methodologies are the existing command files (`/explore`, `/red-team`, `/code`, etc.) that were built and battle-tested independently. Dark Foundry decides which ones to call and in what order. The classifier is trivially simple — labels → mode → skip-list → stages. No AI classification, no complexity. Adding new methodologies or frameworks on top of existing stages is the Second System Effect (Article 4) unless those stages genuinely don't exist.
+The Foundry is an orchestrator and runner, NOT a methodology. It is a 7-phase spec-first pipeline — MINE → SCOUT → ASSAY → CRUCIBLE → PLAN → HAMMER → TEMPER — where each phase composes existing, independently battle-tested methodology (phase files under `phases/`, Ratify gates, the Ralph Loop in HAMMER). The orchestrator decides which phases run and in what order; the routing is trivially simple — labels → mode → skip-list → phases. No AI classification, no complexity. Adding new methodologies or frameworks on top of existing phases is the Second System Effect (Article 4) unless those phases genuinely don't exist.
 
 ---
 
